@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="D:\Studio workspace\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="25e6e52a5d32ce80e0925128199d87bb96bd4045">
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_677f20a55a5ade8c4e875300a85435038b20c8f9.jar" />
+    </item>
+
+</items>

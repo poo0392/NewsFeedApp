@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >-->
+<LinearLayout
+    android:layout_marginTop="55dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/menu_nat_inter_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_margin_top_bottom"
+        android:paddingBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/national_inter_menu"
+        android:textColor="@color/black"
+        android:background="@color/light_gray"
+        android:paddingLeft="@dimen/menu_margin_left"
+        android:tag="m1"/>
+
+
+    <TextView
+        android:id="@+id/menu_gov"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/gov_news_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left"
+        android:tag="m2"/>
+
+    <TextView
+        android:id="@+id/menu_soc_rel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/soc_rel_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left"
+        android:tag="m3"/>
+
+    <TextView
+        android:id="@+id/menu_sports"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_margin_top_bottom"
+        android:paddingBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/sports_menu"
+        android:background="@color/light_gray"
+        android:textColor="@color/black"
+        android:paddingLeft="@dimen/menu_margin_left"
+        android:tag="m4"/>
+
+    <TextView
+        android:id="@+id/menu_sci_tech"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_margin_top_bottom"
+        android:paddingBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/sci_tech_menu"
+        android:background="@color/light_gray"
+        android:textColor="@color/black"
+        android:paddingLeft="@dimen/menu_margin_left"
+        android:tag="m5"/>
+
+    <TextView
+        android:id="@+id/menu_eco"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_margin_top_bottom"
+        android:paddingBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/eco_news_menu"
+        android:background="@color/light_gray"
+        android:textColor="@color/black"
+        android:paddingLeft="@dimen/menu_margin_left"
+        android:tag="m6"/>
+
+    <TextView
+        android:id="@+id/menu_health"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_margin_top_bottom"
+        android:paddingBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/health_rel_menu"
+        android:background="@color/light_gray"
+        android:textColor="@color/black"
+        android:paddingLeft="@dimen/menu_margin_left"
+        android:tag="m7"/>
+
+    <TextView
+        android:id="@+id/menu_business_news"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_margin_top_bottom"
+        android:paddingBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/business_news_menu"
+        android:background="@color/light_gray"
+        android:textColor="@color/black"
+        android:paddingLeft="@dimen/menu_margin_left"
+        android:tag="m8"/>
+
+    <TextView
+        android:id="@+id/menu_agri"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_margin_top_bottom"
+        android:paddingBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/agri_news_menu"
+        android:background="@color/light_gray"
+        android:textColor="@color/black"
+        android:paddingLeft="@dimen/menu_margin_left"
+        android:tag="m9"/>
+
+    <TextView
+        android:id="@+id/menu_cinema"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_margin_top_bottom"
+        android:paddingBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/cinema_menu"
+        android:background="@color/light_gray"
+        android:textColor="@color/black"
+        android:paddingLeft="@dimen/menu_margin_left"
+        android:tag="m10"/>
+
+    <TextView
+        android:id="@+id/menu_small_classi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/menu_margin_top_bottom"
+        android:paddingBottom="5dp"
+        android:text="@string/small_class_menu"
+        android:textColor="@color/black"
+        android:paddingLeft="@dimen/menu_margin_left"
+        android:drawableRight="@mipmap/ic_keyboard_arrow_down_black_24dp"
+        android:tag="1"
+        />
+
+    <LinearLayout
+        android:id="@+id/small_classi_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+    <TextView
+        android:id="@+id/menu_property"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/property_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m11"/>
+
+    <TextView
+        android:id="@+id/menu_birthday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/birth_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m12"/>
+
+    <TextView
+        android:id="@+id/menu_app_rel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/app_rel_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m13"/>
+
+    <TextView
+        android:id="@+id/menu_buy_sell"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/buy_sell_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m14"/>
+
+    <TextView
+        android:id="@+id/menu_services"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/services_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m15"/>
+
+    <TextView
+        android:id="@+id/menu_loan_rel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/loan_rel_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m16"/>
+
+    <TextView
+        android:id="@+id/menu_mat_rel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/mat_rel_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m17"/>
+
+    <TextView
+        android:id="@+id/menu_books_lit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/book_lit_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m18"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/menu_other"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/other_uncat_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left"
+        android:tag="m19"/>
+
+    <TextView
+        android:id="@+id/menu_ent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/ent_news_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left"
+        android:tag="m20"/>
+
+    <TextView
+        android:id="@+id/menu_career"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="5dp"
+        android:text="@string/career_rel_menu"
+        android:textColor="@color/black"
+        android:drawableRight="@mipmap/ic_keyboard_arrow_down_black_24dp"
+        android:layout_marginLeft="@dimen/menu_margin_left"
+        android:tag="2"/>
+
+    <LinearLayout
+        android:id="@+id/career_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+
+    <TextView
+        android:id="@+id/menu_job"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/job_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m21"/>
+
+    <TextView
+        android:id="@+id/menu_business"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/business_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m22"/>
+
+    <TextView
+        android:id="@+id/menu_edu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/menu_margin_top_bottom"
+        android:layout_marginBottom="@dimen/menu_margin_top_bottom"
+        android:text="@string/edu_menu"
+        android:textColor="@color/black"
+        android:layout_marginLeft="@dimen/menu_margin_left_more"
+        android:tag="m23"/>
+
+    </LinearLayout>
+
+</LinearLayout>
+<!--
+</ScrollView>-->

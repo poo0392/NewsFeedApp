@@ -1,0 +1,198 @@
+<resources>
+    <string name="app_name">My News Article</string>
+
+    <string name="next_text">Next</string>
+    <string-array
+        name="language_arr">
+        <item>Select Language</item>
+        <item>हिंदी</item>
+        <item>मराठी</item>
+    </string-array>
+
+    <string name="error_language_selection">Please Select Language</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_username">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_login_in">Login</string>
+    <string name="sign_up_text">Sign up</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="change_password">Change password</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."
+    </string>
+
+
+    <!--Sign Up-->
+    <string name="prompt_first_name">First Name</string>
+    <string name="prompt_last_name">Last Name</string>
+    <string name="prompt_mail">Email Id</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="prompt_mobile">Mobile number</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_mobile_no">This mobile number is invalid</string>
+    <string name="error_match_password">Confirm password is not the same as password</string>
+    <string name="title_activity_home">HomeActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+
+    <string name="whiz_project_key">9uuxccl3jdqiw7aw6c2tw6p4</string>
+
+    <!-- Strings related to Forgot Password -->
+    <string name="action_submit">Submit</string>
+
+    <!--Create Article-->
+    <string name="prompt_title">Enter title</string>
+    <string name="prompt_desc">Enter Description</string>
+    <string name="description_text">Description details (in words)</string>
+    <string name="words_100_str">100</string>
+    <string name="words_200_str">200</string>
+    <string name="words_300_str">300</string>
+    <string name="words_400_str">400</string>
+    <string name="publishing_text">How many days publishing</string>
+    <string name="day_30_str">30 days</string>
+    <string name="day_60_str">60 days</string>
+    <string name="day_90_str">90 days</string>
+    <string name="day_120_str">120 days</string>
+    <string name="photo_str">Photo</string>
+    <string name="total_charges_str">Total Charges</string>
+
+    <!-- Rupee symbol-->
+    <string name="Rs">\u20B9</string>
+
+    <!-- navigation text-->
+    <string name="national_inter_menu">National and International</string>
+    <string name="gov_news_menu">Government News</string>
+    <string name="soc_rel_menu">Social and Related News</string>
+    <string name="sports_menu">Sports</string>
+    <string name="sci_tech_menu">Science and Technology</string>
+    <string name="eco_news_menu">Economical News</string>
+    <string name="health_rel_menu">Health Related</string>
+    <string name="business_news_menu">Business News</string>
+    <string name="agri_news_menu">Agricultural News</string>
+    <string name="cinema_menu">Cinema Related</string>
+    <string name="small_class_menu">Small Classifieds</string>
+    <string name="property_menu">Property</string>
+    <string name="birth_menu">Birthday ads</string>
+    <string name="app_rel_menu">App Related Ads</string>
+    <string name="buy_sell_menu">Buy and Sell</string>
+    <string name="services_menu">Services</string>
+    <string name="loan_rel_menu">Loan related</string>
+    <string name="mat_rel_menu">Matrimony related</string>
+    <string name="book_lit_menu">Books and Literature</string>
+    <string name="other_uncat_menu">Other and Uncategorized News</string>
+    <string name="ent_news_menu">Entertainment News</string>
+    <string name="career_rel_menu">Career Related</string>
+    <string name="job_menu">Job</string>
+    <string name="business_menu">Business</string>
+    <string name="edu_menu">Educational</string>
+
+    <string-array name="article_arr">
+        <item>Select Article Type</item>
+        <item>National and International</item>
+        <item>Government News</item>
+        <item>Social and Related News</item>
+        <item>Sports</item>
+        <item>Science and Technology</item>
+        <item>Economical News</item>
+        <item>Health Related</item>
+        <item>Business News</item>
+        <item>Agricultural News</item>
+        <item>Cinema Related</item>
+        <item>Small Classifieds</item>
+        <item>Property</item>
+        <item>Birthday ads</item>
+        <item>App Related Ads</item>
+        <item>Buy and Sell</item>
+        <item>Services</item>
+        <item>Loan related</item>
+        <item>Matrimony related</item>
+        <item>Books and Literature</item>
+        <item>Other and Uncategorized News</item>
+        <item>Entertainment News</item>
+        <item>Career Related</item>
+        <item>Job</item>
+        <item>Business</item>
+        <item>Educational</item>
+    </string-array>
+
+    <string-array name="state_arr">
+        <item>Select Article Type</item>
+        <item>National and International</item>
+        <item>Government News</item>
+        <item>Social and Related News</item>
+        <item>Sports</item>
+        <item>Science and Technology</item>
+        <item>Economical News</item>
+        <item>Health Related</item>
+        <item>Business News</item>
+        <item>Agricultural News</item>
+        <item>Cinema Related</item>
+        <item>Small Classifieds</item>
+        <item>Property</item>
+        <item>Birthday ads</item>
+        <item>App Related Ads</item>
+        <item>Buy and Sell</item>
+        <item>Services</item>
+        <item>Loan related</item>
+        <item>Matrimony related</item>
+        <item>Books and Literature</item>
+        <item>Other and Uncategorized News</item>
+        <item>Entertainment News</item>
+        <item>Career Related</item>
+        <item>Job</item>
+        <item>Business</item>
+        <item>Educational</item>
+    </string-array>
+
+    <!--menus-->
+    <string name="create_article_menu">Create article</string>
+    <string name="change_pwd_menu">Change password</string>
+    <string name="log_out">Log out</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+
+
+
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="title_activity_net_banking">NetBankingActivity</string>
+    <string name="title_activity_cash_card">CashCardActivity</string>
+    <string name="title_activity_emi">EmiActivity</string>
+    <string name="title_activity_card">CardActivity</string>
+    <string name="title_activity_user_cards">UserCardsActivity</string>
+    <string name="title_activity_payments">PaymentsActivity</string>
+    <string name="pay_now">Pay</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+    <string name="click_here">Click here</string>
+    <string name="if_cvv_and_expiry_on_card"> &#160;if you have CVV and Expiry on your card</string>
+    <string name="if_dont_cvv_and_expiry_on_card"> &#160;if you don\'t have CVV and Expiry on your card</string>
+    <string name="net_banking">Net Banking</string>
+    <string name="title_activity_merchant_payment">MerchantPaymentActivity</string>
+    <string name="title_activity_verify_api">VerifyApiActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="test">Test</string>
+    <string name="production">Production</string>
+
+    <string-array name="environment_array">
+        <item>@string/test</item>
+        <item>@string/production</item>
+    </string-array>
+
+    <string name="use_live_key_in_production_environment">Please use your live merchant key in production environment</string>
+    <string name="could_not_receive_data">Could not receive data</string>
+
+</resources>

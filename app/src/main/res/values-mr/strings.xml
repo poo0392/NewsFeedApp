@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Strings related to login -->
+    <string name="prompt_username">ईमेल</string>
+    <string name="prompt_password">पासवर्ड</string>
+    <string name="action_login_in">लॉग इन</string>
+    <string name="sign_up_text">साइन अप करा</string>
+    <string name="forgot_password">पासवर्ड विसरलात?</string>
+    <string name="change_password">पासवर्ड बदला</string>
+    <string name="error_incorrect_password">हा संकेतशब्द चुकीचा आहे</string>
+    <string name="error_field_required">हे फील्ड आवश्यक आहे</string>
+
+    <!--Sign Up-->
+    <string name="prompt_first_name">पहिले नाव</string>
+    <string name="prompt_last_name">आडनाव</string>
+    <string name="prompt_name">नाव</string>
+    <string name="prompt_mail">ई-मेल आयडी</string>
+    <string name="prompt_confirm_password">पासवर्डची पुष्टी करा</string>
+    <string name="prompt_mobile">मोबाइल नंबर</string>
+    <string name="error_invalid_password">हा संकेतशब्द खूप लहान आहे</string>
+    <string name="error_invalid_email">हा ईमेल पत्ता अवैध आहे</string>
+    <string name="error_invalid_mobile_no">हा मोबाइल नंबर अवैध आहे</string>
+    <string name="error_match_password">पासवर्डची पुष्टी करा पासवर्ड प्रमाणे नाही</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">ईमेल</string>
+    <string name="action_sign_in">साइन इन करा किंवा नोंदणी करा</string>
+    <string name="action_sign_in_short">साइन इन करा</string>
+
+    <!--Create Article-->
+    <string name="prompt_title">शीर्षक प्रविष्ट करा</string>
+    <string name="prompt_desc">वर्णन प्रविष्ट करा</string>
+    <string name="description_text">वर्णन तपशील (शब्दात)</string>
+    <string name="words_100_str">100</string>
+    <string name="words_200_str">200</string>
+    <string name="words_300_str">300</string>
+    <string name="words_400_str">400</string>
+    <string name="publishing_text">किती दिवस प्रकाशन</string>
+    <string name="day_30_str">30 दिवस</string>
+    <string name="day_60_str">60 दिवस</string>
+    <string name="day_90_str">90 दिवस</string>
+    <string name="day_120_str">120 दिवस</string>
+    <string name="photo_str">छायाचित्र</string>
+    <string name="total_charges_str">एकूण शुल्क</string>
+
+    <!-- navigation text-->
+    <string name="national_inter_menu">राष्ट्रीय आणि आंतरराष्ट्रीय</string>
+    <string name="gov_news_menu">सरकारी बातम्या</string>
+    <string name="soc_rel_menu">सामाजिक आणि संबंधित बातम्या</string>
+    <string name="sports_menu">क्रीडा</string>
+    <string name="sci_tech_menu">विज्ञान आणि तंत्रज्ञान</string>
+    <string name="eco_news_menu">आर्थिक बातम्या</string>
+    <string name="health_rel_menu">आरोग्य संबंधित</string>
+    <string name="business_news_menu">व्यवसाय बातम्या</string>
+    <string name="agri_news_menu">कृषी बातम्या</string>
+    <string name="cinema_menu">सिनेमा संबंधित</string>
+    <string name="small_class_menu">छोट्या जाहिराती</string>
+    <string name="property_menu">मालमत्ता</string>
+    <string name="birth_menu">वाढदिवस जाहिराती</string>
+    <string name="app_rel_menu">अॅप संबंधित जाहिराती</string>
+    <string name="buy_sell_menu">खरेदी आणि विक्री</string>
+    <string name="services_menu">सेवा</string>
+    <string name="loan_rel_menu">कर्ज संबंधित</string>
+    <string name="mat_rel_menu">विवाह संबंधित</string>
+    <string name="book_lit_menu">पुस्तके आणि साहित्य</string>
+    <string name="other_uncat_menu">इतर आणि अश्रेणीबद्ध बातम्या</string>
+    <string name="ent_news_menu">मनोरंजन बातम्या</string>
+    <string name="career_rel_menu">करियर संबंधित</string>
+    <string name="job_menu">जॉब</string>
+    <string name="business_menu">व्यवसाय</string>
+    <string name="edu_menu">शैक्षणिक</string>
+
+    <string-array name="article_arr">
+        <item>लेख प्रकार निवडा</item>
+        <item>राष्ट्रीय आणि आंतरराष्ट्रीय</item>
+        <item>सरकारी बातम्या</item>
+        <item>सामाजिक आणि संबंधित बातम्या</item>
+        <item>क्रीडा</item>
+        <item>विज्ञान आणि तंत्रज्ञान</item>
+        <item>आर्थिक बातम्या</item>
+        <item>आरोग्य संबंधित</item>
+        <item>व्यवसाय बातम्या</item>
+        <item>कृषी बातम्य</item>
+        <item>सिनेमा संबंधित</item>
+        <item>मालमत्ता</item>
+        <item>वाढदिवस जाहिराती</item>
+        <item>अॅप संबंधित जाहिराती</item>
+        <item>खरेदी आणि विक्री</item>
+        <item>सेवा</item>
+        <item>कर्ज संबंधित</item>
+        <item>विवाह संबंधित</item>
+        <item>पुस्तके आणि साहित्य</item>
+        <item>इतर आणि अश्रेणीबद्ध बातम्या</item>
+        <item>मनोरंजन बातम्या</item>
+        <item>जॉब</item>
+        <item>व्यवसाय</item>
+        <item>शैक्षणिक</item>
+    </string-array>
+
+    <!--menus-->
+    <string name="create_article_menu">लेख तयार करा</string>
+    <string name="change_pwd_menu">पासवर्ड बदला</string>
+    <string name="log_out">लॉग आऊट करा</string>
+
+</resources>
