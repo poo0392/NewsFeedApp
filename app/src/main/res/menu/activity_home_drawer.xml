@@ -5,6 +5,9 @@
         <item
             android:id="@+id/create_article"
             android:title="Create Article" />
+        <item
+            android:id="@+id/create_articlea"
+            android:title="Create Article" />
 
     </group>
 
