@@ -203,7 +203,7 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View header = navigationView.getHeaderView(0);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.addHeaderView(header);
         navigationView.setNavigationItemSelectedListener(this);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.news_feed_recycler_view);
