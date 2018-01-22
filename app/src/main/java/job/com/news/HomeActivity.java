@@ -32,14 +32,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
+import job.com.news.adapter.ExpandListAdapter;
 import job.com.news.changepassword.ChangePassword;
 import job.com.news.interfaces.ItemClickListener;
 import job.com.news.sharedpref.SessionManager;
@@ -61,6 +65,10 @@ public class HomeActivity extends AppCompatActivity
     private static final int PERMISSION_REQUEST_CODE = 200;
     private SessionManager session, langSelection;
     Toolbar toolbar;
+    ExpandListAdapter listAdapter;
+    List<String> listDataHeader;
+    HashMap<String, List<String>> listDataChild;
+    ExpandableListView expListView;
 
 
     @Override
@@ -163,14 +171,14 @@ public class HomeActivity extends AppCompatActivity
         menuEdu.setOnClickListener(this);
 
 
-
     }
+    //navigation Change
 
     private void setLocaleLang() {
         String[] lang_arr = getResources().getStringArray(R.array.language_arr);
         String getLang = langSelection.getLanguage();
 
-        Log.v("HomeActivity ","getLang "+getLang);
+        Log.v("HomeActivity ", "getLang " + getLang);
         Configuration config = new Configuration();
         Locale locale;
         if (getLang.equalsIgnoreCase(lang_arr[1])) {
@@ -203,8 +211,9 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View header = navigationView.getHeaderView(0);
-        navigationView.addHeaderView(header);
-        navigationView.setNavigationItemSelectedListener(this);
+     //   navigationView.addHeaderView(header);
+        enableExpandableList();
+        // navigationView.setNavigationItemSelectedListener(this);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.news_feed_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -212,6 +221,103 @@ public class HomeActivity extends AppCompatActivity
         setData();
         adapter = new ImageAdapter();
         mRecyclerView.setAdapter(adapter);
+    }
+
+    private void enableExpandableList() {
+        listDataHeader = new ArrayList<String>();
+        listDataChild = new HashMap<String, List<String>>();
+        expListView = (ExpandableListView) findViewById(R.id.left_drawer);
+        expListView.setIndicatorBounds(expListView.getRight() - 40, expListView.getWidth());
+        prepareListData(listDataHeader, listDataChild);
+        listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
+        // setting list adapter
+        expListView.setAdapter(listAdapter);
+
+        expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v,
+                                        int groupPosition, long id) {
+                // Toast.makeText(getApplicationContext(),
+                // "Group Clicked " + listDataHeader.get(groupPosition),
+                // Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+        // Listview Group expanded listener
+        expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+             /*   Toast.makeText(getApplicationContext(),
+                        listDataHeader.get(groupPosition) + " Expanded",
+                        Toast.LENGTH_SHORT).show();*/
+            }
+        });
+
+        // Listview Group collasped listener
+        expListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+              /*  Toast.makeText(getApplicationContext(),
+                        listDataHeader.get(groupPosition) + " Collapsed",
+                        Toast.LENGTH_SHORT).show();*/
+
+            }
+        });
+
+        // Listview on child click listener
+        expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                // TODO Auto-generated method stub
+                // Temporary code:
+
+                // till here
+                Toast.makeText(
+                        getApplicationContext(),
+                        listDataHeader.get(groupPosition)
+                                + " : "
+                                + listDataChild.get(
+                                listDataHeader.get(groupPosition)).get(
+                                childPosition), Toast.LENGTH_SHORT)
+                        .show();
+                return false;
+            }
+        });
+    }
+
+    private void prepareListData(List<String> listDataHeader, HashMap<String, List<String>> listDataChild) {
+        listDataHeader.add("Home");
+        listDataHeader.add("User Profile");
+        listDataHeader.add("Requests");
+        listDataHeader.add("News Categories");
+        listDataHeader.add("About Us");
+
+        List<String> requestsChild = new ArrayList<String>();
+        requestsChild.add("Pending Request");
+        requestsChild.add("Request Status");
+
+
+        List<String> newsChild = new ArrayList<String>();
+        newsChild.add("National and International");
+        newsChild.add("Government News");
+        newsChild.add("Social and Related News");
+        newsChild.add("Sports");
+        newsChild.add("Science and Technology");
+        newsChild.add("Economical News");
+        newsChild.add("Health Related");
+        newsChild.add("Business News");
+        newsChild.add("Agricultural News");
+        newsChild.add("Cinema Related");
+
+        listDataChild.put(listDataHeader.get(2), requestsChild); // Header, Child data
+        listDataChild.put(listDataHeader.get(3), newsChild);
+
+
     }
 
     private void setListeners() {
@@ -556,9 +662,10 @@ public class HomeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
-       setSearchViewMenu(menu);
+        setSearchViewMenu(menu);
         return true;
     }
+
     public void setSearchViewMenu(final Menu menu) {
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -601,11 +708,12 @@ public class HomeActivity extends AppCompatActivity
 
 
     private void setItemsVisibility(Menu menu, MenuItem exception, boolean visible) {
-        for (int i=0; i<menu.size(); ++i) {
+        for (int i = 0; i < menu.size(); ++i) {
             MenuItem item = menu.getItem(i);
             if (item != exception) item.setVisible(visible);
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

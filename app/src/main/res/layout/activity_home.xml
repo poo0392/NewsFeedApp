@@ -39,8 +39,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_home"
-        app:menu="@menu/activity_home_drawer" >
+        android:groupIndicator="@null"
+        app:headerLayout="@layout/nav_header_home" >
 
     <ScrollView
         android:layout_marginTop="55dp"
@@ -58,6 +58,14 @@
 
         </LinearLayout>
     </ScrollView>
+
+        <ExpandableListView
+            android:id="@+id/left_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/nav_header_height"
+            android:background="@color/white"
+            android:dividerHeight="1dp"/>
     </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>

@@ -16,6 +16,6 @@
     <color name="background_color">#f1e9dd</color>
     <color name="orange">#FF9935</color>
     <color name="tabTransparent">#10ffffff</color>
-
+    <color name="DarkGray">#A9A9A9</color>
 
 </resources>

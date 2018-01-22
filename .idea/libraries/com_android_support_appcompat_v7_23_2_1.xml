@@ -1,14 +1,14 @@
 <component name="libraryTable">
   <library name="com.android.support:appcompat-v7-23.2.1">
     <CLASSES>
-      <root url="file://$USER_HOME$/.android/build-cache/d7c3d917b0187e8f508c4fdd1dacc70a6c5ba926/output/res" />
-      <root url="jar://$USER_HOME$/.android/build-cache/d7c3d917b0187e8f508c4fdd1dacc70a6c5ba926/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/476a19b8e258e4767e89d652053abcdebcba8d8d/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/476a19b8e258e4767e89d652053abcdebcba8d8d/output/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://D:/AndroidStudioSDK/SDK/extras/android/m2repository/com/android/support/appcompat-v7/23.2.1/appcompat-v7-23.2.1-javadoc.jar!/" />
+      <root url="jar://$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/appcompat-v7/23.2.1/appcompat-v7-23.2.1-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://D:/AndroidStudioSDK/SDK/extras/android/m2repository/com/android/support/appcompat-v7/23.2.1/appcompat-v7-23.2.1-sources.jar!/" />
+      <root url="jar://$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/appcompat-v7/23.2.1/appcompat-v7-23.2.1-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
