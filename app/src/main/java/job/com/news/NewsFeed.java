@@ -1,3 +1,4 @@
+/*
 package job.com.news;
 
 import android.content.Context;
@@ -43,7 +44,8 @@ public class NewsFeed extends AppCompatActivity {
 
         adapter = new ImageAdapter();
         mRecyclerView.setAdapter(adapter);
-        /*adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+        */
+/*adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
                 Log.e("haint", "Load More");
@@ -59,7 +61,8 @@ public class NewsFeed extends AppCompatActivity {
                     getData(String.valueOf(mCurrentPage));
                 }
             }
-        });*/
+        });*//*
+
 
     }
 
@@ -124,7 +127,8 @@ public class NewsFeed extends AppCompatActivity {
         private int lastVisibleItem, totalItemCount;
 
         public ImageAdapter() {
-            /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+            */
+/*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -139,17 +143,22 @@ public class NewsFeed extends AppCompatActivity {
 
                     }
                 }
-            });*/
+            });*//*
+
         }
 
-        /*public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
+        */
+/*public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
             this.mOnLoadMoreListener = mOnLoadMoreListener;
-        }*/
+        }*//*
 
-       /* @Override
+
+       */
+/* @Override
         public int getItemViewType(int position) {
             return app.mImageDetails.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
-        }*/
+        }*//*
+
 
 
 
@@ -158,17 +167,20 @@ public class NewsFeed extends AppCompatActivity {
             if (viewType == VIEW_TYPE_ITEM) {
                 View view = LayoutInflater.from(mContext).inflate(R.layout.news_feed_item, parent, false);
                 return new ImageViewHolder(view);
-            } /*else if (viewType == VIEW_TYPE_LOADING) {
+            } */
+/*else if (viewType == VIEW_TYPE_LOADING) {
                 View view = LayoutInflater.from(mContext).inflate(R.layout.layout_loading_item, parent, false);
                 return new LoadingViewHolder(view);
-            }*/
+            }*//*
+
             return null;
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ImageViewHolder) {
-                /*ImageDetails user = app.mImageDetails.get(position);
+                */
+/*ImageDetails user = app.mImageDetails.get(position);
                 ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
                 String imageUrl = user.getImg_url();
                 Uri imageUri = Uri.parse(imageUrl);
@@ -177,7 +189,8 @@ public class NewsFeed extends AppCompatActivity {
 
                 imageViewHolder.textViewTitle.setText(user.getTitle());
                 imageViewHolder.textViewDistance.setText(user.getDistance());
-                imageViewHolder.textViewUnit.setText(user.getUnit());*/
+                imageViewHolder.textViewUnit.setText(user.getUnit());*//*
+
 
                 ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
 
@@ -216,10 +229,12 @@ public class NewsFeed extends AppCompatActivity {
                     }
                 });
 
-            }/* else if (holder instanceof LoadingViewHolder) {
+            }*/
+/* else if (holder instanceof LoadingViewHolder) {
                 LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
                 loadingViewHolder.progressBar.setIndeterminate(true);
-            }*/
+            }*//*
+
         }
 
         @Override
@@ -228,7 +243,8 @@ public class NewsFeed extends AppCompatActivity {
             return newsFeedApplication.hashMap.size();
         }
 
-        /*public void setLoaded() {
+        */
+/*public void setLoaded() {
             isLoading = false;
         }
 
@@ -240,7 +256,8 @@ public class NewsFeed extends AppCompatActivity {
         public void addList(){
             //addData
             notifyDataSetChanged();
-        }*/
+        }*//*
+
 
 
     }
@@ -279,3 +296,4 @@ public class NewsFeed extends AppCompatActivity {
     }
 
 }
+*/

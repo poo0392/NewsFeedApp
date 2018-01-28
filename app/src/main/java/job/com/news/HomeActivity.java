@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,6 +19,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -38,15 +40,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import job.com.news.adapter.ExpandListAdapter;
+import job.com.news.adapter.HomeDashboardAdapter;
+import job.com.news.adapter.ImageAdapter;
 import job.com.news.changepassword.ChangePassword;
 import job.com.news.interfaces.ItemClickListener;
+import job.com.news.models.NewsFeedDetails;
 import job.com.news.sharedpref.SessionManager;
+
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -69,6 +80,12 @@ public class HomeActivity extends AppCompatActivity
     List<String> listDataHeader;
     HashMap<String, List<String>> listDataChild;
     ExpandableListView expListView;
+    HomeDashboardAdapter mAdapter;
+    List<NewsFeedDetails> mNewsFeedList;
+    private FragmentPagerItemAdapter mFPIAdapter;
+    private FragmentPagerItems pages;
+    private ViewPager viewPager;
+    private SmartTabLayout viewPagerTab;
 
 
     @Override
@@ -203,6 +220,7 @@ public class HomeActivity extends AppCompatActivity
     private void initialializeComponents() {
 
 
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -211,16 +229,64 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View header = navigationView.getHeaderView(0);
-     //   navigationView.addHeaderView(header);
+        //   navigationView.addHeaderView(header);
         enableExpandableList();
         // navigationView.setNavigationItemSelectedListener(this);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.news_feed_recycler_view);
+       /* mRecyclerView = (RecyclerView) findViewById(R.id.news_feed_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         mRecyclerView.setLayoutManager(layoutManager);
-        setData();
-        adapter = new ImageAdapter();
-        mRecyclerView.setAdapter(adapter);
+        setData();*/
+
+
+        /*addNewsFeedItems();
+        mAdapter = new HomeDashboardAdapter(HomeActivity.this, mNewsFeedList);
+        mRecyclerView.setAdapter(mAdapter);*/
+       // adapter = new ImageAdapter(HomeActivity.this);
+       // mRecyclerView.setAdapter(adapter);
+
+        viewPager = (ViewPager)findViewById(R.id.home_viewpager);
+        viewPagerTab = (SmartTabLayout)findViewById(R.id.viewpagertab);
+
+        pages = new FragmentPagerItems(HomeActivity.this);
+        FragmentPagerItems pages = new FragmentPagerItems(this);
+        for (int titleResId : tabsValues()) {
+            pages.add(FragmentPagerItem.of(getString(titleResId), NewsFeedFragment.class));
+        };
+
+        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(getSupportFragmentManager(), pages);
+
+        viewPager.setAdapter(adapter);
+        viewPagerTab.setViewPager(viewPager);
+
+        //
+    }
+
+    private int[] tabsValues() {
+        return new int[] {
+                R.string.recent_news,
+                R.string.national_inter_menu,
+                R.string.gov_news_menu,
+                R.string.soc_rel_menu,
+                R.string.sports_menu,
+                R.string.sci_tech_menu,
+                R.string.eco_news_menu,
+                R.string.health_rel_menu,
+                R.string.business_news_menu,
+                R.string.agri_news_menu,
+                R.string.cinema_menu
+        };
+    }
+
+    private void addNewsFeedItems() {
+        mNewsFeedList = new ArrayList<>();
+        mNewsFeedList.add(new NewsFeedDetails("'We are here to stay', say Indian-Americans amid growing hate crime incidents in the US","10 mins ago",
+                "1-01-2018",getResources().getDrawable(R.drawable.lebanon),"Mumbai","Maharashtra","John Williams"));
+         mNewsFeedList.add(new NewsFeedDetails("Development of all, appeasement of none: Yogi's mantra for UP","1 day ago",
+                "12-07-2017",getResources().getDrawable(R.drawable.yogi_adinath),"Mumbai","Maharashtra","Richie K"));
+            mNewsFeedList.add(new NewsFeedDetails("India to seal border with Pakistan by 2018: Rajnath Singh","20 mins ago",
+                "11-04-2017",getResources().getDrawable(R.drawable.india_pak_border),"Mumbai","Maharashtra","G K"));
+
     }
 
     private void enableExpandableList() {
@@ -483,168 +549,6 @@ public class HomeActivity extends AppCompatActivity
             }
         }
 
-    }
-
-    class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private final int VIEW_TYPE_ITEM = 0;
-        private final int VIEW_TYPE_LOADING = 1;
-        //private OnLoadMoreListener mOnLoadMoreListener;
-        private boolean isLoading;
-        private int visibleThreshold = 1;
-        private int lastVisibleItem, totalItemCount;
-
-        public ImageAdapter() {
-            /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                    if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                        if (mOnLoadMoreListener != null) {
-                            mOnLoadMoreListener.onLoadMore();
-                        }
-                        isLoading = true;
-
-                    }
-                }
-            });*/
-        }
-
-        /*public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
-            this.mOnLoadMoreListener = mOnLoadMoreListener;
-        }*/
-
-       /* @Override
-        public int getItemViewType(int position) {
-            return app.mImageDetails.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
-        }*/
-
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == VIEW_TYPE_ITEM) {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.news_feed_item, parent, false);
-                return new NewsFeed.ImageViewHolder(view);
-            } /*else if (viewType == VIEW_TYPE_LOADING) {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.layout_loading_item, parent, false);
-                return new LoadingViewHolder(view);
-            }*/
-            return null;
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof NewsFeed.ImageViewHolder) {
-                /*ImageDetails user = app.mImageDetails.get(position);
-                ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
-                String imageUrl = user.getImg_url();
-                Uri imageUri = Uri.parse(imageUrl);
-
-                imageViewHolder.draweeView.setImageURI(imageUri);
-
-                imageViewHolder.textViewTitle.setText(user.getTitle());
-                imageViewHolder.textViewDistance.setText(user.getDistance());
-                imageViewHolder.textViewUnit.setText(user.getUnit());*/
-
-                NewsFeed.ImageViewHolder imageViewHolder = (NewsFeed.ImageViewHolder) holder;
-
-                ArrayList<String> list = newsFeedApplication.hashMap.get("" + position);
-                imageViewHolder.textViewSummary.setText(list.get(0));
-                imageViewHolder.textViewDate.setText(list.get(2));
-                if (position == 0) {
-                    //lebaon
-                    imageViewHolder.imageView.setBackgroundResource(R.drawable.lebanon);
-                } else if (position == 1) {
-                    //india us
-                    imageViewHolder.imageView.setBackgroundResource(R.drawable.india_us);
-                } else if (position == 2) {
-                    //yogi
-                    imageViewHolder.imageView.setBackgroundResource(R.drawable.yogi_adinath);
-                } else if (position == 3) {
-                    //india pak
-                    imageViewHolder.imageView.setBackgroundResource(R.drawable.india_pak_border);
-                } else if (position == 4) {
-                    //kuldeep
-                    imageViewHolder.imageView.setBackgroundResource(R.drawable.kuldeep_yadav);
-                }
-
-
-                imageViewHolder.setClickListener(new ItemClickListener() {
-                    @Override
-                    public void onClick(View view, int position, boolean isLongClick) {
-                        if (isLongClick) {
-                            Toast.makeText(mContext, "#" + position + " (Long click)", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(mContext, "#" + position, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(mContext, NewsDetailScreen.class);
-                            intent.putExtra("itemPosition", position + "");
-                            startActivity(intent);
-                        }
-                    }
-                });
-
-            }/* else if (holder instanceof LoadingViewHolder) {
-                LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
-                loadingViewHolder.progressBar.setIndeterminate(true);
-            }*/
-        }
-
-        @Override
-        public int getItemCount() {
-            //return app.mImageDetails == null ? 0 : app.mImageDetails.size();
-            return newsFeedApplication.hashMap.size();
-        }
-
-        /*public void setLoaded() {
-            isLoading = false;
-        }
-
-        public void clearList(){
-            app.mImageDetails.clear();
-            notifyDataSetChanged();
-        }
-
-        public void addList(){
-            //addData
-            notifyDataSetChanged();
-        }*/
-
-
-    }
-
-    static class ImageViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
-        TextView textViewSummary;
-        TextView textViewDate;
-        ImageView imageView;
-        private ItemClickListener clickListener;
-
-        public ImageViewHolder(View itemView) {
-            super(itemView);
-            this.textViewSummary = (TextView) itemView.findViewById(R.id.row_summary);
-            this.textViewDate = (TextView) itemView.findViewById(R.id.row_date);
-            this.imageView = (ImageView) itemView.findViewById(R.id.row_image);
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
-
-        public void setClickListener(ItemClickListener itemClickListener) {
-            this.clickListener = itemClickListener;
-        }
-
-
-        @Override
-        public void onClick(View view) {
-            clickListener.onClick(view, getAdapterPosition(), false);
-        }
-
-        @Override
-        public boolean onLongClick(View view) {
-            clickListener.onClick(view, getAdapterPosition(), true);
-            return true;
-        }
     }
 
 

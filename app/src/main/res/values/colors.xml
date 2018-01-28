@@ -17,5 +17,30 @@
     <color name="orange">#FF9935</color>
     <color name="tabTransparent">#10ffffff</color>
     <color name="DarkGray">#A9A9A9</color>
+    <color name="black_transparent">#66000000</color>
+
+    <color name="text_enabled">#FFFFFFFF</color>
+    <color name="text_disabled">#4DFFFFFF</color>
 
 </resources>
+    <!--  100% — FF
+        95% — F2
+        90% — E6
+        85% — D9
+        80% — CC
+        75% — BF
+        70% — B3
+        65% — A6
+        60% — 99
+        55% — 8C
+        50% — 80
+        45% — 73
+        40% — 66
+        35% — 59
+        30% — 4D
+        25% — 40
+        20% — 33
+        15% — 26
+        10% — 1A
+        5% — 0D
+        0% — 00-->

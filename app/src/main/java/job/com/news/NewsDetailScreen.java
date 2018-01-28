@@ -2,6 +2,7 @@ package job.com.news;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,12 +12,15 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class NewsDetailScreen extends AppCompatActivity {
-
+    CollapsingToolbarLayout collapsingToolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news_detail_screen);
+        setContentView(R.layout.activity_news_detail_screen_new);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        initializeCompo();
+        setListeners();
 
         NewsFeedApplication newsFeedApplication = NewsFeedApplication.getApp();
 
@@ -31,7 +35,7 @@ public class NewsDetailScreen extends AppCompatActivity {
         TextView news = (TextView) findViewById(R.id.details_news);
         news.setText(arrayList.get(1));
 
-        TextView date = (TextView) findViewById(R.id.details_date);
+        TextView date = (TextView) findViewById(R.id.txt_post_time);
         date.setText(arrayList.get(2));
 
         ImageView imageView = (ImageView) findViewById(R.id.details_image);
@@ -52,6 +56,15 @@ public class NewsDetailScreen extends AppCompatActivity {
             //kuldeep
             imageView.setBackgroundResource(R.drawable.kuldeep_yadav);
         }
+
+    }
+
+    private void initializeCompo() {
+        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsingToolbarLayout);
+        collapsingToolbar.setTitle("Sports");
+    }
+
+    private void setListeners() {
 
     }
 
