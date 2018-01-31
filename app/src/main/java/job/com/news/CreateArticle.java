@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.weiwangcn.betterspinner.library.BetterSpinner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,10 +49,13 @@ import job.com.news.article.City;
 import job.com.news.article.City_Name;
 import job.com.news.article.State;
 import job.com.news.article.State_Name;
+import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.LocaleHelper;
+import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.payU.PayUActivity;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,7 +73,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private HashMap<String, Integer> mapState;
 
     private ArrayList<HashMap<String, String>> stateList;
-    private TextView mTotalChargesView;
+    private TextView mTotalChargesView, mDateView;
     private RadioGroup radioGroupDays;
     private String mRsSymbol;
     private String mArticleCode;
@@ -78,6 +83,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private int currentImageView = 0;
     private Button btn_submit;
     private int charges;
+    String state_arr[], article_arr[];
+    ArrayAdapter<String> state_adapter, article_adapter;
+    RelativeLayout state_relative, city_relative, article_relative;
+    BetterSpinner bsStateSpinner,bsCitySpinner,bsArticleSpinner;
 
     //Indonesia
 
@@ -85,6 +94,19 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create_article);
+        mProjectKey = getString(R.string.whiz_project_key);
+        //  mProjectKey="0q4LozhupoQlXKFFiqtRHAZIJpdaHcObOO6gEKa6uuhQS4t1n33PutMsyyAm";
+        mContext = this;
+
+        setAppToolbar();
+
+        updateViews("hi_IN");
+        initializeComponents();
+        setListeners();
+        openLangKb();
+        setDateToText();
+
 
 //        String languageToLoad  = "hi_IN"; // your language
 //        Locale locale = new Locale(languageToLoad);
@@ -94,10 +116,31 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 //        getBaseContext().getResources().updateConfiguration(config,
 //                getBaseContext().getResources().getDisplayMetrics());
 
-        setContentView(R.layout.activity_create_article);
 
-        updateViews("hi_IN");
+        loadStateApi();
 
+        radioGroupDays = (RadioGroup) findViewById(R.id.article_radio_days);
+        radioGroupDays.getCheckedRadioButtonId();
+
+        mArticleImage1 = (ImageView) findViewById(R.id.article_image1);
+        mArticleImage1.setOnClickListener(this);
+
+        mArticleImage2 = (ImageView) findViewById(R.id.article_image2);
+        mArticleImage2.setOnClickListener(this);
+
+        mTotalChargesView = (TextView) findViewById(R.id.article_total_charges_value);
+
+    }
+
+    private void setDateToText() {
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+        String strDate = sdf.format(date);
+        mDateView.setText(strDate);
+    }
+
+    private void openLangKb() {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         if (inputMethodManager != null) {
@@ -134,35 +177,52 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
 
         }
-        btn_submit = (Button) findViewById(R.id.article_btn_submit);
-        btn_submit.setOnClickListener(this);
+    }
 
-        mProjectKey = getString(R.string.whiz_project_key);
-        //  mProjectKey="0q4LozhupoQlXKFFiqtRHAZIJpdaHcObOO6gEKa6uuhQS4t1n33PutMsyyAm";
-        mContext = this;
+    private void setAppToolbar() {
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("Create Article");
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+    }
 
+    private void initializeComponents() {
         mRsSymbol = getResources().getString(R.string.Rs);
+        btn_submit = (Button) findViewById(R.id.article_btn_submit);
 
-        final String state_arr[] = getResources().getStringArray(R.array.article_arr);
+        state_arr = getResources().getStringArray(R.array.article_arr);
+        article_arr = getResources().getStringArray(R.array.article_arr);
 
-        ArrayAdapter<String> state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item,
-                state_arr);
-        RelativeLayout state_relative = (RelativeLayout) findViewById(R.id.article_state_spinner);
+        state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, state_arr);
+        state_relative = (RelativeLayout) findViewById(R.id.article_state_spinner);
         mStateSpinner = (Spinner) state_relative.findViewById(R.id.spinner);
 
-        RelativeLayout city_relative = (RelativeLayout) findViewById(R.id.article_city_spinner);
+        city_relative = (RelativeLayout) findViewById(R.id.article_city_spinner);
         mCitySpinner = (Spinner) city_relative.findViewById(R.id.spinner);
 
-
-        final String article_arr[] = getResources().getStringArray(R.array.article_arr);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item,
-                article_arr);
-
-        RelativeLayout article_relative = (RelativeLayout) findViewById(R.id.article_article_type_spinner);
+        article_relative = (RelativeLayout) findViewById(R.id.article_article_type_spinner);
         mArticleSpinner = (Spinner) article_relative.findViewById(R.id.spinner);
-        mArticleSpinner.setAdapter(adapter);
-        mArticleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+        mTitleEdit = (EditText) findViewById(R.id.article_title);
+        mDescEdit = (EditText) findViewById(R.id.article_description);
+
+        mDateView = (TextView) findViewById(R.id.article_date_value);
+
+        bsStateSpinner =(BetterSpinner)findViewById(R.id.state_better_spinner);
+        bsCitySpinner =(BetterSpinner)findViewById(R.id.city_better_spinner);
+        bsArticleSpinner =(BetterSpinner)findViewById(R.id.article_better_spinner);
+    }
+
+    private void setListeners() {
+        btn_submit.setOnClickListener(this);
+        article_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, article_arr);
+        bsArticleSpinner.setAdapter(article_adapter);// changed mArticleSpinner to bsArticleSpinner
+        bsArticleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mArticleCode = "m" + position;
@@ -175,9 +235,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
         });
 
-        mTitleEdit = (EditText) findViewById(R.id.article_title);
-
-        mDescEdit = (EditText) findViewById(R.id.article_description);
         mDescEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -195,27 +252,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             }
         });
-
-        TextView mDateView = (TextView) findViewById(R.id.article_date_value);
-        Calendar cal = Calendar.getInstance();
-        Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-        String strDate = sdf.format(date);
-        mDateView.setText(strDate);
-
-        loadState();
-
-        radioGroupDays = (RadioGroup) findViewById(R.id.article_radio_days);
-        radioGroupDays.getCheckedRadioButtonId();
-
-        mArticleImage1 = (ImageView) findViewById(R.id.article_image1);
-        mArticleImage1.setOnClickListener(this);
-
-        mArticleImage2 = (ImageView) findViewById(R.id.article_image2);
-        mArticleImage2.setOnClickListener(this);
-
-        mTotalChargesView = (TextView) findViewById(R.id.article_total_charges_value);
-
     }
 
     private void updateViews(String languageCode) {
@@ -297,14 +333,19 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         return days;
     }
 
-    private void loadState() {
+    private void loadStateApi() {
         try {
             mProgressDialog = new ProgressDialog(mContext);
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.show();
 
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(new ConnectivityInterceptor(mContext))
+                    .build();
+
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Constant.BASE_URL)
+                    .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -336,10 +377,16 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 public void onFailure(Call<State> call, Throwable t) {
                     mProgressDialog.dismiss();
                     t.printStackTrace();
+                    if (t instanceof NoConnectivityException) {
+                        // No internet connection
+                        Toast.makeText(mContext,"No Internet",Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             });
 
-        } catch (Exception e) {
+
+        }catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -356,8 +403,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
-            mStateSpinner.setAdapter(adapter);
-            mStateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            //mStateSpinner.setAdapter(adapter);
+            bsStateSpinner.setAdapter(adapter); //changed from mStateSpinner to bsStateSpinner
+
+            bsStateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
@@ -435,8 +484,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
-            mCitySpinner.setAdapter(adapter);
-            mCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            bsCitySpinner.setAdapter(adapter);// change mCitySpinner to bsCitySpinner
+            bsCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     String selectedCity = adapterView.getSelectedItem().toString().trim();

@@ -577,7 +577,7 @@ public class HomeActivity extends AppCompatActivity
         if (searchItem != null) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         }
-       /* searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean newViewFocus) {
                 if (!newViewFocus) {
@@ -585,14 +585,16 @@ public class HomeActivity extends AppCompatActivity
                     searchItem.collapseActionView();
                     //Clear the filter/search query.
                     menu.findItem(R.id.action_search).setVisible(true);
-                    menu.findItem(R.id.action_notificattion).setVisible(true);
-                    menu.findItem(R.id.action_profile).setVisible(true);
+                    menu.findItem(R.id.action_create_article).setVisible(true);
+                    menu.findItem(R.id.action_change_pwd).setVisible(true);
+                    menu.findItem(R.id.action_logout).setVisible(true);
                 } else {
-                    menu.findItem(R.id.action_notificattion).setVisible(false);
-                    menu.findItem(R.id.action_profile).setVisible(false);
+                    menu.findItem(R.id.action_logout).setVisible(false);
+                    menu.findItem(R.id.action_change_pwd).setVisible(false);
+                    menu.findItem(R.id.action_create_article).setVisible(false);
                 }
             }
-        });*/
+        });
 
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
