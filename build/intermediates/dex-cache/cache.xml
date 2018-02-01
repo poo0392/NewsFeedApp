@@ -3,30 +3,21 @@
 
     <item
         is-multidex="false"
-        jar="C:\Users\POOJA\.android\build-cache\c2095a58b6684a78d4e34ede5d18756c428ccbc1\output\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="1d16ffcc50b1dfa726cf978ea9f0a949cdd70e7d">
-        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_13b5936350d71ae9ef85e493e362265ea280f949.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="D:\Studio workspace\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
+        jar="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.2"
         sha1="25e6e52a5d32ce80e0925128199d87bb96bd4045">
-        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_677f20a55a5ade8c4e875300a85435038b20c8f9.jar" />
+        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_820bc9bb229642784d59810b3429fd90799ebdf6.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="C:\Users\POOJA\.android\build-cache\7f8a0104316e84659638a98178cdc9a49191b6cf\output\jars\classes.jar"
+        jar="C:\Users\Zafar.Hussain\.android\build-cache\2aac6c6a4b8773196f5bb2076787245d23157bbb\output\jars\classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.2"
-        sha1="7dc4e0ea5b06183f6b32f08c5db6bcb6ef79c02a">
-        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_6b30e58b0e8935be50883c476cca11d7da898332.jar" />
+        sha1="b8399b3ef86b9fe9fbfb2171bb6560ff3c49d468">
+        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_fbc10bcad3c363fc8407c4c10673268fb561779d.jar" />
     </item>
 
 </items>

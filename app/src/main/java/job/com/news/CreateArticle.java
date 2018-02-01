@@ -30,7 +30,6 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.weiwangcn.betterspinner.library.BetterSpinner;
@@ -51,7 +50,6 @@ import job.com.news.article.State;
 import job.com.news.article.State_Name;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.LocaleHelper;
-import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.payU.PayUActivity;
 import okhttp3.MediaType;
@@ -84,7 +82,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private Button btn_submit;
     private int charges;
     String state_arr[], article_arr[];
-    ArrayAdapter<String> state_adapter, article_adapter;
+    ArrayAdapter<String> state_adapter, article_adapter,   city_adapter;
     RelativeLayout state_relative, city_relative, article_relative;
     BetterSpinner bsStateSpinner,bsCitySpinner,bsArticleSpinner;
 
@@ -118,17 +116,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
 
         loadStateApi();
-
-        radioGroupDays = (RadioGroup) findViewById(R.id.article_radio_days);
-        radioGroupDays.getCheckedRadioButtonId();
-
-        mArticleImage1 = (ImageView) findViewById(R.id.article_image1);
-        mArticleImage1.setOnClickListener(this);
-
-        mArticleImage2 = (ImageView) findViewById(R.id.article_image2);
-        mArticleImage2.setOnClickListener(this);
-
-        mTotalChargesView = (TextView) findViewById(R.id.article_total_charges_value);
 
     }
 
@@ -198,7 +185,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         state_arr = getResources().getStringArray(R.array.article_arr);
         article_arr = getResources().getStringArray(R.array.article_arr);
 
-        state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, state_arr);
+      //  state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, state_arr);
         state_relative = (RelativeLayout) findViewById(R.id.article_state_spinner);
         mStateSpinner = (Spinner) state_relative.findViewById(R.id.spinner);
 
@@ -216,17 +203,29 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         bsStateSpinner =(BetterSpinner)findViewById(R.id.state_better_spinner);
         bsCitySpinner =(BetterSpinner)findViewById(R.id.city_better_spinner);
         bsArticleSpinner =(BetterSpinner)findViewById(R.id.article_better_spinner);
+
+        article_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, article_arr);
+        bsArticleSpinner.setAdapter(article_adapter);// changed mArticleSpinner to bsArticleSpinner
+
+        radioGroupDays = (RadioGroup) findViewById(R.id.article_radio_days);
+        radioGroupDays.getCheckedRadioButtonId();
+        mArticleImage1 = (ImageView) findViewById(R.id.article_image1);
+        mArticleImage2 = (ImageView) findViewById(R.id.article_image2);
+        mTotalChargesView = (TextView) findViewById(R.id.article_total_charges_value);
+
     }
 
     private void setListeners() {
+        mArticleImage1.setOnClickListener(this);
+        mArticleImage2.setOnClickListener(this);
         btn_submit.setOnClickListener(this);
-        article_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, article_arr);
-        bsArticleSpinner.setAdapter(article_adapter);// changed mArticleSpinner to bsArticleSpinner
+
+
         bsArticleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mArticleCode = "m" + position;
-                Toast.makeText(CreateArticle.this, mArticleCode, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(CreateArticle.this, mArticleCode, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -345,7 +344,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Constant.BASE_URL)
-                    .client(client)
+                  //  .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -357,6 +356,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 public void onResponse(Call<State> call, Response<State> response) {
                     mProgressDialog.dismiss();
                     if (response.isSuccessful()) {
+
                         //Log.v("State ","response "+response.toString());
                         Log.e("Stateresponse ", new Gson().toJson(response.body()));
 
@@ -368,8 +368,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                         List list = state.getStates();
 
                         displayStateData((ArrayList) state.getStates());
-
-
                     }
                 }
 
@@ -377,10 +375,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 public void onFailure(Call<State> call, Throwable t) {
                     mProgressDialog.dismiss();
                     t.printStackTrace();
-                    if (t instanceof NoConnectivityException) {
+                   /* if (t instanceof NoConnectivityException) {
                         // No internet connection
                         Toast.makeText(mContext,"No Internet",Toast.LENGTH_SHORT).show();
-                    }
+                    }*/
 
                 }
             });
@@ -402,11 +400,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
 
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
-            //mStateSpinner.setAdapter(adapter);
-            bsStateSpinner.setAdapter(adapter); //changed from mStateSpinner to bsStateSpinner
-
-            bsStateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+              state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
+             //mStateSpinner.setAdapter(adapter);
+             bsStateSpinner.setAdapter(state_adapter); //changed from mStateSpinner to bsStateSpinner
+             bsStateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
@@ -436,8 +433,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.show();
 
+           /* OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(new ConnectivityInterceptor(mContext))
+                    .build();
+*/
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Constant.BASE_URL)
+                   // .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -449,8 +451,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             call.enqueue(new Callback<City>() {
                 @Override
                 public void onResponse(Call<City> call, Response<City> response) {
-                    mProgressDialog.dismiss();
                     if (response.isSuccessful()) {
+                        mProgressDialog.dismiss();
                         Log.e("Cityresponse ", new Gson().toJson(response.body()));
 
                         City city = response.body();
@@ -467,6 +469,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 public void onFailure(Call<City> call, Throwable t) {
                     mProgressDialog.dismiss();
                     t.printStackTrace();
+                    /*if (t instanceof NoConnectivityException) {
+                        // No internet connection
+                        Toast.makeText(mContext,"No Internet",Toast.LENGTH_SHORT).show();
+                    }*/
                 }
             });
 
@@ -483,8 +489,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 list.add(cityName.getCity());
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
-            bsCitySpinner.setAdapter(adapter);// change mCitySpinner to bsCitySpinner
+            city_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
+           // mCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
+            bsCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
+
             bsCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

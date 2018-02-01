@@ -7,8 +7,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-
-
     <application
         android:name=".NewsFeedApplication"
         android:allowBackup="true"
@@ -35,7 +33,6 @@
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".NewsFeed"
             android:screenOrientation="portrait" />
@@ -44,15 +41,15 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".CreateArticle"
-            android:windowSoftInputMode="stateVisible"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".LanguageSelection"
             android:screenOrientation="portrait" />
         <activity android:name=".forgotpassword.ForgotPassword" />
-        <activity android:name=".changepassword.ChangePassword"></activity>
-        <activity android:name=".payU.MerchantCheckoutActivity"></activity>
-        <activity android:name=".payU.PayUActivity"/>
+        <activity android:name=".changepassword.ChangePassword" />
+        <activity android:name=".payU.MerchantCheckoutActivity" />
+        <activity android:name=".payU.PayUActivity" />
     </application>
 
 </manifest>

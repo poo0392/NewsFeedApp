@@ -1,49 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_create_article"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="job.com.news.CreateArticle">
+    android:paddingBottom="@dimen/activity_vertical_margin">
 
-    <ScrollView
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    </android.support.design.widget.AppBarLayout>
+    <!--<include layout="@layout/content_create_article"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>-->
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <LinearLayout
-                android:weightSum="1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
                 android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/article_state_text"
+                <!--State Linear Layout-->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="State"
-                    android:textSize="@dimen/text_medium"
-                    android:layout_weight="0.3"
-                    android:textColor="@android:color/black"
+                    android:layout_weight=".5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/article_state_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="5dp"
+                        android:text="State"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/text_small"
+                        android:visibility="visible" />
+
+                    <com.weiwangcn.betterspinner.library.BetterSpinner
+                        android:id="@+id/state_better_spinner"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Select State"
+                        android:textSize="@dimen/text_small" />
+
+                </LinearLayout>
+                <!--City Linear Layout-->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight=".5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/article_city_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingLeft="5dp"
+                        android:text="City"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/text_small"
+                        android:visibility="visible" />
+
+
+                    <com.weiwangcn.betterspinner.library.BetterSpinner
+                        android:id="@+id/city_better_spinner"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Select City"
+                        android:textSize="@dimen/text_small" />
+                </LinearLayout>
+            </LinearLayout>
+            <!--Article Views Spinner-->
+            <TextView
+                android:id="@+id/article_type_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingLeft="5dp"
+                android:text="Article Type"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_small"
+                android:visibility="visible" />
+
+            <com.weiwangcn.betterspinner.library.BetterSpinner
+                android:id="@+id/article_better_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:hint="Select Article Category"
+                android:textSize="@dimen/text_small" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/article_state_texts"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    />
+                    android:layout_weight="0.3"
+                    android:text="State"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_medium" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
                     android:layout_gravity="center"
-                    >
+                    android:layout_weight="0.7">
 
-                    <include android:id="@+id/article_state_spinner"
+                    <include
+                        android:id="@+id/article_state_spinner"
                         layout="@layout/spinner_layout"
 
                         />
@@ -51,126 +147,157 @@
                 </LinearLayout>
 
 
-
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="1">
 
+                <TextView
+                    android:id="@+id/article_city_texts"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.3"
+                    android:text="City"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_medium" />
 
-        <LinearLayout
-            android:weightSum="1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.7">
+
+                    <include
+                        android:id="@+id/article_city_spinner"
+                        layout="@layout/spinner_layout"
+
+                        />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/article_type_texts"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.3"
+                    android:text="Article Type"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_medium" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.7">
+
+                    <include
+                        android:id="@+id/article_article_type_spinner"
+                        layout="@layout/spinner_layout"
+
+                        />
+
+                </LinearLayout>
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/article_city_text"
-                android:layout_width="0dp"
+                android:id="@+id/article_date_text"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="City"
-                android:textSize="@dimen/text_medium"
-                android:layout_weight="0.3"
+                android:layout_gravity="center"
+                android:paddingLeft="5dp"
+                android:text="Date"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_small" />
+
+            <TextView
+                android:id="@+id/article_date_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/txt_line_bg"
+                android:paddingBottom="5dp"
+                android:text="23 aug 2017"
                 android:textColor="@android:color/black"
-                android:layout_gravity="center"
-                />
+                android:textSize="@dimen/text_small" />
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.7"
-                android:layout_gravity="center"
-                >
-
-                <include android:id="@+id/article_city_spinner"
-                    layout="@layout/spinner_layout"
-
-                    />
-
-            </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:weightSum="1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/article_type_text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Article Type"
-                    android:textSize="@dimen/text_medium"
-                    android:layout_weight="0.3"
-                    android:textColor="@android:color/black"
-                    android:layout_gravity="center"
-                    />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
-                    android:layout_gravity="center"
-                    >
-
-                    <include android:id="@+id/article_article_type_spinner"
-                        layout="@layout/spinner_layout"
-
-                        />
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:weightSum="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp">
+                android:visibility="gone"
+                android:weightSum="1">
 
                 <TextView
-                    android:id="@+id/article_date_text"
+                    android:id="@+id/article_date_texts"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:text="Date"
-                    android:textSize="@dimen/text_medium"
-                    android:layout_weight="0.5"
                     android:textColor="@android:color/black"
-                    />
+                    android:textSize="@dimen/text_medium" />
 
                 <TextView
-                    android:id="@+id/article_date_value"
+                    android:id="@+id/article_date_values"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="23 aug 2017"
-                    android:textSize="@dimen/text_medium"
                     android:layout_weight="0.5"
+                    android:text="23 aug 2017"
                     android:textColor="@android:color/black"
-                    />
+                    android:textSize="@dimen/text_medium" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="5dp"
+                android:text="Title"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_small" />
 
             <EditText
                 android:id="@+id/article_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background"
-                android:layout_marginTop="15dp"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/txt_line_bg"
                 android:hint="@string/prompt_title"
-                android:textSize="@dimen/text_small"
-                android:padding="8dp"
-                />
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
+                android:textSize="@dimen/text_small" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="15dp">
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
                     android:text="@string/description_text"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/text_medium"/>
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_small" />
 
                 <RadioGroup
                     android:layout_width="match_parent"
@@ -181,115 +308,139 @@
                         android:id="@+id/article_100d_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/words_100_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium"
-                        android:layout_weight="1"/>
+                        android:textSize="@dimen/text_medium" />
 
                     <RadioButton
                         android:id="@+id/article_200d_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/words_200_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium"
-                        android:layout_weight="1"/>
+                        android:textSize="@dimen/text_medium" />
 
                     <RadioButton
                         android:id="@+id/article_300d_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/words_300_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium"
-                        android:layout_weight="1"/>
+                        android:textSize="@dimen/text_medium" />
 
                     <RadioButton
                         android:id="@+id/article_400d_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/words_400_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium"
-                        android:layout_weight="1"/>
+                        android:textSize="@dimen/text_medium" />
 
                 </RadioGroup>
 
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/desc_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="5dp"
+                android:text="Description"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_small" />
 
             <EditText
                 android:id="@+id/article_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
+                android:background="@drawable/txt_line_bg"
                 android:hint="@string/prompt_desc"
-                android:textSize="@dimen/text_small"
-                android:padding="8dp"
-                />
+                android:paddingBottom="8dp"
+                android:textSize="@dimen/text_small" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="5dp"
+                android:text="@string/photo_str"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_small" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                android:weightSum="1"
-                >
+                android:weightSum="1">
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/photo_str"
-                    android:textSize="@dimen/text_medium"
-                    android:layout_weight="0.4"
-                    android:textColor="@android:color/black"
                     android:layout_gravity="center"
-                    />
+                    android:layout_weight="0.4"
+                    android:text="@string/photo_str"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_medium"
+                    android:visibility="gone" />
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="0.6"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/border"
                     android:gravity="center">
 
-                <ImageView
-                    android:layout_weight="0.3"
-                    android:id="@+id/article_image1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:background="@mipmap/ic_add_a_photo_black_48dp"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="2dp"
-                    />
+                    <ImageView
+                        android:id="@+id/article_image1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@mipmap/ic_add_a_photo_black_48dp" />
 
-                <ImageView
-                    android:layout_weight="0.3"
-                    android:id="@+id/article_image2"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:background="@mipmap/ic_add_a_photo_black_48dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="2dp"
-                    />
                 </LinearLayout>
-                
-            </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/border"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/article_image2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@mipmap/ic_add_a_photo_black_48dp" />
+                </LinearLayout>
+
+            </LinearLayout>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="15dp">
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/publishing_text"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/text_medium"/>
+                    android:textColor="@color/colorPrimary"
+                    android:paddingLeft="5dp"
+                    android:textSize="@dimen/text_small" />
 
                 <RadioGroup
                     android:id="@+id/article_radio_days"
@@ -301,37 +452,37 @@
                         android:id="@+id/article_30_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/day_30_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium"
-                        android:layout_weight="1"/>
+                        android:textSize="@dimen/text_medium" />
 
                     <RadioButton
                         android:id="@+id/article_60_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/day_60_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium"
-                        android:layout_weight="1"/>
+                        android:textSize="@dimen/text_medium" />
 
                     <RadioButton
                         android:id="@+id/article_90_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/day_90_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium"
-                        android:layout_weight="1"/>
+                        android:textSize="@dimen/text_medium" />
 
                     <RadioButton
                         android:id="@+id/article_120_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/day_120_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium"
-                        android:layout_weight="1"/>
+                        android:textSize="@dimen/text_medium" />
 
                 </RadioGroup>
 
@@ -341,49 +492,43 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="15dp"
-                android:weightSum="1"
-                >
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/total_charges_str"
-                    android:textSize="@dimen/text_medium"
                     android:layout_weight="0.5"
+                    android:text="@string/total_charges_str"
                     android:textColor="@android:color/black"
-                    />
+                    android:textSize="@dimen/text_medium" />
 
                 <TextView
-                    android:text="5"
                     android:id="@+id/article_total_charges_value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:textSize="@dimen/text_medium"
-                    android:textColor="@android:color/black"/>
+                    android:text="5"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_medium" />
 
             </LinearLayout>
 
             <Button
-                android:layout_marginTop="15dp"
                 android:id="@+id/article_btn_submit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/action_submit"
-                android:textSize="@dimen/text_medium"
+                android:layout_marginTop="15dp"
                 android:background="@drawable/view_corner_bg"
-                android:textColor="@android:color/white"/>
-            
+                android:text="@string/action_submit"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_medium" />
+
 
         </LinearLayout>
 
 
-    </ScrollView>
-
-
-
-
-</RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

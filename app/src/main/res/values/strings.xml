@@ -2,8 +2,7 @@
     <string name="app_name">My News Article</string>
 
     <string name="next_text">Next</string>
-    <string-array
-        name="language_arr">
+    <string-array name="language_arr">
         <item>Select Language</item>
         <item>हिंदी</item>
         <item>मराठी</item>
@@ -164,7 +163,6 @@
     <!-- TODO: Remove or change this placeholder text -->
 
 
-
     <string name="title_activity_base">BaseActivity</string>
     <string name="title_activity_net_banking">NetBankingActivity</string>
     <string name="title_activity_cash_card">CashCardActivity</string>
@@ -214,4 +212,5 @@
         will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in
         these matters to this principle of selection: he rejects pleasures to secure other greater pleasures,
         or else he endures pains to avoid worse pains</string>
+    <string name="title_activity_main2">Main2Activity</string>
 </resources>
