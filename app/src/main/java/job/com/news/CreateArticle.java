@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
@@ -26,10 +27,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.weiwangcn.betterspinner.library.BetterSpinner;
@@ -50,6 +53,7 @@ import job.com.news.article.State;
 import job.com.news.article.State_Name;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.LocaleHelper;
+import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.payU.PayUActivity;
 import okhttp3.MediaType;
@@ -72,19 +76,20 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
     private ArrayList<HashMap<String, String>> stateList;
     private TextView mTotalChargesView, mDateView;
-    private RadioGroup radioGroupDays;
+    private RadioGroup radioGroupDays, radioGroupWords;
     private String mRsSymbol;
     private String mArticleCode;
     private ImageView mArticleImage1, mArticleImage2;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String mediaPath;
-    private int currentImageView = 0;
+    private int currentImageView = 0, words;
     private Button btn_submit;
     private int charges;
-    String state_arr[], article_arr[];
-    ArrayAdapter<String> state_adapter, article_adapter,   city_adapter;
+    String state_arr[], article_arr[], no_of_days_arr[], selectedState, selectedCity, selectedDays;
+    ArrayAdapter<String> state_adapter, article_adapter, city_adapter, publish_days_adapter;
     RelativeLayout state_relative, city_relative, article_relative;
-    BetterSpinner bsStateSpinner,bsCitySpinner,bsArticleSpinner;
+    BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsPublishDaysSpinner;
+    RadioButton article_100d_radio, article_200d_radio, article_300d_radio, article_400d_radio;
 
     //Indonesia
 
@@ -184,8 +189,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         state_arr = getResources().getStringArray(R.array.article_arr);
         article_arr = getResources().getStringArray(R.array.article_arr);
+        no_of_days_arr = getResources().getStringArray(R.array.no_of_days_publishing);
 
-      //  state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, state_arr);
+        //  state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, state_arr);
         state_relative = (RelativeLayout) findViewById(R.id.article_state_spinner);
         mStateSpinner = (Spinner) state_relative.findViewById(R.id.spinner);
 
@@ -200,19 +206,27 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         mDateView = (TextView) findViewById(R.id.article_date_value);
 
-        bsStateSpinner =(BetterSpinner)findViewById(R.id.state_better_spinner);
-        bsCitySpinner =(BetterSpinner)findViewById(R.id.city_better_spinner);
-        bsArticleSpinner =(BetterSpinner)findViewById(R.id.article_better_spinner);
+        bsStateSpinner = (BetterSpinner) findViewById(R.id.state_better_spinner);
+        bsCitySpinner = (BetterSpinner) findViewById(R.id.city_better_spinner);
+        bsArticleSpinner = (BetterSpinner) findViewById(R.id.article_better_spinner);
+        bsPublishDaysSpinner = (BetterSpinner) findViewById(R.id.publish_better_spinner);
 
         article_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, article_arr);
         bsArticleSpinner.setAdapter(article_adapter);// changed mArticleSpinner to bsArticleSpinner
 
+        publish_days_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, no_of_days_arr);
+        bsPublishDaysSpinner.setAdapter(publish_days_adapter);
+
         radioGroupDays = (RadioGroup) findViewById(R.id.article_radio_days);
         radioGroupDays.getCheckedRadioButtonId();
+
+        radioGroupWords = (RadioGroup) findViewById(R.id.article_radio_words);
+        radioGroupWords.getCheckedRadioButtonId();
+
+
         mArticleImage1 = (ImageView) findViewById(R.id.article_image1);
         mArticleImage2 = (ImageView) findViewById(R.id.article_image2);
         mTotalChargesView = (TextView) findViewById(R.id.article_total_charges_value);
-
     }
 
     private void setListeners() {
@@ -221,18 +235,46 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         btn_submit.setOnClickListener(this);
 
 
-        bsArticleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+       /* bsArticleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mArticleCode = "m" + position;
-               // Toast.makeText(CreateArticle.this, mArticleCode, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(CreateArticle.this, mArticleCode, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
+        });*/
+
+        bsArticleSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mArticleCode = "m" + position;
+                // Toast.makeText(CreateArticle.this, mArticleCode, Toast.LENGTH_SHORT).show();
+            }
         });
+
+        bsPublishDaysSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedDays = parent.getItemAtPosition(position).toString();
+                Log.v("bsPublishDaysItemClick ", "selectedDays " + selectedDays);
+            }
+        });
+
+        radioGroupWords.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                int radioId = group.getCheckedRadioButtonId();
+                int wordsLength = setDescpWordsLength(radioId);
+                Log.v("", "wordsLength " + wordsLength);
+
+                mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
+            }
+        });
+
 
         mDescEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -251,6 +293,29 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             }
         });
+    }
+
+    private int setDescpWordsLength(int radioId) {
+       // int radioId = radioGroupWords.getCheckedRadioButtonId();
+        Log.v("", "radioId " + radioId);
+        switch (radioId) {
+            case R.id.article_100d_radio:
+                words = 100;
+                break;
+            case R.id.article_200d_radio:
+                words = 200;
+                break;
+            case R.id.article_300d_radio:
+                words = 300;
+                break;
+            case R.id.article_400d_radio:
+                words = 400;
+                break;
+            /*default:
+                words = 0;
+                break;*/
+        }
+        return words;
     }
 
     private void updateViews(String languageCode) {
@@ -344,7 +409,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Constant.BASE_URL)
-                  //  .client(client)
+                    .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -354,9 +419,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             call.enqueue(new Callback<State>() {
                 @Override
                 public void onResponse(Call<State> call, Response<State> response) {
-                    mProgressDialog.dismiss();
-                    if (response.isSuccessful()) {
 
+                    if (response.isSuccessful()) {
+                        mProgressDialog.dismiss();
                         //Log.v("State ","response "+response.toString());
                         Log.e("Stateresponse ", new Gson().toJson(response.body()));
 
@@ -375,16 +440,16 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 public void onFailure(Call<State> call, Throwable t) {
                     mProgressDialog.dismiss();
                     t.printStackTrace();
-                   /* if (t instanceof NoConnectivityException) {
+                    if (t instanceof NoConnectivityException) {
                         // No internet connection
-                        Toast.makeText(mContext,"No Internet",Toast.LENGTH_SHORT).show();
-                    }*/
+                        Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                    }
 
                 }
             });
 
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -400,10 +465,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
 
 
-              state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
-             //mStateSpinner.setAdapter(adapter);
-             bsStateSpinner.setAdapter(state_adapter); //changed from mStateSpinner to bsStateSpinner
-             bsStateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
+            //mStateSpinner.setAdapter(adapter);
+            bsStateSpinner.setAdapter(state_adapter); //changed from mStateSpinner to bsStateSpinner
+
+           /* bsStateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
@@ -419,6 +485,22 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 public void onNothingSelected(AdapterView<?> adapterView) {
 
                 }
+            });*/
+
+            bsStateSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // selectedState = parent.getSelectedItem().toString();
+                    selectedState = parent.getItemAtPosition(position).toString();
+
+                    Integer stateId = mapState.get(selectedState);
+                    System.out.println("State : " + selectedState + " ID :" + stateId);
+                    Log.v("ItemClickListener ", "selectedState " + selectedState);
+                    // Toast.makeText(getApplicationContext(),selectedState,Toast.LENGTH_SHORT).show();
+                    bsCitySpinner.setHint("Select City");
+                    bsCitySpinner.setText("");
+                    loadCity(stateId);
+                }
             });
 
 
@@ -433,13 +515,12 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.show();
 
-           /* OkHttpClient client = new OkHttpClient.Builder()
+            OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(new ConnectivityInterceptor(mContext))
                     .build();
-*/
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Constant.BASE_URL)
-                   // .client(client)
+                    .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -469,10 +550,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 public void onFailure(Call<City> call, Throwable t) {
                     mProgressDialog.dismiss();
                     t.printStackTrace();
-                    /*if (t instanceof NoConnectivityException) {
+                    if (t instanceof NoConnectivityException) {
                         // No internet connection
-                        Toast.makeText(mContext,"No Internet",Toast.LENGTH_SHORT).show();
-                    }*/
+                        Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -490,10 +571,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
 
             city_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
-           // mCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
+            // mCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
             bsCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
 
-            bsCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+           /* bsCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     String selectedCity = adapterView.getSelectedItem().toString().trim();
@@ -502,6 +583,15 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {
 
+                }
+            });*/
+
+            bsCitySpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    selectedCity = parent.getItemAtPosition(position).toString();
+
+                    Log.v("bsCityItemClick ", "selectedCity " + selectedCity);
                 }
             });
 

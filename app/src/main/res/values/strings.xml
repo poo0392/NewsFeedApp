@@ -191,6 +191,13 @@
         <item>@string/production</item>
     </string-array>
 
+    <string-array name="no_of_days_publishing">
+        <item>30 days</item>
+        <item>60 days</item>
+        <item>90 days</item>
+        <item>120 days</item>
+    </string-array>
+
     <string name="use_live_key_in_production_environment">Please use your live merchant key in production environment</string>
     <string name="could_not_receive_data">Could not receive data</string>
     <string name="default_text_large">But I must explain to you how all this mistaken idea of denouncing of a pleasure and

@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,23 +23,22 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,14 +48,10 @@ import java.util.Locale;
 import job.com.news.adapter.ExpandListAdapter;
 import job.com.news.adapter.HomeDashboardAdapter;
 import job.com.news.adapter.ImageAdapter;
+import job.com.news.adapter.ThreeLevelListAdapter;
 import job.com.news.changepassword.ChangePassword;
-import job.com.news.interfaces.ItemClickListener;
 import job.com.news.models.NewsFeedDetails;
 import job.com.news.sharedpref.SessionManager;
-
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -78,7 +72,8 @@ public class HomeActivity extends AppCompatActivity
     Toolbar toolbar;
     ExpandListAdapter listAdapter;
     List<String> listDataHeader;
-    HashMap<String, List<String>> listDataChild;
+    HashMap<String, List<String>> listDataChild,listThirdLevelChild;
+    List<HashMap<String, List<String>>> data;
     ExpandableListView expListView;
     HomeDashboardAdapter mAdapter;
     List<NewsFeedDetails> mNewsFeedList;
@@ -292,10 +287,19 @@ public class HomeActivity extends AppCompatActivity
     private void enableExpandableList() {
         listDataHeader = new ArrayList<String>();
         listDataChild = new HashMap<String, List<String>>();
+        listThirdLevelChild = new HashMap<>();
+        data = new ArrayList<>();
+
         expListView = (ExpandableListView) findViewById(R.id.left_drawer);
         expListView.setIndicatorBounds(expListView.getRight() - 40, expListView.getWidth());
-        prepareListData(listDataHeader, listDataChild);
-        listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
+        prepareListData(listDataHeader, listDataChild,listThirdLevelChild);
+
+        ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, listDataHeader, listDataChild, data);
+        // set adapter
+        expListView.setAdapter( threeLevelListAdapterAdapter );
+
+
+     /*   listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
         // setting list adapter
         expListView.setAdapter(listAdapter);
 
@@ -315,9 +319,9 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onGroupExpand(int groupPosition) {
-             /*   Toast.makeText(getApplicationContext(),
+             *//*   Toast.makeText(getApplicationContext(),
                         listDataHeader.get(groupPosition) + " Expanded",
-                        Toast.LENGTH_SHORT).show();*/
+                        Toast.LENGTH_SHORT).show();*//*
             }
         });
 
@@ -326,9 +330,9 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onGroupCollapse(int groupPosition) {
-              /*  Toast.makeText(getApplicationContext(),
+              *//*  Toast.makeText(getApplicationContext(),
                         listDataHeader.get(groupPosition) + " Collapsed",
-                        Toast.LENGTH_SHORT).show();*/
+                        Toast.LENGTH_SHORT).show();*//*
 
             }
         });
@@ -353,10 +357,10 @@ public class HomeActivity extends AppCompatActivity
                         .show();
                 return false;
             }
-        });
+        });*/
     }
 
-    private void prepareListData(List<String> listDataHeader, HashMap<String, List<String>> listDataChild) {
+    private void prepareListData(List<String> listDataHeader, HashMap<String, List<String>> listDataChild, HashMap<String, List<String>> listThirdLevelChild) {
         listDataHeader.add("Home");
         listDataHeader.add("User Profile");
         listDataHeader.add("Requests");
@@ -379,11 +383,19 @@ public class HomeActivity extends AppCompatActivity
         newsChild.add("Business News");
         newsChild.add("Agricultural News");
         newsChild.add("Cinema Related");
+        newsChild.add("Other and Uncategorized News");
+        newsChild.add("Career Related");
+
+        List<String> newsThirdChild = new ArrayList<String>();
+        newsThirdChild.add("Job");
+        newsThirdChild.add("Business");
+        newsThirdChild.add("Educational");
 
         listDataChild.put(listDataHeader.get(2), requestsChild); // Header, Child data
         listDataChild.put(listDataHeader.get(3), newsChild);
+        listThirdLevelChild.put(newsChild.get(11),newsThirdChild);
 
-
+        data.add(listThirdLevelChild);
     }
 
     private void setListeners() {

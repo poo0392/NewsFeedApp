@@ -22,7 +22,7 @@
     <!--<include layout="@layout/content_create_article"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>-->
 
-    <android.support.v4.widget.NestedScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -31,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:background="@color/white"
             android:padding="16dp">
 
             <LinearLayout
@@ -300,6 +301,7 @@
                     android:textSize="@dimen/text_small" />
 
                 <RadioGroup
+                    android:id="@+id/article_radio_words"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -492,8 +494,66 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight=".6"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No. of Days for publishing"
+                    android:paddingLeft="5dp"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_small" />
+
+                    <com.weiwangcn.betterspinner.library.BetterSpinner
+                        android:id="@+id/publish_better_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:hint="No. of Days"
+                        android:textSize="@dimen/text_small" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".4"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Charges"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/text_small" />
+
+                    <TextView
+                        android:id="@+id/article_total_charges_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="10 (min)"
+                        android:layout_marginTop="6dp"
+                        android:layout_gravity="center"
+                        android:paddingBottom="3dp"
+                        android:textColor="@android:color/black"
+                        android:background="@drawable/txt_line_bg"
+                        android:textSize="@dimen/text_medium" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:orientation="horizontal"
+                android:visibility="gone"
                 android:weightSum="1">
 
                 <TextView
@@ -501,15 +561,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:text="@string/total_charges_str"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/text_medium" />
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_small" />
 
                 <TextView
-                    android:id="@+id/article_total_charges_value"
+                    android:id="@+id/article_total_charges_values"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="5"
+                    android:text="10"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/text_medium" />
 
@@ -530,5 +590,5 @@
         </LinearLayout>
 
 
-    </android.support.v4.widget.NestedScrollView>
+    </ScrollView>
 </android.support.design.widget.CoordinatorLayout>

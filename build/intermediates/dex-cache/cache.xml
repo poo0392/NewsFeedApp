@@ -10,14 +10,5 @@
         sha1="25e6e52a5d32ce80e0925128199d87bb96bd4045">
         <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_820bc9bb229642784d59810b3429fd90799ebdf6.jar" />
     </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\Zafar.Hussain\.android\build-cache\2aac6c6a4b8773196f5bb2076787245d23157bbb\output\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="b8399b3ef86b9fe9fbfb2171bb6560ff3c49d468">
-        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_fbc10bcad3c363fc8407c4c10673268fb561779d.jar" />
-    </item>
 
 </items>
