@@ -3,39 +3,12 @@
 
     <item
         is-multidex="false"
-        jar="C:\Users\POOJA\.android\build-cache\2a3626d5d75359e66ff3a3cf4d6bf9c0636cacee\output\jars\classes.jar"
+        jar="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.2"
-        sha1="1478a113f04bf0b679037b4f6bd88bd1837b96a3">
-        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_2a6b77479b6c44ccd3ae71ce202ed069ebf92286.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="D:\Studio workspace\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="25e6e52a5d32ce80e0925128199d87bb96bd4045">
-        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_677f20a55a5ade8c4e875300a85435038b20c8f9.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\POOJA\.android\build-cache\4104407d621b5b6f179d3e72c35e5a066208e841\output\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="23a2f2c8b39a0d679ce90a771dac4cb29ee27638">
-        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_13e8c58ade21d61e5bc2a2ca46ed82ae5539a04a.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\POOJA\.android\build-cache\8030e967785b00908574eb8f41ecc7f79e0f12c6\output\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="d3f8ab57967a9149262ad36a46477fc2515f6ac8">
-        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_e6d15b36298f5bfd93cbba15302d182afb90ed1c.jar" />
+        sha1="d158f5684f57f23551675cdcdad677c9435db0dd">
+        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_820bc9bb229642784d59810b3429fd90799ebdf6.jar" />
     </item>
 
 </items>

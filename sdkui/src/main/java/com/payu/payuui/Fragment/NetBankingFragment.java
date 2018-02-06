@@ -94,16 +94,16 @@ public class NetBankingFragment extends Fragment implements View.OnClickListener
                 spinnerArray.add(netBankingList.get(i).getBankName());
                 switch (netBankingList.get(i).getBankCode()){
                     case "AXIB":
-                        ((LinearLayout)view.findViewById(R.id.layout_axis)).setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.layout_axis).setVisibility(View.VISIBLE);
                         break;
                     case "HDFB":
-                        ((LinearLayout)view.findViewById(R.id.layout_hdfc)).setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.layout_hdfc).setVisibility(View.VISIBLE);
                         break;
                     case "SBIB":
-                        ((LinearLayout)view.findViewById(R.id.layout_sbi)).setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.layout_sbi).setVisibility(View.VISIBLE);
                         break;
                     case "ICIB":
-                        ((LinearLayout)view.findViewById(R.id.layout_icici)).setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.layout_icici).setVisibility(View.VISIBLE);
                         break;
                 }
 

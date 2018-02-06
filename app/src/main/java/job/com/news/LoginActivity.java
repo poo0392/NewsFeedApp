@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -14,8 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
@@ -130,11 +129,12 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
     }
+
     private void setLocaleLang() {
 
         String[] lang_arr = getResources().getStringArray(R.array.language_arr);
         String getLang = langSelection.getLanguage();
-        Log.v("LoginActivity ","getLang "+getLang);
+        Log.v("LoginActivity ", "getLang " + getLang);
         Configuration config = new Configuration();
         Locale locale;
         if (getLang.equalsIgnoreCase(lang_arr[1])) {
@@ -248,7 +248,7 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             //login failed
                             String desc = serverResponse.getDescription().trim();
-                           // Toast.makeText(LoginActivity.this, "Login failed." + desc, Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(LoginActivity.this, "Login failed." + desc, Toast.LENGTH_SHORT).show();
                             setFailedAlertDialog(LoginActivity.this, "Failed", "Login failed.");
                         }
                     }
@@ -261,7 +261,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     if (t instanceof NoConnectivityException) {
                         // No internet connection
-                       // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
                         setFailedAlertDialog(LoginActivity.this, "Failed", "No Internet! Please Check Your internet connection");
                     }
                 }
@@ -272,6 +272,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "e : " + e.toString());
         }
     }
+
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)
@@ -309,5 +310,27 @@ public class LoginActivity extends AppCompatActivity {
                 .show();
     }
 
+    @Override
+    public void onBackPressed() {
+     //   super.onBackPressed();
+        showBackPressAlertDialog(LoginActivity.this, "Confirm Please...", "Do you want to close the app ?");
+    }
 
+    private void showBackPressAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_success)
+                .setPositiveText("Yes")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    //   dialog.dismiss();
+                        ActivityCompat.finishAffinity(LoginActivity.this);
+                    }
+                })
+                .setNegativeText("No")
+                .show();
+    }
 }

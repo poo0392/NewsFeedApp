@@ -192,13 +192,7 @@ public class CreditDebitFragment extends Fragment implements GetOfferStatusApiLi
                 @Override
                 public void afterTextChanged(Editable editable) {
 
-                    if(editable.length() == 4 && Integer.parseInt(editable.toString()) >= Calendar.YEAR){
-
-                        isExpiryYearValid = true;
-
-                    }
-                    else
-                        isExpiryYearValid = false;
+                    isExpiryYearValid = editable.length() == 4 && Integer.parseInt(editable.toString()) >= Calendar.YEAR;
 
                 }
 
@@ -301,7 +295,7 @@ public class CreditDebitFragment extends Fragment implements GetOfferStatusApiLi
                     }
                 } else {
                     issuer = null;
-                    ((LinearLayout)view.findViewById(R.id.layout_expiry_cvv)).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.layout_expiry_cvv).setVisibility(View.VISIBLE);
                     cardImage.setImageResource(R.drawable.icon_card);
                     cardCvvEditText.getText().clear();
 

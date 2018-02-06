@@ -3,12 +3,12 @@ package job.com.news.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -115,9 +115,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View view, int position, boolean isLongClick) {
                     if (isLongClick) {
-                        Toast.makeText(mContext, "#" + position + " (Long click)", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(mContext, "#" + position + " (Long click)", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(mContext, "#" + position, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(mContext, "#" + position, Toast.LENGTH_SHORT).show();
+                        Log.v("Adapter ","itemPosition "+position);
                         Intent intent = new Intent(mContext, NewsDetailScreen.class);
                         intent.putExtra("itemPosition", position + "");
                         mContext.startActivity(intent);

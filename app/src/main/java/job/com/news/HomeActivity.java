@@ -28,7 +28,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,7 +49,6 @@ import java.util.Locale;
 import job.com.news.adapter.ExpandListAdapter;
 import job.com.news.adapter.HomeDashboardAdapter;
 import job.com.news.adapter.ImageAdapter;
-import job.com.news.adapter.ThreeLevelListAdapter;
 import job.com.news.changepassword.ChangePassword;
 import job.com.news.models.NewsFeedDetails;
 import job.com.news.sharedpref.SessionManager;
@@ -266,7 +264,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentPagerItems pages = new FragmentPagerItems(this);
         for (int titleResId : tabsValues()) {
             pages.add(FragmentPagerItem.of(getString(titleResId), NewsFeedFragment.class));
-        };
+        }
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(getSupportFragmentManager(), pages);
 

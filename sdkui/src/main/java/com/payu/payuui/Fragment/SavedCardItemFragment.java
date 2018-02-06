@@ -235,13 +235,7 @@ public final class SavedCardItemFragment extends Fragment {
         if (cvvEditText != null && cvvEditText.getText() != null) {
             cvv = cvvEditText.getText().toString();
 
-            if ((myPayuUtils.validateCvv(mStoredCard.getCardBin(), cvv) && !cvv.equals("")) || (cvvEditText != null && cvvEditText.getVisibility() == View.GONE)) {
-                isCvvValid = true;
-
-
-            } else {
-                isCvvValid = false;
-            }
+            isCvvValid = (myPayuUtils.validateCvv(mStoredCard.getCardBin(), cvv) && !cvv.equals("")) || (cvvEditText != null && cvvEditText.getVisibility() == View.GONE);
         }
 
         return isCvvValid;

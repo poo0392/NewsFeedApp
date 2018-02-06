@@ -1,6 +1,7 @@
 package job.com.news;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +9,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 
@@ -23,6 +27,13 @@ public class NewsFeedFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ImageAdapter adapter;
     private NewsFeedApplication newsFeedApplication;
+    LinearLayoutManager layoutManager;
+
+    //For Recyclerview scroll
+    private boolean userScrolled = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
+    RelativeLayout bottomLayout;
+
 
     @Nullable
     @Override
@@ -35,8 +46,9 @@ public class NewsFeedFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         int position = FragmentPagerItem.getPosition(getArguments());
+        bottomLayout = (RelativeLayout) view.findViewById(R.id.loadItemsLayout_recyclerView);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.news_feed_recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
         setData();
 
@@ -46,8 +58,89 @@ public class NewsFeedFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);*/
         adapter = new ImageAdapter(getActivity());
         mRecyclerView.setAdapter(adapter);
+        implementScrollListener();
     }
 
+    // Implement scroll listener
+    private void implementScrollListener() {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView,
+                                             int newState) {
+
+                super.onScrollStateChanged(recyclerView, newState);
+
+                // If scroll state is touch scroll then set userScrolled
+                // true
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    userScrolled = true;
+
+                }
+
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx,
+                                   int dy) {
+
+                super.onScrolled(recyclerView, dx, dy);
+                // Here get the child count, item count and visibleitems
+                // from layout manager
+
+                visibleItemCount = layoutManager.getChildCount();
+                totalItemCount = layoutManager.getItemCount();
+                pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+
+                // Now check if userScrolled is true and also check if
+                // the item is end then update recycler view and set
+                // userScrolled to false
+                if (userScrolled && (visibleItemCount + pastVisiblesItems) == totalItemCount) {
+                    userScrolled = false;
+
+                    updateRecyclerView();
+                }
+
+            }
+
+        });
+
+    }
+    // Method for repopulating recycler view
+    private void updateRecyclerView() {
+
+        // Show Progress Layout
+        bottomLayout.setVisibility(View.VISIBLE);
+
+        // Handler to show refresh for a period of time you can use async task
+        // while commnunicating serve
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+
+                // Loop for 3 items
+                for (int i = 0; i < 3; i++) {
+                  //  int value = new RandomNumberGenerator().RandomGenerator();// Random
+                    // value
+
+                    // add random data to arraylist
+                 //   listArrayList.add(new Data_Model(getTitle[value],getLocation[value], getYear[value], images[value]));
+                    setData();
+                }
+                adapter.notifyDataSetChanged();// notify adapter
+
+                // Toast for task completion
+                Toast.makeText(getActivity(), "Items Updated.",
+                        Toast.LENGTH_SHORT).show();
+
+                // After adding new data hide the view.
+                bottomLayout.setVisibility(View.GONE);
+
+            }
+        }, 5000);
+    }
     private void setData() {
 
         ArrayList list = new ArrayList();
