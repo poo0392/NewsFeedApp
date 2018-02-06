@@ -51,7 +51,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingLeft="5dp"
-                        android:text="State"
+                        android:text="@string/state_lbl"
                         android:textColor="@color/colorPrimary"
                         android:textSize="@dimen/text_small"
                         android:visibility="visible" />
@@ -62,7 +62,7 @@
                         android:focusableInTouchMode="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Select State"
+                        android:hint="@string/hint_select_state"
                         android:textSize="@dimen/text_small" />
 
                 </LinearLayout>
@@ -80,7 +80,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:paddingLeft="5dp"
-                        android:text="City"
+                        android:text="@string/city_lbl"
                         android:textColor="@color/colorPrimary"
                         android:textSize="@dimen/text_small"
                         android:visibility="visible" />
@@ -92,7 +92,7 @@
                         android:focusableInTouchMode="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Select City"
+                        android:hint="@string/hint_select_city"
                         android:textSize="@dimen/text_small" />
                 </LinearLayout>
             </LinearLayout>
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:paddingLeft="5dp"
-                android:text="Article Type"
+                android:text="@string/article_lbl"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/text_small"
                 android:visibility="visible" />
@@ -113,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:hint="Select Article Category"
+                android:hint="@string/hint_select_article"
                 android:textSize="@dimen/text_small" />
 
             <LinearLayout
@@ -220,7 +220,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:paddingLeft="5dp"
-                android:text="Date"
+                android:text="@string/date_lbl"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/text_small" />
 
@@ -271,7 +271,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:paddingLeft="5dp"
-                android:text="Title"
+                android:text="@string/title_lbl"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/text_small" />
 
@@ -313,7 +313,7 @@
                         android:layout_weight="1"
                         android:text="@string/words_100_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium" />
+                        android:textSize="@dimen/text_small" />
 
                     <RadioButton
                         android:id="@+id/article_200d_radio"
@@ -322,7 +322,7 @@
                         android:layout_weight="1"
                         android:text="@string/words_200_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium" />
+                        android:textSize="@dimen/text_small" />
 
                     <RadioButton
                         android:id="@+id/article_300d_radio"
@@ -331,7 +331,7 @@
                         android:layout_weight="1"
                         android:text="@string/words_300_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium" />
+                        android:textSize="@dimen/text_small" />
 
                     <RadioButton
                         android:id="@+id/article_400d_radio"
@@ -340,7 +340,7 @@
                         android:layout_weight="1"
                         android:text="@string/words_400_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium" />
+                        android:textSize="@dimen/text_small" />
 
                 </RadioGroup>
 
@@ -354,7 +354,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:paddingLeft="5dp"
-                android:text="Description"
+                android:text="@string/desc_lbl"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/text_small" />
 
@@ -457,7 +457,7 @@
                         android:layout_weight="1"
                         android:text="@string/day_30_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium" />
+                        android:textSize="@dimen/text_small" />
 
                     <RadioButton
                         android:id="@+id/article_60_radio"
@@ -466,7 +466,7 @@
                         android:layout_weight="1"
                         android:text="@string/day_60_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium" />
+                        android:textSize="@dimen/text_small" />
 
                     <RadioButton
                         android:id="@+id/article_90_radio"
@@ -475,7 +475,7 @@
                         android:layout_weight="1"
                         android:text="@string/day_90_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium" />
+                        android:textSize="@dimen/text_small" />
 
                     <RadioButton
                         android:id="@+id/article_120_radio"
@@ -484,7 +484,7 @@
                         android:layout_weight="1"
                         android:text="@string/day_120_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_medium" />
+                        android:textSize="@dimen/text_small" />
 
                 </RadioGroup>
 
@@ -527,9 +527,10 @@
 
 
                     <TextView
+                        android:id="@+id/total_charges_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Total Charges"
+                        android:text="@string/total_charges_str"
                         android:textColor="@color/colorPrimary"
                         android:textSize="@dimen/text_small" />
 
@@ -537,7 +538,7 @@
                         android:id="@+id/article_total_charges_value"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="10 (min)"
+                        android:text=""
                         android:layout_marginTop="6dp"
                         android:layout_gravity="center"
                         android:paddingBottom="3dp"

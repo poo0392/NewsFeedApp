@@ -18,6 +18,8 @@ import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -56,6 +58,7 @@ import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.payU.PayUActivity;
+import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -68,6 +71,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CreateArticle extends AppCompatActivity implements View.OnClickListener {
     private Spinner mStateSpinner, mCitySpinner, mArticleSpinner;
     private EditText mTitleEdit, mDescEdit;
+    private TextView article_state_text, article_city_text, article_type_text, article_date_text, title_text, desc_text, total_charges_text;
     private String mProjectKey;
     private ProgressDialog mProgressDialog;
     private Context mContext;
@@ -90,6 +94,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     RelativeLayout state_relative, city_relative, article_relative;
     BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsPublishDaysSpinner;
     RadioButton article_100d_radio, article_200d_radio, article_300d_radio, article_400d_radio;
+    private SessionManager session, langSelection;
 
     //Indonesia
 
@@ -101,15 +106,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mProjectKey = getString(R.string.whiz_project_key);
         //  mProjectKey="0q4LozhupoQlXKFFiqtRHAZIJpdaHcObOO6gEKa6uuhQS4t1n33PutMsyyAm";
         mContext = this;
+        langSelection = new SessionManager(getApplicationContext());
+
+
+        // updateViews("hi_IN");
 
         setAppToolbar();
-
-        updateViews("hi_IN");
         initializeComponents();
         setListeners();
-        openLangKb();
-        setDateToText();
 
+        setDateToText();
+        //    setLang();
 
 //        String languageToLoad  = "hi_IN"; // your language
 //        Locale locale = new Locale(languageToLoad);
@@ -124,12 +131,41 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
     }
 
+    private void setLang() {
+        String getLang = langSelection.getLanguage();
+        String[] lang_arr = getResources().getStringArray(R.array.language_arr);
+        if (getLang.equalsIgnoreCase(lang_arr[1])) {
+            updateViews("hi");
+        } else if (getLang.equalsIgnoreCase(lang_arr[2])) {
+            updateViews("mr");
+        }
+    }
+
     private void setDateToText() {
         Calendar cal = Calendar.getInstance();
         Date date = cal.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm");
         String strDate = sdf.format(date);
         mDateView.setText(strDate);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.create_article_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_keyboard) {
+            openLangKb();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void openLangKb() {
@@ -174,7 +210,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private void setAppToolbar() {
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Create Article");
+        getSupportActionBar().setTitle(getResources().getString(R.string.create_article_menu));
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -210,6 +246,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         bsCitySpinner = (BetterSpinner) findViewById(R.id.city_better_spinner);
         bsArticleSpinner = (BetterSpinner) findViewById(R.id.article_better_spinner);
         bsPublishDaysSpinner = (BetterSpinner) findViewById(R.id.publish_better_spinner);
+        bsCitySpinner.setClickable(false);
+        bsCitySpinner.setFocusableInTouchMode(false);
 
         article_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, article_arr);
         bsArticleSpinner.setAdapter(article_adapter);// changed mArticleSpinner to bsArticleSpinner
@@ -227,6 +265,16 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mArticleImage1 = (ImageView) findViewById(R.id.article_image1);
         mArticleImage2 = (ImageView) findViewById(R.id.article_image2);
         mTotalChargesView = (TextView) findViewById(R.id.article_total_charges_value);
+
+
+        article_state_text = (TextView) findViewById(R.id.article_state_text);
+        article_city_text = (TextView) findViewById(R.id.article_city_text);
+        article_type_text = (TextView) findViewById(R.id.article_type_text);
+        article_date_text = (TextView) findViewById(R.id.article_date_text);
+        title_text = (TextView) findViewById(R.id.title_text);
+        desc_text = (TextView) findViewById(R.id.desc_text);
+        total_charges_text = (TextView) findViewById(R.id.total_charges_text);
+
     }
 
     private void setListeners() {
@@ -296,7 +344,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private int setDescpWordsLength(int radioId) {
-       // int radioId = radioGroupWords.getCheckedRadioButtonId();
+        // int radioId = radioGroupWords.getCheckedRadioButtonId();
         Log.v("", "radioId " + radioId);
         switch (radioId) {
             case R.id.article_100d_radio:
@@ -321,6 +369,15 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private void updateViews(String languageCode) {
         Context context = LocaleHelper.setLocale(this, languageCode);
         Resources resources = context.getResources();
+
+        article_state_text.setText(resources.getString(R.string.state_lbl));
+        article_city_text.setText(resources.getString(R.string.city_lbl));
+        article_type_text.setText(resources.getString(R.string.article_lbl));
+        article_date_text.setText(resources.getString(R.string.date_lbl));
+        title_text.setText(resources.getString(R.string.title_lbl));
+        desc_text.setText(resources.getString(R.string.desc_lbl));
+        total_charges_text.setText(resources.getString(R.string.total_charges_str));
+
     }
 
     private void printInputLanguages() {
@@ -569,7 +626,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 City_Name cityName = cityList.get(i);
                 list.add(cityName.getCity());
             }
-
+            bsCitySpinner.setFocusableInTouchMode(true);
             city_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
             // mCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
             bsCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner

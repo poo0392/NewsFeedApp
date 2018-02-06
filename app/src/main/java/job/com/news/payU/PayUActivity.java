@@ -44,6 +44,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import job.com.news.CreateArticle;
 import job.com.news.R;
 
 /**
@@ -873,4 +874,10 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(PayUActivity.this, CreateArticle.class));
+        finish();
+    }
 }

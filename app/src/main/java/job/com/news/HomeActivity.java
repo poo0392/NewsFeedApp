@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -97,6 +99,7 @@ public class HomeActivity extends AppCompatActivity
 
         }
         setAppToolbar();
+
         setLocaleLang();
         initialializeComponents();
         setListeners();
@@ -186,30 +189,46 @@ public class HomeActivity extends AppCompatActivity
     }
     //navigation Change
 
+    public void setLocale(String lang) {
+        Locale myLocale = new Locale(lang);
+        Resources res = getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        res.updateConfiguration(conf, dm);
+       // Intent refresh = new Intent(this, HomeActivity.class);
+     //   startActivity(refresh);
+       // finish();
+    }
+
     private void setLocaleLang() {
         String[] lang_arr = getResources().getStringArray(R.array.language_arr);
         String getLang = langSelection.getLanguage();
 
-        Log.v("HomeActivity ", "getLang " + getLang);
+      //  Log.v("HomeActivity ", "getLang " + getLang);
         Configuration config = new Configuration();
         Locale locale;
         if (getLang.equalsIgnoreCase(lang_arr[1])) {
             locale = new Locale("hi");
             Locale.setDefault(locale);
             config.setLocale(locale);
+
+           // setLocale("hi");
         } else if (getLang.equalsIgnoreCase(lang_arr[2])) {
             locale = new Locale("mr");
             Locale.setDefault(locale);
             config.setLocale(locale);
+
+            //setLocale("mr");
         }
-        //getResources().getConfiguration().setTo(config);
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
+        getResources().getConfiguration().setTo(config);
+        getBaseContext().getResources().updateConfiguration(config,getBaseContext().getResources().getDisplayMetrics());
     }
 
     private void setAppToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(getResources().getString(R.string.home_toolbar_title));
     }
 
     private void initialializeComponents() {
@@ -294,10 +313,12 @@ public class HomeActivity extends AppCompatActivity
         expListView.setIndicatorBounds(expListView.getRight() - 40, expListView.getWidth());
         prepareListData(listDataHeader, listDataChild,listThirdLevelChild);
 
-        ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, listDataHeader, listDataChild, data);
+     //   ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, listDataHeader, listDataChild, data);
         // set adapter
-        expListView.setAdapter( threeLevelListAdapterAdapter );
+       // expListView.setAdapter( threeLevelListAdapterAdapter );
 
+        listAdapter=new ExpandListAdapter(this,listDataHeader,listDataChild);
+        expListView.setAdapter(listAdapter);
 
      /*   listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
         // setting list adapter
@@ -649,6 +670,10 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.action_logout) {
             session.setLogin(false);
             Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }else if(id==R.id.action_change_language){
+            Intent intent = new Intent(this, LanguageSelection.class);
+            intent.putExtra("from","home");
             startActivity(intent);
         }
 

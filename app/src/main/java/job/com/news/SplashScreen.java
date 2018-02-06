@@ -32,6 +32,7 @@ public class SplashScreen extends AppCompatActivity {
                 }else{
                     Log.v("SplashAct ","First Time");
                     Intent intent = new Intent(SplashScreen.this, LanguageSelection.class);
+                    intent.putExtra("from","splash");
                     startActivity(intent);
                     finish();
                 }

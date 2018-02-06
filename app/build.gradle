@@ -38,6 +38,7 @@ dependencies {
     compile 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
     //Optional: see how to use the utility.
     compile 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
+    compile 'com.github.javiersantos:MaterialStyledDialogs:2.1'
 
     testCompile 'junit:junit:4.12'
 }

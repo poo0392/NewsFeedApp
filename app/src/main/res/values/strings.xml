@@ -65,6 +65,17 @@
     <string name="day_120_str">120 days</string>
     <string name="photo_str">Photo</string>
     <string name="total_charges_str">Total Charges</string>
+    <string name="state_lbl">State</string>
+    <string name="city_lbl">City</string>
+    <string name="article_lbl">Article Type</string>
+    <string name="date_lbl">Date</string>
+    <string name="desc_lbl">Description</string>
+    <string name="title_lbl">Title</string>
+
+    <string name="hint_select_state">Select State</string>
+    <string name="hint_select_city">Select City</string>
+    <string name="hint_select_article">Select Article Category</string>
+
 
     <!-- Rupee symbol-->
     <string name="Rs">\u20B9</string>
@@ -157,11 +168,14 @@
 
     <!--menus-->
     <string name="create_article_menu">Create article</string>
+    <string name="change_lang_menu">Change Display Language</string>
     <string name="change_pwd_menu">Change password</string>
     <string name="log_out">Log out</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 
+    <string name="home_toolbar_title">News Feed</string>
+    <string name="button_ok">Ok</string>
 
     <string name="title_activity_base">BaseActivity</string>
     <string name="title_activity_net_banking">NetBankingActivity</string>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="home_toolbar_title">समाचार फ़ीड</string>
+
     <!--Login-->
     <string name="prompt_username">ईमेल</string>
     <string name="prompt_password">पासवर्ड</string>
@@ -28,6 +30,8 @@
     <string name="action_sign_in">साइन इन करें या रजिस्टर</string>
     <string name="action_sign_in_short">साइन इन करें</string>
 
+    <string name="action_submit">जमा करेंं</string>
+
     <!--Create Article-->
     <string name="prompt_title">शीर्षक दर्ज करें</string>
     <string name="prompt_desc">विवरण दर्ज करें</string>
@@ -44,7 +48,19 @@
     <string name="photo_str">तस्वीर</string>
     <string name="total_charges_str">कुल शुल्क</string>
 
+    <string name="state_lbl">राज्य</string>
+    <string name="city_lbl">शहर</string>
+    <string name="article_lbl">अनुच्छेद प्रकार</string>
+    <string name="date_lbl">तारीख</string>
+    <string name="desc_lbl">विवरण</string>
+    <string name="title_lbl">शीर्षक</string>
+
+    <string name="hint_select_state">राज्य चुनें</string>
+    <string name="hint_select_city">शहर चुनें</string>
+    <string name="hint_select_article">अनुच्छेद श्रेणी चुनें</string>
+
     <!-- navigation text-->
+    <string name="recent_news">ताज़ा खबर</string>
     <string name="national_inter_menu">राष्ट्रीय और अंतर्राष्ट्रीय</string>
     <string name="gov_news_menu">सरकारी समाचार</string>
     <string name="soc_rel_menu">सामाजिक और संबंधित समाचार</string>
@@ -100,6 +116,7 @@
 
     <!--menus-->
     <string name="create_article_menu">आलेख बनाएं</string>
+    <string name="change_lang_menu">प्रदर्शित भाषा बदलें</string>
     <string name="change_pwd_menu">पासवर्ड बदलें</string>
     <string name="log_out">लॉग आउट करें</string>
 

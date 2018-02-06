@@ -33,9 +33,7 @@
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".NewsFeed"
-            android:screenOrientation="portrait" />
+
         <activity
             android:name=".NewsDetailScreen"
             android:screenOrientation="portrait" />

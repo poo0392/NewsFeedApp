@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -15,14 +16,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.github.javiersantos.materialstyleddialogs.enums.Style;
+
 import java.util.Locale;
 
 import job.com.news.forgotpassword.ForgotPassword;
+import job.com.news.helper.ConnectivityInterceptor;
+import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.register.LoginRegisterResponse;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -195,8 +204,13 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.setMessage("loading...");
             progressDialog.show();
 
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(new ConnectivityInterceptor(LoginActivity.this))
+                    .build();
+
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Constant.BASE_URL)
+                    .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -228,15 +242,14 @@ public class LoginActivity extends AppCompatActivity {
                                     " email : " + myPreferences.getEmailId().trim() + " mob : " + myPreferences.getMobile() + " memberId : "
                                             + myPreferences.getMemberId() + " Member : " + myPreferences.getMemberToken());
 
-                            //register success
-                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
-                            session.setLogin(true);
+
+                            showSuccessAlertDialog(LoginActivity.this, "Success", "Logged In Successfully");
+
                         } else {
                             //login failed
                             String desc = serverResponse.getDescription().trim();
-                            Toast.makeText(LoginActivity.this, "Login failed." + desc, Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(LoginActivity.this, "Login failed." + desc, Toast.LENGTH_SHORT).show();
+                            setFailedAlertDialog(LoginActivity.this, "Failed", "Login failed.");
                         }
                     }
                 }
@@ -245,6 +258,12 @@ public class LoginActivity extends AppCompatActivity {
                 public void onFailure(Call<LoginRegisterResponse> call, Throwable t) {
                     progressDialog.dismiss();
                     t.printStackTrace();
+
+                    if (t instanceof NoConnectivityException) {
+                        // No internet connection
+                       // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                        setFailedAlertDialog(LoginActivity.this, "Failed", "No Internet! Please Check Your internet connection");
+                    }
                 }
             });
 
@@ -252,6 +271,42 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
             Log.d(TAG, "e : " + e.toString());
         }
+    }
+    private void setFailedAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_failed)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void showSuccessAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_success)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        //register success
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                        finish();
+                        session.setLogin(true);
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
 

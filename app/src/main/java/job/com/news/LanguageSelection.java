@@ -28,6 +28,7 @@ public class LanguageSelection extends AppCompatActivity {
     SessionManager langSelection;
     boolean isFirstTime;
     SharedPreferences reader;
+    String fromActivity;
 
 
     @Override
@@ -41,7 +42,12 @@ public class LanguageSelection extends AppCompatActivity {
         reader = getSharedPreferences("NewsFeed", Context.MODE_PRIVATE);
         isFirstTime = reader.getBoolean("is_first", true);
         Log.v("LanguageSelection ", "isFirstTime " + isFirstTime);
+        fromActivity = getIntent().getExtras().getString("from");
+
         if (isFirstTime) {
+            initializeComponents();
+            setListeners();
+        } else if (!isFirstTime && (fromActivity.equals("home"))) {
             initializeComponents();
             setListeners();
         } else {
@@ -51,11 +57,12 @@ public class LanguageSelection extends AppCompatActivity {
         }
 
     }
+
     private void setLocaleLang() {
 
         String[] lang_arr = getResources().getStringArray(R.array.language_arr);
         String getLang = langSelection.getLanguage();
-        Log.v("LanguageSelection ","getLang "+getLang);
+        Log.v("LanguageSelection ", "getLang " + getLang);
         Configuration config = new Configuration();
         Locale locale;
         if (getLang.equalsIgnoreCase(lang_arr[1])) {
@@ -102,10 +109,12 @@ public class LanguageSelection extends AppCompatActivity {
 
 
                     moveToNextActivity();
-                    isFirstTime = false;
-                    final SharedPreferences.Editor editor = reader.edit();
-                    editor.putBoolean("is_first", false);
-                    editor.commit();
+                    if(!fromActivity.equals("home")) {
+                        isFirstTime = false;
+                        final SharedPreferences.Editor editor = reader.edit();
+                        editor.putBoolean("is_first", false);
+                        editor.commit();
+                    }
                 }
             }
         });
@@ -124,10 +133,24 @@ public class LanguageSelection extends AppCompatActivity {
     }
 
     private void moveToNextActivity() {
+        try {
+            fromActivity = getIntent().getExtras().getString("from");
+            if (fromActivity != null) {
+                if (fromActivity.equals("home")) {
+                    Intent intent = new Intent(LanguageSelection.this, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else if (fromActivity.equals("splash")) {
+                    Intent intent = new Intent(LanguageSelection.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
 
-        Intent intent = new Intent(LanguageSelection.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

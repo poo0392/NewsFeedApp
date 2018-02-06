@@ -1,11 +1,13 @@
 package job.com.news;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,10 +18,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.github.javiersantos.materialstyleddialogs.enums.Style;
+
+import job.com.news.helper.ConnectivityInterceptor;
+import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.register.LoginRegisterResponse;
 import job.com.news.sharedpref.MyPreferences;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,7 +97,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-    private void attemptSignUp(){
+    private void attemptSignUp() {
         try {
 
             //Reset error
@@ -110,42 +120,42 @@ public class SignUpActivity extends AppCompatActivity {
             View focusView = null;
 
             //empty
-            if(TextUtils.isEmpty(firstname)){
+            if (TextUtils.isEmpty(firstname)) {
                 mFNameView.setError(getString(R.string.error_field_required));
                 focusView = mFNameView;
                 cancel = true;
             }
 
-            if(TextUtils.isEmpty(lastname)){
+            if (TextUtils.isEmpty(lastname)) {
                 mLNameView.setError(getString(R.string.error_field_required));
                 focusView = mLNameView;
                 cancel = true;
             }
 
-            if(TextUtils.isEmpty(password)){
+            if (TextUtils.isEmpty(password)) {
                 mPasswordView.setError(getString(R.string.error_field_required));
                 focusView = mPasswordView;
                 cancel = true;
             }
 
-            if(TextUtils.isEmpty(email)){
+            if (TextUtils.isEmpty(email)) {
                 mEmailView.setError(getString(R.string.error_field_required));
                 focusView = mEmailView;
                 cancel = true;
-            }  else if (!isEmailValid(email)) {
+            } else if (!isEmailValid(email)) {
                 mEmailView.setError(getString(R.string.error_invalid_email));
                 focusView = mEmailView;
                 cancel = true;
             }
 
-            if(TextUtils.isEmpty(confirmPwd) || !password.equals(confirmPwd)){
+            if (TextUtils.isEmpty(confirmPwd) || !password.equals(confirmPwd)) {
                 mConfirmPwd.setError(getString(R.string.error_match_password));
                 focusView = mConfirmPwd;
                 cancel = true;
             }
 
             //Check for a valid mobile number.
-            if (TextUtils.isEmpty(mobile) ||  isMobileNumberValid(mobile)) {
+            if (TextUtils.isEmpty(mobile) || isMobileNumberValid(mobile)) {
                 mMobileView.setError(getString(R.string.error_invalid_mobile_no));
                 focusView = mMobileView;
                 cancel = true;
@@ -158,10 +168,9 @@ public class SignUpActivity extends AppCompatActivity {
                 cancel = true;
             }*/
 
-            if(cancel){
+            if (cancel) {
                 focusView.requestFocus();
-            } else
-                {
+            } else {
                /* Toast.makeText(this, "Congrats !!! Signed up Successfully.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, HomeActivity.class);
                 startActivity(intent);
@@ -170,21 +179,26 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
 
-        } catch (Exception e){
-           // e.printStackTrace();
-            Log.d("Core","e : "+e.toString());
+        } catch (Exception e) {
+            // e.printStackTrace();
+            Log.d("Core", "e : " + e.toString());
         }
     }
 
-    private void sendRegister(String first_name, String last_name, String mobile, String password, String email){
+    private void sendRegister(String first_name, String last_name, String mobile, String password, String email) {
         try {
 
             progressDialog = new ProgressDialog(SignUpActivity.this);
             progressDialog.setMessage("loading...");
             progressDialog.show();
 
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(new ConnectivityInterceptor(SignUpActivity.this))
+                    .build();
+
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Constant.BASE_URL)
+                    .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -201,26 +215,24 @@ public class SignUpActivity extends AppCompatActivity {
                 body = MultipartBody.Part.createFormData("uploaded_file", compressedImageFile.getName(), requestFile);
             }*/
 
-            RequestBody bodyFName  = RequestBody.create(MediaType.parse("text/plain"), first_name);
-            RequestBody bodyLName  = RequestBody.create(MediaType.parse("text/plain"), last_name);
+            RequestBody bodyFName = RequestBody.create(MediaType.parse("text/plain"), first_name);
+            RequestBody bodyLName = RequestBody.create(MediaType.parse("text/plain"), last_name);
             RequestBody bodyMobile = RequestBody.create(MediaType.parse("text/plain"), mobile);
-            RequestBody bodyPwd    = RequestBody.create(MediaType.parse("text/plain"), password);
-            RequestBody bodyNoti   = RequestBody.create(MediaType.parse("text/plain"), "cadscasd");
-            RequestBody bodyPlat   = RequestBody.create(MediaType.parse("text/plain"), 1+"");
-            RequestBody bodyEmail  = RequestBody.create(MediaType.parse("text/plain"), email);
+            RequestBody bodyPwd = RequestBody.create(MediaType.parse("text/plain"), password);
+            RequestBody bodyNoti = RequestBody.create(MediaType.parse("text/plain"), "cadscasd");
+            RequestBody bodyPlat = RequestBody.create(MediaType.parse("text/plain"), 1 + "");
+            RequestBody bodyEmail = RequestBody.create(MediaType.parse("text/plain"), email);
 
             Call<LoginRegisterResponse> responseCall = webService.registerRequest(bodyFName, bodyLName, bodyMobile, bodyPwd, bodyNoti,
-                                                                            bodyPlat, bodyEmail);
-            responseCall.enqueue(new Callback<LoginRegisterResponse>()
-            {
+                    bodyPlat, bodyEmail);
+            responseCall.enqueue(new Callback<LoginRegisterResponse>() {
                 @Override
                 public void onResponse(Call<LoginRegisterResponse> call, Response<LoginRegisterResponse> response) {
                     progressDialog.dismiss();
-                    if(response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         LoginRegisterResponse serverResponse = response.body();
 
-                        if(serverResponse.getStatus() == 0)
-                        {
+                        if (serverResponse.getStatus() == 0) {
                             //register success
 
                             try {
@@ -230,22 +242,20 @@ public class SignUpActivity extends AppCompatActivity {
                                 myPreferences.setMobile(serverResponse.getMember().getMobile());
                                 myPreferences.setMemberId(serverResponse.getMember().getMemberId());
                                 myPreferences.setMemberToken(serverResponse.getMember().getMemberToken().trim());
-                            }catch (Exception e)
-                            {
-                                Log.d("Core","e :"+e.toString());
+                            } catch (Exception e) {
+                                Log.d("Core", "e :" + e.toString());
                             }
-
-                            Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else
-                        {
+                            showSuccessAlertDialog(SignUpActivity.this, "Success", "You have Successfuly registered");
+                        } else {
                             //register failed
                             String desc = serverResponse.getDescription().trim();
-                            if(desc.equalsIgnoreCase("")){
-                                Toast.makeText(SignUpActivity.this, "Register failed. Please try again after some time.", Toast.LENGTH_SHORT).show();
+                            if (desc.equalsIgnoreCase("")) {
+
+                                setFailedAlertDialog(SignUpActivity.this, "Failed", "Register failed. Please try again after some time.");
+                                //Toast.makeText(SignUpActivity.this, "Register failed. Please try again after some time.", Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(SignUpActivity.this, "Register failed." + desc , Toast.LENGTH_SHORT).show();
+                               // Toast.makeText(SignUpActivity.this, "Register failed." + desc, Toast.LENGTH_SHORT).show();
+                                setFailedAlertDialog(SignUpActivity.this, "Failed", "Register failed");
                             }
 
                         }
@@ -256,14 +266,54 @@ public class SignUpActivity extends AppCompatActivity {
                 public void onFailure(Call<LoginRegisterResponse> call, Throwable t) {
                     progressDialog.dismiss();
                     t.printStackTrace();
+                    if (t instanceof NoConnectivityException) {
+                        // No internet connection
+                        // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                        setFailedAlertDialog(SignUpActivity.this, "Failed", "No Internet! Please Check Your internet connection");
+                    }
                 }
             });
 
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
 
-            Log.d("Core","e : "+e.toString());
+            Log.d("Core", "e : " + e.toString());
         }
+    }
+
+    private void showSuccessAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_success)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                        finish();
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+
+    }
+
+    private void setFailedAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_failed)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     private boolean isEmailValid(String email) {
