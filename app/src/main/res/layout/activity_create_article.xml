@@ -21,7 +21,7 @@
     </android.support.design.widget.AppBarLayout>
     <!--<include layout="@layout/content_create_article"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>-->
-
+    <!--Change scrollview to nested scroll view-->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -313,7 +313,7 @@
                         android:layout_weight="1"
                         android:text="@string/words_100_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_small" />
+                        android:textSize="@dimen/text_tiny" />
 
                     <RadioButton
                         android:id="@+id/article_200d_radio"
@@ -322,7 +322,7 @@
                         android:layout_weight="1"
                         android:text="@string/words_200_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_small" />
+                        android:textSize="@dimen/text_tiny" />
 
                     <RadioButton
                         android:id="@+id/article_300d_radio"
@@ -331,7 +331,7 @@
                         android:layout_weight="1"
                         android:text="@string/words_300_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_small" />
+                        android:textSize="@dimen/text_tiny" />
 
                     <RadioButton
                         android:id="@+id/article_400d_radio"
@@ -340,7 +340,7 @@
                         android:layout_weight="1"
                         android:text="@string/words_400_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_small" />
+                        android:textSize="@dimen/text_tiny" />
 
                 </RadioGroup>
 
@@ -457,7 +457,7 @@
                         android:layout_weight="1"
                         android:text="@string/day_30_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_small" />
+                        android:textSize="@dimen/text_tiny" />
 
                     <RadioButton
                         android:id="@+id/article_60_radio"
@@ -466,7 +466,7 @@
                         android:layout_weight="1"
                         android:text="@string/day_60_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_small" />
+                        android:textSize="@dimen/text_tiny" />
 
                     <RadioButton
                         android:id="@+id/article_90_radio"
@@ -475,7 +475,7 @@
                         android:layout_weight="1"
                         android:text="@string/day_90_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_small" />
+                        android:textSize="@dimen/text_tiny" />
 
                     <RadioButton
                         android:id="@+id/article_120_radio"
@@ -484,7 +484,7 @@
                         android:layout_weight="1"
                         android:text="@string/day_120_str"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_small" />
+                        android:textSize="@dimen/text_tiny" />
 
                 </RadioGroup>
 

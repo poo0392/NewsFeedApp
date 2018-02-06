@@ -24,6 +24,11 @@
     <string name="error_invalid_mobile_no">हा मोबाइल नंबर अवैध आहे</string>
     <string name="error_match_password">पासवर्डची पुष्टी करा पासवर्ड प्रमाणे नाही</string>
 
+
+    <string name="toast_msg_state">कृपया राज्य निवडा</string>
+    <string name="toast_msg_city">कृपया शहर निवडा</string>
+    <string name="toast_msg_article">कृपया लेख प्रकार निवडा</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">ईमेल</string>
     <string name="action_sign_in">साइन इन करा किंवा नोंदणी करा</string>

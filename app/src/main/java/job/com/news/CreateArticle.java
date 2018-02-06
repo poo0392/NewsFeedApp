@@ -86,8 +86,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private ImageView mArticleImage1, mArticleImage2;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String mediaPath;
-    private int currentImageView = 0, words;
+    private int currentImageView = 0, words, radioGroupDaysID,wordsCount=0;
     private Button btn_submit;
+    boolean valid = false;
     private int charges;
     String state_arr[], article_arr[], no_of_days_arr[], selectedState, selectedCity, selectedDays;
     ArrayAdapter<String> state_adapter, article_adapter, city_adapter, publish_days_adapter;
@@ -317,9 +318,20 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 int radioId = group.getCheckedRadioButtonId();
                 int wordsLength = setDescpWordsLength(radioId);
-                Log.v("", "wordsLength " + wordsLength);
+                Log.v("radioGroupWords ", "wordsLength " + wordsLength);
 
                 mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
+
+
+            }
+        });
+
+        radioGroupDays.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                radioGroupDaysID = radioGroupDays.getCheckedRadioButtonId();
+
+                calculateCharges(wordsCount,radioGroupDaysID);
             }
         });
 
@@ -332,8 +344,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                int count = charSequence.toString().trim().length();
-                calculateCharges(count);
+                 wordsCount = charSequence.toString().trim().length();
+                Log.v("mDescEdit ","wordsCount "+wordsCount );
+
             }
 
             @Override
@@ -403,23 +416,35 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mTitleEdit.requestFocus();
     }
 
-    private void calculateCharges(int count) {
+    private void calculateCharges(int count, int radioGroupDaysID) {
+        Log.v("calculateCharges"," count "+count);
         try {
             int charLength = 0;
             mTotalChargesView.setText(count + "");
-            if (count > 0 && count <= 100) {
+       /*     if (count > 0 && count <= 100) {
                 charLength = 1;
             } else if (count > 101 && count <= 200) {
-                charLength = 2;
+                charLength = 2;//free
             } else if (count > 201 && count <= 300) {
-                charLength = 3;
+                charLength = 3;//1 rs perday/ 30 rs/30 day 30*1, 60*1,90*1,120*1
             } else if (count > 301 && count <= 400) {
-                charLength = 4;
-            } else {
+                charLength = 4;// 2 rs /perday(300) ,30*2,60*2,90*2,120*2
+            } *//*else {//& 3rs(400) 30*3,60*3,90*3,120*3
                 charLength = 5;
+            }*/
+
+            if( (count>0 && count<=100)){
+                charLength = 0;
+            }else if((count > 101 && count <= 200)){
+                charLength = 1;
+            } else if (count > 201 && count <= 300) {
+                charLength = 2;
+            }else if(count > 301 && count <= 400 ){
+                charLength = 3;
             }
 
-            int days = getDays();
+            int days = getDays(radioGroupDaysID);
+            Log.v("calculateCharges ","days "+days);
 
             charges = charLength * days;
 
@@ -431,9 +456,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private int getDays() {
+    private int getDays(int radioId) {
         int days = 0;
-        int radioId = radioGroupDays.getCheckedRadioButtonId();
+      //  int radioId = radioGroupDays.getCheckedRadioButtonId();
         switch (radioId) {
             case R.id.article_30_radio:
                 days = 30;
@@ -447,9 +472,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             case R.id.article_120_radio:
                 days = 120;
                 break;
-            default:
+            /*default:
                 days = 0;
-                break;
+                break;*/
         }
         return days;
     }
@@ -663,11 +688,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
+                if (validateFields()) {
+                    Intent intent = new Intent(this, PayUActivity.class);
+                    intent.putExtra("Price", charges);
+                    startActivity(intent);
+                    finish();
+                }
 
-                Intent intent = new Intent(this, PayUActivity.class);
-                intent.putExtra("Price", charges);
-                startActivity(intent);
-                finish();
                 break;
             case R.id.article_image1:
                 if (v instanceof ImageView)
@@ -687,6 +714,28 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         }
 
 
+    }
+
+    private boolean validateFields() {
+
+        if (bsStateSpinner.getText().toString().equals("")) {
+            Toast.makeText(mContext,
+                    mContext.getResources().getString(R.string.toast_msg_state), Toast.LENGTH_SHORT).show();
+            return valid;
+        }
+        if (bsCitySpinner.getText().toString().equals("")) {
+            Toast.makeText(mContext,
+                    mContext.getResources().getString(R.string.toast_msg_city), Toast.LENGTH_SHORT).show();
+            return valid;
+        }
+        if (bsArticleSpinner.getText().toString().equals("")) {
+            Toast.makeText(mContext,
+                    mContext.getResources().getString(R.string.toast_msg_article), Toast.LENGTH_SHORT).show();
+            return valid;
+        } else {
+            valid = true;
+        }
+        return valid;
     }
 
     private void getImageFromGallery() {
