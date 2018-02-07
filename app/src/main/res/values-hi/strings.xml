@@ -25,9 +25,12 @@
     <string name="error_invalid_mobile_no">यह मोबाइल नंबर अमान्य है</string>
     <string name="error_match_password">पासवर्ड की पुष्टि करें पासवर्ड के समान नहीं है</string>
 
-    <string name="toast_msg_state">कृपया राज्य का चयन करें</string>
-    <string name="toast_msg_city">कृपया शहर का चयन करें</string>
-    <string name="toast_msg_article">अनुच्छेद प्रकार का चयन करें</string>
+    <string name="toast_msg_state_validations">कृपया राज्य का चयन करें</string>
+    <string name="toast_msg_city_validations">कृपया शहर का चयन करें</string>
+    <string name="toast_msg_article_validations">अनुच्छेद प्रकार का चयन करें</string>
+
+    <string name="toast_msg_title_validations">कृपया शीर्षक दर्ज करें</string>
+    <string name="toast_msg_desc_validations">कृपया विवरण दर्ज करें</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">ईमेल</string>

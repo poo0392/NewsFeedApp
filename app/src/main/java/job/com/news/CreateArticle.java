@@ -57,7 +57,6 @@ import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
-import job.com.news.payU.PayUActivity;
 import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -76,7 +75,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private ProgressDialog mProgressDialog;
     private Context mContext;
 
-    private HashMap<String, Integer> mapState;
+    private HashMap<String, Integer> mapState;//changes done
 
     private ArrayList<HashMap<String, String>> stateList;
     private TextView mTotalChargesView, mDateView;
@@ -86,7 +85,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private ImageView mArticleImage1, mArticleImage2;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String mediaPath;
-    private int currentImageView = 0, words, radioGroupDaysID,wordsCount=0;
+    private int currentImageView = 0, words, radioGroupDaysID, wordsCount = 0;
     private Button btn_submit;
     boolean valid = false;
     private int charges;
@@ -319,8 +318,22 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 int radioId = group.getCheckedRadioButtonId();
                 int wordsLength = setDescpWordsLength(radioId);
                 Log.v("radioGroupWords ", "wordsLength " + wordsLength);
+                //  mDescEdit.setText("");
 
                 mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
+                int editTextLength = mDescEdit.getText().toString().length();
+                Log.v("radioGroupWords ", "editTextLength " + editTextLength);
+                if (!(editTextLength == 100)) {
+                    if ((wordsLength <= editTextLength)) { //200<=300 & 200<=300
+                    /*if (wordsLength < 200) {
+                        Log.v("radioGroupWords ", "22 wordsLength " + wordsLength);
+                    } else {
+
+                    }*/
+
+                        mDescEdit.setText(mDescEdit.getText().toString().substring(0, mDescEdit.getText().toString().length() - 100));
+                    }
+                }
 
 
             }
@@ -330,8 +343,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 radioGroupDaysID = radioGroupDays.getCheckedRadioButtonId();
-
-                calculateCharges(wordsCount,radioGroupDaysID);
+                calculateCharges(wordsCount, radioGroupDaysID);
             }
         });
 
@@ -344,8 +356,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                 wordsCount = charSequence.toString().trim().length();
-                Log.v("mDescEdit ","wordsCount "+wordsCount );
+                wordsCount = charSequence.toString().trim().length();
+                Log.v("mDescEdit ", "wordsCount " + wordsCount);
+                radioGroupDays.clearCheck();
 
             }
 
@@ -417,7 +430,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void calculateCharges(int count, int radioGroupDaysID) {
-        Log.v("calculateCharges"," count "+count);
+        Log.v("calculateCharges", " count " + count);
         try {
             int charLength = 0;
             mTotalChargesView.setText(count + "");
@@ -433,18 +446,22 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 charLength = 5;
             }*/
 
-            if( (count>0 && count<=100)){
+            if ((count > 0 && count <= 100)) {
                 charLength = 0;
-            }else if((count > 101 && count <= 200)){
+
+            } else if ((count > 100 && count <= 200)) {
                 charLength = 1;
-            } else if (count > 201 && count <= 300) {
+
+            } else if (count > 200 && count <= 300) {
                 charLength = 2;
-            }else if(count > 301 && count <= 400 ){
+
+            } else if (count > 300 && count <= 400) {
                 charLength = 3;
+
             }
 
             int days = getDays(radioGroupDaysID);
-            Log.v("calculateCharges ","days "+days);
+            Log.v("calculateCharges ", "days " + days);
 
             charges = charLength * days;
 
@@ -458,7 +475,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
     private int getDays(int radioId) {
         int days = 0;
-      //  int radioId = radioGroupDays.getCheckedRadioButtonId();
+        //  int radioId = radioGroupDays.getCheckedRadioButtonId();
         switch (radioId) {
             case R.id.article_30_radio:
                 days = 30;
@@ -689,10 +706,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.article_btn_submit:
                 if (validateFields()) {
-                    Intent intent = new Intent(this, PayUActivity.class);
+                    /*Intent intent = new Intent(this, PayUActivity.class);
                     intent.putExtra("Price", charges);
                     startActivity(intent);
-                    finish();
+                    finish();*/
                 }
 
                 break;
@@ -720,17 +737,28 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         if (bsStateSpinner.getText().toString().equals("")) {
             Toast.makeText(mContext,
-                    mContext.getResources().getString(R.string.toast_msg_state), Toast.LENGTH_SHORT).show();
+                    mContext.getResources().getString(R.string.toast_msg_state_validations), Toast.LENGTH_SHORT).show();
             return valid;
         }
         if (bsCitySpinner.getText().toString().equals("")) {
             Toast.makeText(mContext,
-                    mContext.getResources().getString(R.string.toast_msg_city), Toast.LENGTH_SHORT).show();
+                    mContext.getResources().getString(R.string.toast_msg_city_validations), Toast.LENGTH_SHORT).show();
             return valid;
         }
         if (bsArticleSpinner.getText().toString().equals("")) {
             Toast.makeText(mContext,
-                    mContext.getResources().getString(R.string.toast_msg_article), Toast.LENGTH_SHORT).show();
+                    mContext.getResources().getString(R.string.toast_msg_article_validations), Toast.LENGTH_SHORT).show();
+            return valid;
+        }
+        if (mDescEdit.getText().toString().trim().equals("")) {
+            Toast.makeText(mContext,
+                    mContext.getResources().getString(R.string.toast_msg_desc_validations), Toast.LENGTH_SHORT).show();
+            return valid;
+
+        }
+        if (mTitleEdit.getText().toString().trim().equals("")) {
+            Toast.makeText(mContext,
+                    mContext.getResources().getString(R.string.toast_msg_title_validations), Toast.LENGTH_SHORT).show();
             return valid;
         } else {
             valid = true;

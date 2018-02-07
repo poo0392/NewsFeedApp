@@ -51,6 +51,7 @@ import job.com.news.adapter.HomeDashboardAdapter;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.changepassword.ChangePassword;
 import job.com.news.models.NewsFeedDetails;
+import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
@@ -66,13 +67,13 @@ public class HomeActivity extends AppCompatActivity
     private NewsFeedApplication newsFeedApplication;
     private LinearLayout mSmallClassiLayout, mCareerLayout;
     private TextView menuSmallClassi;
-    private TextView menuCareer;
+    private TextView menuCareer, txt_header_username, txt_header_email;
     private static final int PERMISSION_REQUEST_CODE = 200;
     private SessionManager session, langSelection;
     Toolbar toolbar;
     ExpandListAdapter listAdapter;
     List<String> listDataHeader;
-    HashMap<String, List<String>> listDataChild,listThirdLevelChild;
+    HashMap<String, List<String>> listDataChild, listThirdLevelChild;
     List<HashMap<String, List<String>>> data;
     ExpandableListView expListView;
     HomeDashboardAdapter mAdapter;
@@ -81,7 +82,8 @@ public class HomeActivity extends AppCompatActivity
     private FragmentPagerItems pages;
     private ViewPager viewPager;
     private SmartTabLayout viewPagerTab;
-
+    private MyPreferences myPreferences;
+    String emailId, fullName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +98,8 @@ public class HomeActivity extends AppCompatActivity
             requestPermission();
 
         }
+        getPrefData();
         setAppToolbar();
-
         setLocaleLang();
         initialializeComponents();
         setListeners();
@@ -185,6 +187,12 @@ public class HomeActivity extends AppCompatActivity
 
 
     }
+
+    private void getPrefData() {
+        myPreferences = MyPreferences.getMyAppPref(this);
+        emailId = myPreferences.getEmailId().trim();
+        fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
+    }
     //navigation Change
 
     public void setLocale(String lang) {
@@ -194,16 +202,16 @@ public class HomeActivity extends AppCompatActivity
         Configuration conf = res.getConfiguration();
         conf.locale = myLocale;
         res.updateConfiguration(conf, dm);
-       // Intent refresh = new Intent(this, HomeActivity.class);
-     //   startActivity(refresh);
-       // finish();
+        // Intent refresh = new Intent(this, HomeActivity.class);
+        //   startActivity(refresh);
+        // finish();
     }
 
     private void setLocaleLang() {
         String[] lang_arr = getResources().getStringArray(R.array.language_arr);
         String getLang = langSelection.getLanguage();
 
-      //  Log.v("HomeActivity ", "getLang " + getLang);
+        //  Log.v("HomeActivity ", "getLang " + getLang);
         Configuration config = new Configuration();
         Locale locale;
         if (getLang.equalsIgnoreCase(lang_arr[1])) {
@@ -211,7 +219,7 @@ public class HomeActivity extends AppCompatActivity
             Locale.setDefault(locale);
             config.setLocale(locale);
 
-           // setLocale("hi");
+            // setLocale("hi");
         } else if (getLang.equalsIgnoreCase(lang_arr[2])) {
             locale = new Locale("mr");
             Locale.setDefault(locale);
@@ -220,7 +228,7 @@ public class HomeActivity extends AppCompatActivity
             //setLocale("mr");
         }
         getResources().getConfiguration().setTo(config);
-        getBaseContext().getResources().updateConfiguration(config,getBaseContext().getResources().getDisplayMetrics());
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
     }
 
     private void setAppToolbar() {
@@ -232,7 +240,6 @@ public class HomeActivity extends AppCompatActivity
     private void initialializeComponents() {
 
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -241,6 +248,12 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View header = navigationView.getHeaderView(0);
+        txt_header_username = (TextView) header.findViewById(R.id.txt_header_username);
+        txt_header_email = (TextView) header.findViewById(R.id.txt_header_email);
+
+        txt_header_username.setText(fullName);
+        txt_header_email.setText(emailId);
+
         //   navigationView.addHeaderView(header);
         enableExpandableList();
         // navigationView.setNavigationItemSelectedListener(this);
@@ -254,11 +267,11 @@ public class HomeActivity extends AppCompatActivity
         /*addNewsFeedItems();
         mAdapter = new HomeDashboardAdapter(HomeActivity.this, mNewsFeedList);
         mRecyclerView.setAdapter(mAdapter);*/
-       // adapter = new ImageAdapter(HomeActivity.this);
-       // mRecyclerView.setAdapter(adapter);
+        // adapter = new ImageAdapter(HomeActivity.this);
+        // mRecyclerView.setAdapter(adapter);
 
-        viewPager = (ViewPager)findViewById(R.id.home_viewpager);
-        viewPagerTab = (SmartTabLayout)findViewById(R.id.viewpagertab);
+        viewPager = (ViewPager) findViewById(R.id.home_viewpager);
+        viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
 
         pages = new FragmentPagerItems(HomeActivity.this);
         FragmentPagerItems pages = new FragmentPagerItems(this);
@@ -275,7 +288,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private int[] tabsValues() {
-        return new int[] {
+        return new int[]{
                 R.string.recent_news,
                 R.string.national_inter_menu,
                 R.string.gov_news_menu,
@@ -292,12 +305,12 @@ public class HomeActivity extends AppCompatActivity
 
     private void addNewsFeedItems() {
         mNewsFeedList = new ArrayList<>();
-        mNewsFeedList.add(new NewsFeedDetails("'We are here to stay', say Indian-Americans amid growing hate crime incidents in the US","10 mins ago",
-                "1-01-2018",getResources().getDrawable(R.drawable.lebanon),"Mumbai","Maharashtra","John Williams"));
-         mNewsFeedList.add(new NewsFeedDetails("Development of all, appeasement of none: Yogi's mantra for UP","1 day ago",
-                "12-07-2017",getResources().getDrawable(R.drawable.yogi_adinath),"Mumbai","Maharashtra","Richie K"));
-            mNewsFeedList.add(new NewsFeedDetails("India to seal border with Pakistan by 2018: Rajnath Singh","20 mins ago",
-                "11-04-2017",getResources().getDrawable(R.drawable.india_pak_border),"Mumbai","Maharashtra","G K"));
+        mNewsFeedList.add(new NewsFeedDetails("'We are here to stay', say Indian-Americans amid growing hate crime incidents in the US", "10 mins ago",
+                "1-01-2018", getResources().getDrawable(R.drawable.lebanon), "Mumbai", "Maharashtra", "John Williams"));
+        mNewsFeedList.add(new NewsFeedDetails("Development of all, appeasement of none: Yogi's mantra for UP", "1 day ago",
+                "12-07-2017", getResources().getDrawable(R.drawable.yogi_adinath), "Mumbai", "Maharashtra", "Richie K"));
+        mNewsFeedList.add(new NewsFeedDetails("India to seal border with Pakistan by 2018: Rajnath Singh", "20 mins ago",
+                "11-04-2017", getResources().getDrawable(R.drawable.india_pak_border), "Mumbai", "Maharashtra", "G K"));
 
     }
 
@@ -309,14 +322,16 @@ public class HomeActivity extends AppCompatActivity
 
         expListView = (ExpandableListView) findViewById(R.id.left_drawer);
         expListView.setIndicatorBounds(expListView.getRight() - 40, expListView.getWidth());
-        prepareListData(listDataHeader, listDataChild,listThirdLevelChild);
+        prepareListData(listDataHeader, listDataChild, listThirdLevelChild);
 
-     //   ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, listDataHeader, listDataChild, data);
+        //   ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, listDataHeader, listDataChild, data);
         // set adapter
-       // expListView.setAdapter( threeLevelListAdapterAdapter );
+        // expListView.setAdapter( threeLevelListAdapterAdapter );
 
-        listAdapter=new ExpandListAdapter(this,listDataHeader,listDataChild);
+        listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
+
+        setGroupIndicatorToRight();
 
      /*   listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
         // setting list adapter
@@ -379,6 +394,24 @@ public class HomeActivity extends AppCompatActivity
         });*/
     }
 
+    private void setGroupIndicatorToRight() {
+    /* Get the screen width */
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+
+        expListView.setIndicatorBounds(width - getDipsFromPixel(35), width
+                - getDipsFromPixel(5));
+    }
+
+    // Convert pixel to dip
+    public int getDipsFromPixel(float pixels) {
+        // Get the screen's density scale
+        final float scale = getResources().getDisplayMetrics().density;
+        // Convert the dps to pixels, based on density scale
+        return (int) (pixels * scale + 0.5f);
+    }
+
     private void prepareListData(List<String> listDataHeader, HashMap<String, List<String>> listDataChild, HashMap<String, List<String>> listThirdLevelChild) {
         listDataHeader.add("Home");
         listDataHeader.add("User Profile");
@@ -412,7 +445,7 @@ public class HomeActivity extends AppCompatActivity
 
         listDataChild.put(listDataHeader.get(2), requestsChild); // Header, Child data
         listDataChild.put(listDataHeader.get(3), newsChild);
-        listThirdLevelChild.put(newsChild.get(11),newsThirdChild);
+        listThirdLevelChild.put(newsChild.get(11), newsThirdChild);
 
         data.add(listThirdLevelChild);
     }
@@ -604,6 +637,7 @@ public class HomeActivity extends AppCompatActivity
     public void setSearchViewMenu(final Menu menu) {
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setQueryHint("Search by state and city");
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         if (searchItem != null) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -669,9 +703,9 @@ public class HomeActivity extends AppCompatActivity
             session.setLogin(false);
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
-        }else if(id==R.id.action_change_language){
+        } else if (id == R.id.action_change_language) {
             Intent intent = new Intent(this, LanguageSelection.class);
-            intent.putExtra("from","home");
+            intent.putExtra("from", "home");
             startActivity(intent);
         }
 

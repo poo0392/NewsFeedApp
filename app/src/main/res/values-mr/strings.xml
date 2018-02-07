@@ -25,9 +25,12 @@
     <string name="error_match_password">पासवर्डची पुष्टी करा पासवर्ड प्रमाणे नाही</string>
 
 
-    <string name="toast_msg_state">कृपया राज्य निवडा</string>
-    <string name="toast_msg_city">कृपया शहर निवडा</string>
-    <string name="toast_msg_article">कृपया लेख प्रकार निवडा</string>
+    <string name="toast_msg_state_validations">कृपया राज्य निवडा</string>
+    <string name="toast_msg_city_validations">कृपया शहर निवडा</string>
+    <string name="toast_msg_article_validations">कृपया लेख प्रकार निवडा</string>
+
+    <string name="toast_msg_title_validations">कृपया शीर्षक प्रविष्ट करा</string>
+    <string name="toast_msg_desc_validations">कृपया वर्णन प्रविष्ट करा</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">ईमेल</string>

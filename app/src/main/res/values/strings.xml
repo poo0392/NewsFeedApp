@@ -21,9 +21,11 @@
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."
     </string>
-    <string name="toast_msg_state">Please Select State</string>
-    <string name="toast_msg_city">Please Select City</string>
-    <string name="toast_msg_article">Please Select Article Type</string>
+    <string name="toast_msg_state_validations">Please Select State</string>
+    <string name="toast_msg_city_validations">Please Select City</string>
+    <string name="toast_msg_article_validations">Please Select Article Type</string>
+    <string name="toast_msg_title_validations">Please Enter Title</string>
+    <string name="toast_msg_desc_validations">Please Please Enter Description</string>
 
 
     <!--Sign Up-->
