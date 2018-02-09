@@ -43,15 +43,15 @@
     <string name="prompt_title">शीर्षक दर्ज करें</string>
     <string name="prompt_desc">विवरण दर्ज करें</string>
     <string name="description_text">विवरण विवरण (शब्दों में)</string>
-    <string name="words_100_str">100</string>
-    <string name="words_200_str">200</string>
-    <string name="words_300_str">300</string>
-    <string name="words_400_str">400</string>
+    <string name="words_100_str">१००</string>
+    <string name="words_200_str">२००</string>
+    <string name="words_300_str">३००</string>
+    <string name="words_400_str">४००</string>
     <string name="publishing_text">कितने दिनों का प्रकाशन</string>
-    <string name="day_30_str">30 दिन</string>
-    <string name="day_60_str">60 दिन</string>
-    <string name="day_90_str">90 दिन</string>
-    <string name="day_120_str">120 दिन</string>
+    <string name="day_30_str">३० दिन</string>
+    <string name="day_60_str">६० दिन</string>
+    <string name="day_90_str">९० दिन</string>
+    <string name="day_120_str">१२० दिन</string>
     <string name="photo_str">तस्वीर</string>
     <string name="total_charges_str">कुल शुल्क</string>
 

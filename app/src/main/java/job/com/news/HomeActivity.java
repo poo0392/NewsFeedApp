@@ -1,6 +1,7 @@
 package job.com.news;
 
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,6 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
@@ -56,7 +58,7 @@ import job.com.news.sharedpref.SessionManager;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
+//changes added on 09/02
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
@@ -65,6 +67,7 @@ public class HomeActivity extends AppCompatActivity
     private ImageAdapter adapter;
     //private HashMap<String, ArrayList<String>> hashMap;
     private NewsFeedApplication newsFeedApplication;
+
     private LinearLayout mSmallClassiLayout, mCareerLayout;
     private TextView menuSmallClassi;
     private TextView menuCareer, txt_header_username, txt_header_email;
@@ -83,7 +86,10 @@ public class HomeActivity extends AppCompatActivity
     private ViewPager viewPager;
     private SmartTabLayout viewPagerTab;
     private MyPreferences myPreferences;
-    String emailId, fullName;
+    String emailId, fullName, memberToken;
+    int memberId;
+    private ProgressDialog mProgressDialog;
+    Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,16 +99,18 @@ public class HomeActivity extends AppCompatActivity
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
-
+        gson = new Gson();
         if (!checkPermission()) {
             requestPermission();
 
         }
+        setLocaleLang();
         getPrefData();
         setAppToolbar();
-        setLocaleLang();
+
         initialializeComponents();
         setListeners();
+
 
 
         LinearLayout mMenuLayout = (LinearLayout) findViewById(R.id.main_menu_layout);
@@ -188,8 +196,14 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+
+
+
+
     private void getPrefData() {
         myPreferences = MyPreferences.getMyAppPref(this);
+        memberId = myPreferences.getMemberId();
+        memberToken = myPreferences.getMemberToken().trim();
         emailId = myPreferences.getEmailId().trim();
         fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
     }

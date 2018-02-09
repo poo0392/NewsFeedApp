@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class NewsDetailScreen extends AppCompatActivity {
+    //changes added on 09/02
     CollapsingToolbarLayout collapsingToolbar;
     Toolbar mToolbar;
 

@@ -3,6 +3,7 @@ package job.com.news.interfaces;
 import job.com.news.article.City;
 import job.com.news.article.State;
 import job.com.news.forgotpassword.ForgotPasswordResp;
+import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.register.LoginRegisterResponse;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -17,7 +18,7 @@ import retrofit2.http.Path;
  */
 
 public interface WebService {
-
+    //changes added on 09/02
     //to get state list
     @GET("states")
     Call<State> getStateList();
@@ -31,7 +32,7 @@ public interface WebService {
     //to get city list
     @GET("cities_on_stateid/{id}")
     Call<City> getCityList(@Path("id") int state_id);
-   // Call<City> getCityList();
+    // Call<City> getCityList();
 
     //http://thanehousingfederation.com/abhi/api/member/register
     //register
@@ -68,5 +69,13 @@ public interface WebService {
                                                    @Part("member_token") RequestBody member_token,
                                                    @Part("new_password") RequestBody new_password);
 
+    //http://thanehousingfederation.com/newsapp/api/member/news_list
+    //@GET("member_token/{member_token}/member_id/{member_id}")
+
+    //changes added on 09/02
+    @Multipart
+    @POST("news_list")
+    Call<NewsFeedModelResponse> getNewsListRequest(@Part("member_token") RequestBody member_token,
+                                                   @Part("member_id") RequestBody member_id);
 
 }

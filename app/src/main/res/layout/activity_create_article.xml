@@ -30,8 +30,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:background="@color/white"
+            android:orientation="vertical"
             android:padding="16dp">
 
             <LinearLayout
@@ -58,10 +58,10 @@
 
                     <com.weiwangcn.betterspinner.library.BetterSpinner
                         android:id="@+id/state_better_spinner"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:hint="@string/hint_select_state"
                         android:textSize="@dimen/text_small" />
 
@@ -88,10 +88,10 @@
 
                     <com.weiwangcn.betterspinner.library.BetterSpinner
                         android:id="@+id/city_better_spinner"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:hint="@string/hint_select_city"
                         android:textSize="@dimen/text_small" />
                 </LinearLayout>
@@ -275,16 +275,32 @@
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/text_small" />
 
-            <EditText
-                android:id="@+id/article_title"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:background="@drawable/txt_line_bg"
-                android:hint="@string/prompt_title"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:textSize="@dimen/text_small" />
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/article_title"
+                    android:layout_width="0dp"
+                    android:layout_weight=".8"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/txt_line_bg"
+                    android:hint="@string/prompt_title"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:textSize="@dimen/text_small" />
+
+                <ImageView
+                    android:id="@+id/iv_info_title"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@mipmap/ic_info"
+                    android:tint="@color/colorPrimary"/>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -357,10 +373,14 @@
                 android:text="@string/desc_lbl"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/text_small" />
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
             <EditText
                 android:id="@+id/article_description"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight=".8"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
@@ -368,7 +388,15 @@
                 android:hint="@string/prompt_desc"
                 android:paddingBottom="8dp"
                 android:textSize="@dimen/text_small" />
-
+            <ImageView
+                android:id="@+id/iv_info_desc"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="2dp"
+                android:layout_gravity="center_vertical"
+                android:src="@mipmap/ic_info"
+                android:tint="@color/colorPrimary"/>
+        </LinearLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -439,9 +467,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
                     android:text="@string/publishing_text"
                     android:textColor="@color/colorPrimary"
-                    android:paddingLeft="5dp"
                     android:textSize="@dimen/text_small" />
 
                 <RadioGroup
@@ -496,6 +524,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -503,13 +532,14 @@
                     android:layout_weight=".6"
                     android:orientation="vertical"
                     android:visibility="gone">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="No. of Days for publishing"
-                    android:paddingLeft="5dp"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/text_small" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="5dp"
+                        android:text="No. of Days for publishing"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/text_small" />
 
                     <com.weiwangcn.betterspinner.library.BetterSpinner
                         android:id="@+id/publish_better_spinner"
@@ -519,6 +549,7 @@
                         android:hint="No. of Days"
                         android:textSize="@dimen/text_small" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -538,12 +569,12 @@
                         android:id="@+id/article_total_charges_value"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text=""
-                        android:layout_marginTop="6dp"
                         android:layout_gravity="center"
-                        android:paddingBottom="3dp"
-                        android:textColor="@android:color/black"
+                        android:layout_marginTop="6dp"
                         android:background="@drawable/txt_line_bg"
+                        android:paddingBottom="3dp"
+                        android:text=""
+                        android:textColor="@android:color/black"
                         android:textSize="@dimen/text_medium" />
                 </LinearLayout>
 

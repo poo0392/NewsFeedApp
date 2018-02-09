@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -36,6 +37,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 import com.weiwangcn.betterspinner.library.BetterSpinner;
 
@@ -66,7 +71,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
+//changes added on 09/02
 public class CreateArticle extends AppCompatActivity implements View.OnClickListener {
     private Spinner mStateSpinner, mCitySpinner, mArticleSpinner;
     private EditText mTitleEdit, mDescEdit;
@@ -82,7 +87,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private RadioGroup radioGroupDays, radioGroupWords;
     private String mRsSymbol;
     private String mArticleCode;
-    private ImageView mArticleImage1, mArticleImage2;
+    private ImageView mArticleImage1, mArticleImage2, iv_info_desc, iv_info_title;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String mediaPath;
     private int currentImageView = 0, words, radioGroupDaysID, wordsCount = 0;
@@ -220,6 +225,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void initializeComponents() {
+        Log.v("CreateArticle ", "current Lang " + Locale.getDefault().getDisplayLanguage().toString());
+
         mRsSymbol = getResources().getString(R.string.Rs);
         btn_submit = (Button) findViewById(R.id.article_btn_submit);
 
@@ -266,6 +273,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mArticleImage2 = (ImageView) findViewById(R.id.article_image2);
         mTotalChargesView = (TextView) findViewById(R.id.article_total_charges_value);
 
+        iv_info_title = (ImageView) findViewById(R.id.iv_info_title);
+        iv_info_desc = (ImageView) findViewById(R.id.iv_info_desc);
+
 
         article_state_text = (TextView) findViewById(R.id.article_state_text);
         article_city_text = (TextView) findViewById(R.id.article_city_text);
@@ -275,12 +285,15 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         desc_text = (TextView) findViewById(R.id.desc_text);
         total_charges_text = (TextView) findViewById(R.id.total_charges_text);
 
+
     }
 
     private void setListeners() {
         mArticleImage1.setOnClickListener(this);
         mArticleImage2.setOnClickListener(this);
         btn_submit.setOnClickListener(this);
+        iv_info_title.setOnClickListener(this);
+        iv_info_desc.setOnClickListener(this);
 
 
        /* bsArticleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -447,7 +460,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }*/
 
             if ((count > 0 && count <= 100)) {
-                charLength = 0;
+                charLength = 1;
 
             } else if ((count > 100 && count <= 200)) {
                 charLength = 1;
@@ -727,10 +740,49 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 }
                 break;
 
+            case R.id.iv_info_desc:
+                openAlertInfoForKbSettingPopup();
+                break;
 
+            case R.id.iv_info_title:
+                openAlertInfoForKbSettingPopup();
+                break;
         }
 
 
+    }
+
+    private void openAlertInfoForKbSettingPopup() {
+        new MaterialStyledDialog.Builder(CreateArticle.this)
+                .setTitle("Please select keyboard from settings")
+                .setDescription("1. First Go to Google Play store and download Google Indic Keyboard (By Google). \n" +
+                        "(skip 1. if you already have Google Indic Keyboard) " + "\n" +
+                        "2. Click on settings button to go to Languages and input in your phone settings. " + "\n" +
+                        "3. Tap on current keyboard under Keyboard & input methods. " + "\n" +
+                        "4. Tap on choose keyboards. " + "\n" +
+                        "5. Tap on the Google Indic Keyboard to select your language as Hindi or Marathi.")
+                //"2. Go to your Phone Settings. " + "\n" +
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_info)
+                .setPositiveText("Settings")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        //register success
+                        Intent intent=new Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS);
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                })
+               /* .setNeutralText("Settings")
+                .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent intent=new Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS);
+                        startActivity(intent);
+                    }
+                })*/
+                .show();
     }
 
     private boolean validateFields() {

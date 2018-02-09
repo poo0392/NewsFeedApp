@@ -51,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     private SessionManager session, langSelection;
     private Button mLoginInButton;
     private TextView sign_up, forgot_password;
+    //changes added
 
 
     @Override

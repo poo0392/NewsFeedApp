@@ -10,12 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import job.com.news.NewsDetailScreen;
 import job.com.news.NewsFeedApplication;
 import job.com.news.R;
 import job.com.news.interfaces.ItemClickListener;
+import job.com.news.models.NewsFeedModelResponse;
 
 /**
  * Created by POOJA on 1/27/2018.
@@ -29,11 +30,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private int visibleThreshold = 1;
     private int lastVisibleItem, totalItemCount;
     Context mContext;
-    private NewsFeedApplication newsFeedApplication;
+    private NewsFeedApplication newsFeedApplication;;
+    List<NewsFeedModelResponse.NewsFeedList> newsFeedList;
+    //changes added
 
-    public ImageAdapter(Context mContext) {
+    public ImageAdapter(Context mContext, List<NewsFeedModelResponse.NewsFeedList> newsFeedList) {
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;
+        this.newsFeedList=newsFeedList;
             /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -89,10 +93,21 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 imageViewHolder.textViewUnit.setText(user.getUnit());*/
 
             ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
-
+/*
             ArrayList<String> list = newsFeedApplication.hashMap.get("" + position);
             imageViewHolder.textViewSummary.setText(list.get(0));
-            imageViewHolder.textViewDate.setText(list.get(2));
+            imageViewHolder.textViewDate.setText(list.get(2));*/
+            String member_name=newsFeedList.get(position).getUser().getFirst_name();
+
+
+           // RegisterMember
+            imageViewHolder.txt_post_person_name.setText(member_name);
+            imageViewHolder.textViewSummary.setText(newsFeedList.get(position).getNews_title());
+            imageViewHolder.txt_city.setText(newsFeedList.get(position).getCity());
+            imageViewHolder.txt_news_category.setText(newsFeedList.get(position).getCategory());
+            imageViewHolder.txt_desc.setText(newsFeedList.get(position).getNews_description());
+            imageViewHolder.txt_state.setText(newsFeedList.get(position).getState());
+
             if (position == 0) {
                 //lebaon
                 imageViewHolder.imageView.setBackgroundResource(R.drawable.lebanon);
@@ -135,7 +150,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemCount() {
         //return app.mImageDetails == null ? 0 : app.mImageDetails.size();
-        return newsFeedApplication.hashMap.size();
+        //return newsFeedApplication.hashMap.size();
+        return  newsFeedList.size();
     }
 
         /*public void setLoaded() {
@@ -154,16 +170,25 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public class ImageViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
-        TextView textViewSummary;
+        TextView textViewSummary,txt_news_category;
         TextView textViewDate;
         ImageView imageView;
+        TextView txt_post_person_name,txt_post_time,txt_desc,txt_city,txt_state;
         private ItemClickListener clickListener;
 
         public ImageViewHolder(View itemView) {
             super(itemView);
-            this.textViewSummary = (TextView) itemView.findViewById(R.id.row_summary);
-            this.textViewDate = (TextView) itemView.findViewById(R.id.row_date);
-            this.imageView = (ImageView) itemView.findViewById(R.id.row_image);
+            textViewSummary = (TextView) itemView.findViewById(R.id.row_summary);
+            textViewDate = (TextView) itemView.findViewById(R.id.row_date);
+            imageView = (ImageView) itemView.findViewById(R.id.row_image);
+
+            txt_post_person_name=(TextView)itemView.findViewById(R.id.txt_post_person_name);
+            txt_news_category=(TextView)itemView.findViewById(R.id.txt_news_category);
+            txt_post_time=(TextView)itemView.findViewById(R.id.txt_post_time);
+            txt_desc=(TextView)itemView.findViewById(R.id.txt_desc);
+            txt_city=(TextView)itemView.findViewById(R.id.txt_city);
+            txt_state=(TextView)itemView.findViewById(R.id.txt_state);
+
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
