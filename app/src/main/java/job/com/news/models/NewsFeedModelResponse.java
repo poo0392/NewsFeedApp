@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import job.com.news.register.RegisterMember;
+
 /**
  * Created by POOJA on 1/25/2018.
  */
@@ -22,7 +24,7 @@ public class NewsFeedModelResponse {
 
     @SerializedName("news")
     @Expose
-   // private NewsFeedList newsFeedList;
+    // private NewsFeedList newsFeedList;
     private List<NewsFeedList> newsFeedList;
 
     public List<NewsFeedList> getNewsFeedList() {
@@ -100,9 +102,12 @@ public class NewsFeedModelResponse {
         @Expose
         private String created_at;
         //private RegisterMember member;
-        @SerializedName("user")
+        /*@SerializedName("user")
         @Expose
-        private UserModel user;
+        private UserModel user;*/
+        @SerializedName("member")
+        @Expose
+        private RegisterMember member;
 
         public int getId() {
             return id;
@@ -200,12 +205,19 @@ public class NewsFeedModelResponse {
             this.created_at = created_at;
         }
 
-        public UserModel getUser() {
-            return user;
+        /* public UserModel getUser() {
+             return user;
+         }
+
+         public void setUser(UserModel user) {
+             this.user = user;
+         }*/
+        public RegisterMember getMember() {
+            return member;
         }
 
-        public void setUser(UserModel user) {
-            this.user = user;
+        public void setMember(RegisterMember member) {
+            this.member = member;
         }
 
         @Override

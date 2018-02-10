@@ -43,6 +43,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,7 @@ import job.com.news.adapter.ExpandListAdapter;
 import job.com.news.adapter.HomeDashboardAdapter;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.changepassword.ChangePassword;
+import job.com.news.db.DBHelper;
 import job.com.news.models.NewsFeedDetails;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -90,6 +92,7 @@ public class HomeActivity extends AppCompatActivity
     int memberId;
     private ProgressDialog mProgressDialog;
     Gson gson;
+    DBHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +102,13 @@ public class HomeActivity extends AppCompatActivity
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
+        db = new DBHelper(getApplicationContext());
+        try {
+            db.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        db.close();
         gson = new Gson();
         if (!checkPermission()) {
             requestPermission();

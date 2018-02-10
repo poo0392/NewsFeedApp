@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import job.com.news.db.DBHelper;
 import job.com.news.sharedpref.SessionManager;
 
 public class SplashScreen extends AppCompatActivity {
@@ -16,6 +17,7 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
         session = new SessionManager(getApplicationContext());
+       // DBHelper.getInstance(getApplicationContext());
         loadSplashScreen();
 
     }

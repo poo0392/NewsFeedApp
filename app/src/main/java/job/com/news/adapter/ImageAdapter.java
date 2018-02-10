@@ -97,7 +97,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ArrayList<String> list = newsFeedApplication.hashMap.get("" + position);
             imageViewHolder.textViewSummary.setText(list.get(0));
             imageViewHolder.textViewDate.setText(list.get(2));*/
-            String member_name=newsFeedList.get(position).getUser().getFirst_name();
+            String member_name=newsFeedList.get(position).getMember().getFirstName();
 
 
            // RegisterMember
