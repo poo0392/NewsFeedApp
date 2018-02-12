@@ -41,8 +41,11 @@ public class DBHelper {
             NewsListTable.NEWS_ID + " INTEGER," + NewsListTable.NEWS_UUID + " TEXT," + NewsListTable.CATEGORY + " TEXT," +
             NewsListTable.COUNTRY + " TEXT," + NewsListTable.STATE + " TEXT," + NewsListTable.CITY + " TEXT," +
             NewsListTable.NEWS_TITLE + " TEXT," + NewsListTable.NEWS_DESCRIPTION + " TEXT," + NewsListTable.NEWS_PIC + " TEXT," +
-            NewsListTable.LIKE_COUNT + " TEXT," + NewsListTable.MEMBER_ID + " INTEGER," + NewsListTable.CREATED_AT + " TEXT,"
-            + NewsListTable.IS_UPDATED + " TEXT," + NewsListTable.STATUS + " TEXT)";
+            NewsListTable.LIKE_COUNT + " TEXT," + NewsListTable.MEMBER_ID + " INTEGER," +
+            " INTEGER," + NewsListTable.CREATED_AT + " TEXT,"
+            + NewsListTable.IS_UPDATED + " TEXT," + NewsListTable.STATUS + " TEXT," +
+            " FOREIGN KEY(" + NewsListTable.MEMBER_ID + ") REFERENCES " +
+            MemberTable.MEMBER_TABLE_NAME + "(id)" + ")";
 
     /*public static synchronized DBHelper getInstance(Context context) {
         if (mInstance == null) {
@@ -201,7 +204,7 @@ public class DBHelper {
                 model.setLike_count(cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)));
                 model.setMember_id(cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)));
                 model.setCreated_at(cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
-               // model.setMember(c.getString(c.getColumnIndex(MemberTable.FIRST_NAME)));
+                // model.setMember(c.getString(c.getColumnIndex(MemberTable.FIRST_NAME)));
                 listAll.add(model);
 
             }
@@ -210,6 +213,33 @@ public class DBHelper {
         cursor.close();
         mDb.close();
         return listAll;
+    }
+
+    public List<RegisterMember> getMember(int member_id) {// here member_id = news_list.member_id
+        ArrayList<RegisterMember> listAll = new ArrayList<RegisterMember>();
+        RegisterMember model;
+        // String query1 = "SELECT * FROM " + MemberTable.MEMBER_TABLE_NAME + " where " + MemberTable.MEMBER_ID + " = " + member_id;
+        String query1 = "select * from " + MemberTable.MEMBER_TABLE_NAME + " m INNER JOIN " + NewsListTable.NEWS_LIST_TABLE_NAME
+                + " n ON " + " m." + MemberTable.MEMBER_ID + " = " + " n." + NewsListTable.MEMBER_ID + " where "
+                + "n." + NewsListTable.MEMBER_ID + " = " + member_id;
+        Cursor cursor = mDb.rawQuery(query1, null);
+        //  while (cursor != null && cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
+            model = new RegisterMember();
+            model.setMemberId(cursor.getColumnIndex(MemberTable.MEMBER_ID));
+            model.setMemberToken(cursor.getString(cursor.getColumnIndex(MemberTable.MEMBER_TOKEN)));
+            model.setFirstName(cursor.getString(cursor.getColumnIndex(MemberTable.FIRST_NAME)));
+            model.setLastName(cursor.getString(cursor.getColumnIndex(MemberTable.LAST_NAME)));
+            model.setEmailId(cursor.getString(cursor.getColumnIndex(MemberTable.EMAIL_ID)));
+            model.setMobile(cursor.getString(cursor.getColumnIndex(MemberTable.MOBILE)));
+            listAll.add(model);
+        }
+        Log.v("DbHelper ", " MemList(mrm_id) " + listAll.toString());
+        cursor.close();
+        mDb.close();
+        return listAll;
+
+
     }
 
 }

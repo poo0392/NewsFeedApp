@@ -110,11 +110,12 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            memberList = db.getMember();
+            // memberList = db.getMember();
+            memberList = db.getMember(Integer.parseInt(newsFeedList.get(position).getMember_id()));
             db.close();
 
             //  String member_name=newsFeedList.get(position).getMember().getFirstName();
-           // String member_name = memberList.get().getFirstName();
+           // String member_name = memberList.get(0).getFirstName();
 
 //get Member from member_id in news List i.e select member from member_table where member_id = NewsListTable.Member_id;
             // RegisterMember

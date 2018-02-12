@@ -3,12 +3,12 @@
 
     <item
         is-multidex="false"
-        jar="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
+        jar="D:\Studio workspace\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.2"
         sha1="d158f5684f57f23551675cdcdad677c9435db0dd">
-        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_820bc9bb229642784d59810b3429fd90799ebdf6.jar" />
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_677f20a55a5ade8c4e875300a85435038b20c8f9.jar" />
     </item>
 
 </items>
