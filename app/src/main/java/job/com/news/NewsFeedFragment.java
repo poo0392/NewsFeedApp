@@ -24,13 +24,16 @@ import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import job.com.news.adapter.ImageAdapter;
+import job.com.news.db.DBHelper;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
+import job.com.news.models.NewsFeedList;
 import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.sharedpref.MyPreferences;
 import okhttp3.MediaType;
@@ -59,9 +62,10 @@ public class NewsFeedFragment extends Fragment {
     Context mContext;
     private MyPreferences myPreferences;
     String emailId, fullName, memberToken;
-    private List<NewsFeedModelResponse.NewsFeedList> newsFeedList = new ArrayList<>();
+    private List<NewsFeedList> newsFeedList = new ArrayList<>();
     int memberId;
     ProgressDialog mProgressDialog;
+    DBHelper db;
     //changes added on 09/02
 
 
@@ -70,6 +74,7 @@ public class NewsFeedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         newsFeedApplication = NewsFeedApplication.getApp();
         mContext = getActivity();
+        db = new DBHelper(mContext);
         return inflater.inflate(R.layout.fragment_news_feed, container, false);
     }
 
@@ -80,11 +85,12 @@ public class NewsFeedFragment extends Fragment {
         attachViews(view);
         getPrefData();
         callNewsListAPI(memberToken, memberId);
-       // setData();
+        // setData();
         /*addNewsFeedItems();
         mAdapter = new HomeDashboardAdapter(HomeActivity.this, mNewsFeedList);
         mRecyclerView.setAdapter(mAdapter);*/
         setListeners();
+        loadDatatoList();
     }
 
     private void setListeners() {
@@ -156,7 +162,7 @@ public class NewsFeedFragment extends Fragment {
                         newsFeedList = serverResponse.getNewsFeedList();
                         Log.v("", "newsFeedList " + newsFeedList.toString());
 
-                        loadDatatoList(newsFeedList);
+                        // loadDatatoList(newsFeedList);
                     }
                 }
             }
@@ -191,10 +197,17 @@ public class NewsFeedFragment extends Fragment {
                 .show();
     }
 
-    private void loadDatatoList(List<NewsFeedModelResponse.NewsFeedList> newsFeedList) {
-
-        adapter = new ImageAdapter(getActivity(),newsFeedList);
+    private void loadDatatoList() {
+        try {
+            db.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        newsFeedList = db.getAllNewsRecords();
+        Log.v("db ","getNewsFeedList "+newsFeedList.toString());
+        adapter = new ImageAdapter(getActivity(), newsFeedList);
         mRecyclerView.setAdapter(adapter);
+        db.close();
     }
 
     // Implement scroll listener

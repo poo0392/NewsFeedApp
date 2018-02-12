@@ -10,7 +10,6 @@ import com.google.gson.annotations.SerializedName;
 public class RegisterMember {
 
 
-
     @SerializedName("first_name")
     @Expose
     private String first_name;
@@ -29,7 +28,7 @@ public class RegisterMember {
 
     @SerializedName("member_id")
     @Expose
-    private Integer member_id;
+    private int member_id;
 
     @SerializedName("member_token")
     @Expose
@@ -40,7 +39,7 @@ public class RegisterMember {
     }
 
     public void setFirstName(String firstName) {
-        this.first_name = first_name;
+        this.first_name = firstName;
     }
 
     public String getLastName() {
@@ -48,7 +47,7 @@ public class RegisterMember {
     }
 
     public void setLastName(String lastName) {
-        this.last_name = last_name;
+        this.last_name = lastName;
     }
 
     public String getEmailId() {
@@ -67,12 +66,12 @@ public class RegisterMember {
         this.mobile = mobile;
     }
 
-    public Integer getMemberId() {
+    public int getMemberId() {
         return member_id;
     }
 
-    public void setMemberId(Integer memberId) {
-        this.member_id = member_id;
+    public void setMemberId(int memberId) {
+        this.member_id = memberId;
     }
 
     public String getMemberToken() {
@@ -80,7 +79,7 @@ public class RegisterMember {
     }
 
     public void setMemberToken(String memberToken) {
-        this.member_token = member_token;
+        this.member_token = memberToken;
     }
 
 }

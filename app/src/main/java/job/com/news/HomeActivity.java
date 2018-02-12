@@ -29,6 +29,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +38,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
@@ -54,12 +59,26 @@ import job.com.news.adapter.HomeDashboardAdapter;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.changepassword.ChangePassword;
 import job.com.news.db.DBHelper;
+import job.com.news.helper.ConnectivityInterceptor;
+import job.com.news.helper.NoConnectivityException;
+import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedDetails;
+import job.com.news.models.NewsFeedList;
+import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 //changes added on 09/02
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -91,6 +110,7 @@ public class HomeActivity extends AppCompatActivity
     String emailId, fullName, memberToken;
     int memberId;
     private ProgressDialog mProgressDialog;
+    private List<NewsFeedList> newsFeedList = new ArrayList<>();
     Gson gson;
     DBHelper db;
 
@@ -99,16 +119,12 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mContext = this;
+        db = new DBHelper(getApplicationContext());
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
-        db = new DBHelper(getApplicationContext());
-        try {
-            db.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        db.close();
+
+        // DatabaseHelper.getInstance(getApplicationContext());
         gson = new Gson();
         if (!checkPermission()) {
             requestPermission();
@@ -117,10 +133,9 @@ public class HomeActivity extends AppCompatActivity
         setLocaleLang();
         getPrefData();
         setAppToolbar();
-
+        callNewsListAPI(memberToken, memberId);
         initialializeComponents();
         setListeners();
-
 
 
         LinearLayout mMenuLayout = (LinearLayout) findViewById(R.id.main_menu_layout);
@@ -205,9 +220,6 @@ public class HomeActivity extends AppCompatActivity
 
 
     }
-
-
-
 
 
     private void getPrefData() {
@@ -309,6 +321,122 @@ public class HomeActivity extends AppCompatActivity
         viewPagerTab.setViewPager(viewPager);
 
         //
+    }
+
+    private void callNewsListAPI(String memberToken, int memberId) {
+        mProgressDialog = new ProgressDialog(HomeActivity.this);
+        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.show();
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        WebService webService = retrofit.create(WebService.class);
+
+        RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
+        RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
+
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId);
+        serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
+            @Override
+            public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
+                mProgressDialog.dismiss();
+                String newsList = "";
+                if (response.isSuccessful()) {
+
+                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
+                    }.getType();
+                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
+                            .fromJson(String.valueOf(response.body()), collectionType);*/
+
+                    NewsFeedModelResponse serverResponse = response.body();
+                    //    newsList=serverResponse.toString();
+                    if (serverResponse.getStatus() == 0) {
+                        Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
+                        //   Log.v("", "Response " + serverResponse.getNewsFeedList().toString());
+                      /*  Log.v("", "News Category " + serverResponse.getNewsFeedList().getCategory());
+                        Log.v("", "News Desc " + serverResponse.getNewsFeedList().getNews_description());*/
+
+//                        serverResponse = gson.fromJson(newsList, NewsFeedModelResponse.class);
+                        //   newsFeedList = serverResponse.getNewsFeedList();
+                        //  gson.fromJson(serverResponse);
+                        //  Log.v("callNewsListAPI ", "response " + newsFeedList.toString());
+                        try {
+                            newsFeedList = serverResponse.getNewsFeedList();
+                            Log.v("", "newsFeedList " + newsFeedList.toString());
+
+                            //   loadDatatoList(newsFeedList);
+                            try {
+                                db.open();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+
+                            NewsFeedList model = new NewsFeedList();
+                            for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
+                                if (!db.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
+                                    model.setId(serverResponse.getNewsFeedList().get(i).getId());
+                                    model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
+                                    model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
+                                    model.setCountry(serverResponse.getNewsFeedList().get(i).getCountry());
+                                    model.setState(serverResponse.getNewsFeedList().get(i).getState());
+                                    model.setCity(serverResponse.getNewsFeedList().get(i).getCity());
+                                    model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
+                                    model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
+                                    model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
+                                    model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
+                                    model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
+                                    model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
+
+                                    db.insertNewsList(model);
+
+                                }
+                            }
+
+                            db.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NewsFeedModelResponse> call, Throwable t) {
+                mProgressDialog.dismiss();
+                t.printStackTrace();
+
+                if (t instanceof NoConnectivityException) {
+                    // No internet connection
+                    // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                    setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
+                }
+            }
+        });
+    }
+
+    private void setFailedAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_failed)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     private int[] tabsValues() {

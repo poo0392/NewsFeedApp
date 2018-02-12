@@ -19,5 +19,6 @@ public class NewsListTable {
     public static final String LIKE_COUNT = "like_count";
     public static final String MEMBER_ID = "member_id";
     public static final String CREATED_AT = "created_at";
+    public static final String IS_UPDATED = "is_updated";
     public static final String STATUS= "status";
 }

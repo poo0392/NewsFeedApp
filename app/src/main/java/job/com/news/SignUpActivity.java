@@ -16,18 +16,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
+import com.google.gson.Gson;
 
+import java.sql.SQLException;
+
+import job.com.news.db.DBHelper;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.register.LoginRegisterResponse;
+import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
+import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -51,14 +56,17 @@ public class SignUpActivity extends AppCompatActivity {
     private static final int SELECT_PHOTO = 100;
     private ProgressDialog progressDialog;
     private MyPreferences myPreferences;
+    DBHelper db;
+    private SessionManager session;
+    //changes added on 12/02
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
+        db = new DBHelper(getApplicationContext());
         myPreferences = MyPreferences.getMyAppPref(this);
-
+        session = new SessionManager(getApplicationContext());
         mFNameView = (EditText) findViewById(R.id.profile_first_name);
         mLNameView = (EditText) findViewById(R.id.profile_last_name);
         mPasswordView = (EditText) findViewById(R.id.profile_password);
@@ -234,7 +242,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                         if (serverResponse.getStatus() == 0) {
                             //register success
-
+                            Log.v("RegisterAPI ", "response " + new Gson().toJson(response.body()));
                             try {
                                 myPreferences.setFirstName(serverResponse.getMember().getFirstName().trim());
                                 myPreferences.setLastName(serverResponse.getMember().getLastName().trim());
@@ -242,6 +250,25 @@ public class SignUpActivity extends AppCompatActivity {
                                 myPreferences.setMobile(serverResponse.getMember().getMobile());
                                 myPreferences.setMemberId(serverResponse.getMember().getMemberId());
                                 myPreferences.setMemberToken(serverResponse.getMember().getMemberToken().trim());
+                                try {
+                                    db.open();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                                //  Log.v("Response", "MemberId " + serverResponse.getMember().getMemberId());
+                                if (!db.checkUser(serverResponse.getMember().getMemberId())) {
+                                    RegisterMember model = new RegisterMember();
+                                    model.setMemberId(serverResponse.getMember().getMemberId());
+                                    model.setMemberToken(serverResponse.getMember().getMemberToken().trim());
+                                    model.setFirstName(serverResponse.getMember().getFirstName().trim());
+                                    model.setLastName(serverResponse.getMember().getLastName().trim());
+                                    model.setEmailId(serverResponse.getMember().getEmailId().trim());
+                                    model.setMobile(serverResponse.getMember().getMobile());
+
+                                    db.insertMembers(model);
+
+                                    db.close();
+                                }
                             } catch (Exception e) {
                                 Log.d("Core", "e :" + e.toString());
                             }
@@ -254,7 +281,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 setFailedAlertDialog(SignUpActivity.this, "Failed", "Register failed. Please try again after some time.");
                                 //Toast.makeText(SignUpActivity.this, "Register failed. Please try again after some time.", Toast.LENGTH_SHORT).show();
                             } else {
-                               // Toast.makeText(SignUpActivity.this, "Register failed." + desc, Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(SignUpActivity.this, "Register failed." + desc, Toast.LENGTH_SHORT).show();
                                 setFailedAlertDialog(SignUpActivity.this, "Failed", "Register failed");
                             }
 
@@ -293,6 +320,7 @@ public class SignUpActivity extends AppCompatActivity {
                         Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
                         startActivity(intent);
                         finish();
+                        session.setLogin(true);
                         dialog.dismiss();
                     }
                 })

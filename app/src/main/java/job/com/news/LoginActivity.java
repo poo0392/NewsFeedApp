@@ -15,18 +15,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
+import com.google.gson.Gson;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import job.com.news.db.DBHelper;
 import job.com.news.forgotpassword.ForgotPassword;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
+import job.com.news.models.NewsFeedList;
 import job.com.news.register.LoginRegisterResponse;
+import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
@@ -51,7 +59,9 @@ public class LoginActivity extends AppCompatActivity {
     private SessionManager session, langSelection;
     private Button mLoginInButton;
     private TextView sign_up, forgot_password;
-    //changes added
+    private List<NewsFeedList> newsFeedList = new ArrayList<>();
+    DBHelper db;
+    //changes added on 12/02
 
 
     @Override
@@ -62,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         myPreferences = MyPreferences.getMyAppPref(this);
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
-
+        db = new DBHelper(getApplicationContext());
 
         checkForLoginSession();
         //setLocaleLang();
@@ -232,6 +242,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         LoginRegisterResponse serverResponse = response.body();
                         if (serverResponse.getStatus() == 0) {
+                            Log.v("LoginAPI ", "response " + new Gson().toJson(response.body()));
                             myPreferences.setFirstName(serverResponse.getMember().getFirstName().trim());
                             myPreferences.setLastName(serverResponse.getMember().getLastName().trim());
                             myPreferences.setEmailId(serverResponse.getMember().getEmailId().trim());
@@ -241,9 +252,36 @@ public class LoginActivity extends AppCompatActivity {
 
                             System.out.println(
                                     " email : " + myPreferences.getEmailId().trim() + " mob : " + myPreferences.getMobile() + " memberId : "
-                                            + myPreferences.getMemberId() + " Member : " + myPreferences.getMemberToken());
+                                            + "firstName: " + myPreferences.getFirstName().trim() +
+                                            "lastName: " + myPreferences.getLastName().trim() +
+                                            +myPreferences.getMemberId() + " Member : " + myPreferences.getMemberToken());
 
 
+                            //addMemmberToDb();
+
+                            try {
+                                db.open();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            //  Log.v("Response", "MemberId " + serverResponse.getMember().getMemberId());
+                            try {
+                                if (!db.checkUser(serverResponse.getMember().getMemberId())) {
+                                    RegisterMember model = new RegisterMember();
+                                    model.setMemberId(serverResponse.getMember().getMemberId());
+                                    model.setMemberToken(serverResponse.getMember().getMemberToken().trim());
+                                    model.setFirstName(serverResponse.getMember().getFirstName().trim());
+                                    model.setLastName(serverResponse.getMember().getLastName().trim());
+                                    model.setEmailId(serverResponse.getMember().getEmailId().trim());
+                                    model.setMobile(serverResponse.getMember().getMobile());
+
+                                    db.insertMembers(model);
+
+                                    db.close();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             showSuccessAlertDialog(LoginActivity.this, "Success", "Logged In Successfully");
 
                         } else {
@@ -273,6 +311,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "e : " + e.toString());
         }
     }
+
 
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
@@ -304,6 +343,7 @@ public class LoginActivity extends AppCompatActivity {
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         startActivity(intent);
                         finish();
+
                         session.setLogin(true);
                         dialog.dismiss();
                     }
@@ -313,7 +353,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-     //   super.onBackPressed();
+        //   super.onBackPressed();
         showBackPressAlertDialog(LoginActivity.this, "Confirm Please...", "Do you want to close the app ?");
     }
 
@@ -327,11 +367,13 @@ public class LoginActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    //   dialog.dismiss();
+                        //   dialog.dismiss();
                         ActivityCompat.finishAffinity(LoginActivity.this);
                     }
                 })
                 .setNegativeText("No")
                 .show();
     }
+
+
 }
