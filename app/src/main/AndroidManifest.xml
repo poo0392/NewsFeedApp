@@ -48,6 +48,9 @@
         <activity android:name=".changepassword.ChangePassword" />
         <activity android:name=".payU.MerchantCheckoutActivity" />
         <activity android:name=".payU.PayUActivity" />
+
+        <service android:name=".service.BackgroundService" />
+        <receiver android:name=".service.AlarmReceiver"></receiver>
     </application>
 
 </manifest>

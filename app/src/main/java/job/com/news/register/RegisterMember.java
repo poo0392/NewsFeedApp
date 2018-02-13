@@ -30,6 +30,11 @@ public class RegisterMember {
     @Expose
     private int member_id;
 
+
+    @SerializedName("id")
+    @Expose
+    private int id;
+
     @SerializedName("member_token")
     @Expose
     private String member_token;
@@ -80,6 +85,14 @@ public class RegisterMember {
 
     public void setMemberToken(String memberToken) {
         this.member_token = memberToken;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
 }

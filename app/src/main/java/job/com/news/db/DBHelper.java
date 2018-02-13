@@ -222,7 +222,9 @@ public class DBHelper {
         String query1 = "select * from " + MemberTable.MEMBER_TABLE_NAME + " m INNER JOIN " + NewsListTable.NEWS_LIST_TABLE_NAME
                 + " n ON " + " m." + MemberTable.MEMBER_ID + " = " + " n." + NewsListTable.MEMBER_ID + " where "
                 + "n." + NewsListTable.MEMBER_ID + " = " + member_id;
-        Cursor cursor = mDb.rawQuery(query1, null);
+
+        String sql="SELECT t1.* FROM "+ MemberTable.MEMBER_TABLE_NAME+" AS t1,"+NewsListTable.NEWS_LIST_TABLE_NAME +" AS t2  WHERE t1.member_id = t2.member_id & t1.member_id = "+member_id +";";
+        Cursor cursor = mDb.rawQuery(sql, null);
         //  while (cursor != null && cursor.moveToNext()) {
         while (cursor.moveToNext()) {
             model = new RegisterMember();

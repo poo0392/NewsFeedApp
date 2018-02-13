@@ -84,7 +84,7 @@ public class NewsFeedFragment extends Fragment {
 
         attachViews(view);
         getPrefData();
-        callNewsListAPI(memberToken, memberId);
+       // callNewsListAPI(memberToken, memberId);
         // setData();
         /*addNewsFeedItems();
         mAdapter = new HomeDashboardAdapter(HomeActivity.this, mNewsFeedList);
