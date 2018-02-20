@@ -30,9 +30,21 @@ public class RegisterMember {
     @Expose
     private int member_id;
 
+
+    @SerializedName("id")
+    @Expose
+    private int id;
+
     @SerializedName("member_token")
     @Expose
     private String member_token;
+
+
+    @SerializedName("role")
+    @Expose
+    private String member_role;
+
+
 
     public String getFirstName() {
         return first_name;
@@ -82,4 +94,19 @@ public class RegisterMember {
         this.member_token = memberToken;
     }
 
+    public String getMember_role() {
+        return member_role;
+    }
+
+    public void setMember_role(String member_role) {
+        this.member_role = member_role;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

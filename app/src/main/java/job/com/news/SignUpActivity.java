@@ -26,6 +26,8 @@ import com.google.gson.Gson;
 import java.sql.SQLException;
 
 import job.com.news.db.DBHelper;
+import job.com.news.db.MemberTable;
+import job.com.news.db.NewsListTable;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
@@ -56,7 +58,7 @@ public class SignUpActivity extends AppCompatActivity {
     private static final int SELECT_PHOTO = 100;
     private ProgressDialog progressDialog;
     private MyPreferences myPreferences;
-    DBHelper db;
+    MemberTable memberTable;
     private SessionManager session;
     //changes added on 12/02
 
@@ -64,7 +66,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        db = new DBHelper(getApplicationContext());
+        memberTable = new MemberTable(getApplicationContext());
         myPreferences = MyPreferences.getMyAppPref(this);
         session = new SessionManager(getApplicationContext());
         mFNameView = (EditText) findViewById(R.id.profile_first_name);
@@ -250,13 +252,10 @@ public class SignUpActivity extends AppCompatActivity {
                                 myPreferences.setMobile(serverResponse.getMember().getMobile());
                                 myPreferences.setMemberId(serverResponse.getMember().getMemberId());
                                 myPreferences.setMemberToken(serverResponse.getMember().getMemberToken().trim());
-                                try {
-                                    db.open();
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
-                                }
+
+
                                 //  Log.v("Response", "MemberId " + serverResponse.getMember().getMemberId());
-                                if (!db.checkUser(serverResponse.getMember().getMemberId())) {
+                                if (!memberTable.checkUser(serverResponse.getMember().getMemberId())) {
                                     RegisterMember model = new RegisterMember();
                                     model.setMemberId(serverResponse.getMember().getMemberId());
                                     model.setMemberToken(serverResponse.getMember().getMemberToken().trim());
@@ -265,9 +264,8 @@ public class SignUpActivity extends AppCompatActivity {
                                     model.setEmailId(serverResponse.getMember().getEmailId().trim());
                                     model.setMobile(serverResponse.getMember().getMobile());
 
-                                    db.insertMembers(model);
+                                    memberTable.insertMembers(model);
 
-                                    db.close();
                                 }
                             } catch (Exception e) {
                                 Log.d("Core", "e :" + e.toString());

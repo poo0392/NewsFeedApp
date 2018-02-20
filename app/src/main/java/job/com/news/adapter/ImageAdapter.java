@@ -18,6 +18,7 @@ import job.com.news.NewsDetailScreen;
 import job.com.news.NewsFeedApplication;
 import job.com.news.R;
 import job.com.news.db.DBHelper;
+import job.com.news.db.MemberTable;
 import job.com.news.interfaces.ItemClickListener;
 import job.com.news.models.NewsFeedList;
 import job.com.news.register.RegisterMember;
@@ -38,13 +39,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     List<NewsFeedList> newsFeedList;
     List<RegisterMember> memberList;
     DBHelper db;
+    MemberTable memberTable;
     //changes added
 
     public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList) {
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;
         this.newsFeedList = newsFeedList;
-        db = new DBHelper(mContext);
+        memberTable = new MemberTable(mContext);
         memberList = new ArrayList<>();
             /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -105,18 +107,11 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ArrayList<String> list = newsFeedApplication.hashMap.get("" + position);
             imageViewHolder.textViewSummary.setText(list.get(0));
             imageViewHolder.textViewDate.setText(list.get(2));*/
-            try {
-                db.open();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
             // memberList = db.getMember();
-            memberList = db.getMember(Integer.parseInt(newsFeedList.get(position).getMember_id()));
-            db.close();
+            memberList = memberTable.getMember(Integer.parseInt(newsFeedList.get(position).getMember_id()));
 
-            //  String member_name=newsFeedList.get(position).getMember().getFirstName();
-           // String member_name = memberList.get(0).getFirstName();
-
+           // String member_name = memberList.get(position).getFirstName();
 //get Member from member_id in news List i.e select member from member_table where member_id = NewsListTable.Member_id;
             // RegisterMember
            // imageViewHolder.txt_post_person_name.setText(member_name);

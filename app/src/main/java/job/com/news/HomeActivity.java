@@ -1,6 +1,8 @@
 package job.com.news;
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -11,6 +13,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -48,7 +51,6 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,13 +60,16 @@ import job.com.news.adapter.ExpandListAdapter;
 import job.com.news.adapter.HomeDashboardAdapter;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.changepassword.ChangePassword;
-import job.com.news.db.DBHelper;
+import job.com.news.db.MemberTable;
+import job.com.news.db.NewsListTable;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedDetails;
 import job.com.news.models.NewsFeedList;
 import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.register.RegisterMember;
+import job.com.news.service.AlarmReceiver;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
@@ -112,14 +117,16 @@ public class HomeActivity extends AppCompatActivity
     private ProgressDialog mProgressDialog;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
     Gson gson;
-    DBHelper db;
+    NewsListTable newsListTable;
+    MemberTable memberTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mContext = this;
-        db = new DBHelper(getApplicationContext());
+        newsListTable = new NewsListTable(mContext);
+        memberTable = new MemberTable(mContext);
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
@@ -136,6 +143,7 @@ public class HomeActivity extends AppCompatActivity
         callNewsListAPI(memberToken, memberId);
         initialializeComponents();
         setListeners();
+        syncNewsList();
 
 
         LinearLayout mMenuLayout = (LinearLayout) findViewById(R.id.main_menu_layout);
@@ -373,34 +381,45 @@ public class HomeActivity extends AppCompatActivity
                             Log.v("", "newsFeedList " + newsFeedList.toString());
 
                             //   loadDatatoList(newsFeedList);
-                            try {
-                                db.open();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
+
 
                             NewsFeedList model = new NewsFeedList();
-                            for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
-                                if (!db.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
-                                    model.setId(serverResponse.getNewsFeedList().get(i).getId());
-                                    model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
-                                    model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
-                                    model.setCountry(serverResponse.getNewsFeedList().get(i).getCountry());
-                                    model.setState(serverResponse.getNewsFeedList().get(i).getState());
-                                    model.setCity(serverResponse.getNewsFeedList().get(i).getCity());
-                                    model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
-                                    model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
-                                    model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
-                                    model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
-                                    model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
-                                    model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
+                            try {
+                                RegisterMember member = new RegisterMember();
+                                for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
+                                    if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
+                                        model.setId(serverResponse.getNewsFeedList().get(i).getId());
+                                        model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
+                                        model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
+                                        model.setCountry(serverResponse.getNewsFeedList().get(i).getCountry());
+                                        model.setState(serverResponse.getNewsFeedList().get(i).getState());
+                                        model.setCity(serverResponse.getNewsFeedList().get(i).getCity());
+                                        model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
+                                        model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
+                                        model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
+                                        model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
+                                        model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
+                                        model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
+                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
 
-                                    db.insertNewsList(model);
+                                        if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
+                                            member.setMemberId(model.getMember().getId());
+                                            //   member.setMemberToken(model.getMember().getMemberToken().trim());
+                                            member.setFirstName(model.getMember().getFirstName().trim());
+                                            member.setLastName(model.getMember().getLastName().trim());
+                                            member.setEmailId(model.getMember().getEmailId().trim());
+                                            member.setMobile(model.getMember().getMobile());
 
+                                            memberTable.insertMembers(member);
+
+                                        }
+                                        newsListTable.insertNewsList(model);
+
+                                    }
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-
-                            db.close();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -422,7 +441,15 @@ public class HomeActivity extends AppCompatActivity
             }
         });
     }
-
+    private void syncNewsList() {
+        Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
+        boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
+        if(alarmRunning == false) {
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, 0);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 500000, pendingIntent);
+        }
+    }
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)
@@ -483,20 +510,25 @@ public class HomeActivity extends AppCompatActivity
         listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
 
-        setGroupIndicatorToRight();
-
-     /*   listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
-        // setting list adapter
-        expListView.setAdapter(listAdapter);
+        //setGroupIndicatorToRight();
 
         expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
 
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v,
                                         int groupPosition, long id) {
-                // Toast.makeText(getApplicationContext(),
-                // "Group Clicked " + listDataHeader.get(groupPosition),
-                // Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),
+                        "Group Clicked " + listDataHeader.get(groupPosition),
+                        Toast.LENGTH_SHORT).show();
+                String group = listDataHeader.get(groupPosition);
+                //Log.v(""," group "+group);
+                if (group.equals("Home")) {
+                    finish();
+                    startActivity(getIntent());
+                }/*else if(group.equals("User Profile")){
+
+                }*/
+                //else if()
                 return false;
             }
         });
@@ -505,9 +537,14 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onGroupExpand(int groupPosition) {
-             *//*   Toast.makeText(getApplicationContext(),
+               /* Toast.makeText(getApplicationContext(),
                         listDataHeader.get(groupPosition) + " Expanded",
-                        Toast.LENGTH_SHORT).show();*//*
+                        Toast.LENGTH_SHORT).show();*/
+                // String group = listDataHeader.get(groupPosition);
+                //Log.v(""," group "+group);
+                /*if(group.equals("Home")){
+
+                }*/
             }
         });
 
@@ -516,9 +553,9 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onGroupCollapse(int groupPosition) {
-              *//*  Toast.makeText(getApplicationContext(),
+              /*  Toast.makeText(getApplicationContext(),
                         listDataHeader.get(groupPosition) + " Collapsed",
-                        Toast.LENGTH_SHORT).show();*//*
+                        Toast.LENGTH_SHORT).show();*/
 
             }
         });
@@ -543,7 +580,7 @@ public class HomeActivity extends AppCompatActivity
                         .show();
                 return false;
             }
-        });*/
+        });
     }
 
     private void setGroupIndicatorToRight() {

@@ -159,6 +159,8 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
 
             } else {
                 Toast.makeText(this, getString(R.string.could_not_receive_data), Toast.LENGTH_LONG).show();
+               // onBackPressed();
+
             }
         }
     }

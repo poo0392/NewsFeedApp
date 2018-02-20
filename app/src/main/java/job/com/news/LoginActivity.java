@@ -22,12 +22,14 @@ import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import job.com.news.db.DBHelper;
+import job.com.news.db.MemberTable;
 import job.com.news.forgotpassword.ForgotPassword;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
@@ -40,6 +42,7 @@ import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okio.Buffer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button mLoginInButton;
     private TextView sign_up, forgot_password;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
-    DBHelper db;
+    MemberTable memberTable;
     //changes added on 12/02
 
 
@@ -72,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         myPreferences = MyPreferences.getMyAppPref(this);
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
-        db = new DBHelper(getApplicationContext());
+        memberTable = new MemberTable(LoginActivity.this);
 
         checkForLoginSession();
         //setLocaleLang();
@@ -232,13 +235,19 @@ public class LoginActivity extends AppCompatActivity {
             RequestBody bodyNoti = RequestBody.create(MediaType.parse("text/plain"), "cadscasd");
             RequestBody bodyPlat = RequestBody.create(MediaType.parse("text/plain"), 1 + "");
 
-            Call<LoginRegisterResponse> serverResponse = webService.loginRequest(bodyUsername, bodyPwd, bodyNoti, bodyPlat);
 
+
+            Call<LoginRegisterResponse> serverResponse = webService.loginRequest(bodyUsername, bodyPwd, bodyNoti, bodyPlat);
+            Log.v("sendlogin ","LoginParameters url : "+serverResponse.request().url());
+            Log.v("sendlogin ","LoginParameters : "+serverResponse.request().body().toString());
+            Log.v("sendlogin ","LoginParameters req : "+serverResponse.request().toString());
+           String reqParam = bodyToString(serverResponse.request().body());
+            Log.v("sendlogin ","reqParam : "+reqParam);
             serverResponse.enqueue(new Callback<LoginRegisterResponse>() {
                 @Override
                 public void onResponse(Call<LoginRegisterResponse> call, Response<LoginRegisterResponse> response) {
                     progressDialog.dismiss();
-
+                    Log.v("LoginAPI ", "response " + new Gson().toJson(response.body()));
                     if (response.isSuccessful()) {
                         LoginRegisterResponse serverResponse = response.body();
                         if (serverResponse.getStatus() == 0) {
@@ -259,14 +268,10 @@ public class LoginActivity extends AppCompatActivity {
 
                             //addMemmberToDb();
 
-                            try {
-                                db.open();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
+
                             //  Log.v("Response", "MemberId " + serverResponse.getMember().getMemberId());
                             try {
-                                if (!db.checkUser(serverResponse.getMember().getMemberId())) {
+                                if (!memberTable.checkUser(serverResponse.getMember().getMemberId())) {
                                     RegisterMember model = new RegisterMember();
                                     model.setMemberId(serverResponse.getMember().getMemberId());
                                     model.setMemberToken(serverResponse.getMember().getMemberToken().trim());
@@ -275,9 +280,8 @@ public class LoginActivity extends AppCompatActivity {
                                     model.setEmailId(serverResponse.getMember().getEmailId().trim());
                                     model.setMobile(serverResponse.getMember().getMobile());
 
-                                    db.insertMembers(model);
+                                    memberTable.insertMembers(model);
 
-                                    db.close();
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -286,9 +290,10 @@ public class LoginActivity extends AppCompatActivity {
 
                         } else {
                             //login failed
-                            String desc = serverResponse.getDescription().trim();
+                          //  String desc = serverResponse.getDescription().trim();
                             // Toast.makeText(LoginActivity.this, "Login failed." + desc, Toast.LENGTH_SHORT).show();
-                            setFailedAlertDialog(LoginActivity.this, "Failed", "Login failed.");
+                            Log.v(" sendlogin "," desc "+serverResponse.getDescription());
+                            setFailedAlertDialog(LoginActivity.this, "Failed", serverResponse.getDescription());
                         }
                     }
                 }
@@ -297,7 +302,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onFailure(Call<LoginRegisterResponse> call, Throwable t) {
                     progressDialog.dismiss();
                     t.printStackTrace();
-
+                    Log.v(" onFailure "," getMessage "+t.getMessage());
                     if (t instanceof NoConnectivityException) {
                         // No internet connection
                         // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
@@ -312,7 +317,19 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
+    private String bodyToString(final RequestBody request) {
+        try {
+            final RequestBody copy = request;
+            final Buffer buffer = new Buffer();
+            if (copy != null)
+                copy.writeTo(buffer);
+            else
+                return "";
+            return buffer.readUtf8();
+        } catch (final IOException e) {
+            return "did not work";
+        }
+    }
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)

@@ -31,6 +31,8 @@
 
     <string name="toast_msg_title_validations">कृपया शीर्षक प्रविष्ट करा</string>
     <string name="toast_msg_desc_validations">कृपया वर्णन प्रविष्ट करा</string>
+    <string name="toast_msg_charges_validations">कृपया किती दिवस प्रकाशन निवडा</string>
+    <string name="toast_msg_desc_select">कृपया वर्णन तपशील निवडा (शब्दात)</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">ईमेल</string>
@@ -96,7 +98,7 @@
     <string name="edu_menu">शैक्षणिक</string>
 
     <string-array name="article_arr">
-        <item>लेख प्रकार निवडा</item>
+       <!-- <item>लेख प्रकार निवडा</item>-->
         <item>राष्ट्रीय आणि आंतरराष्ट्रीय</item>
         <item>सरकारी बातम्या</item>
         <item>सामाजिक आणि संबंधित बातम्या</item>

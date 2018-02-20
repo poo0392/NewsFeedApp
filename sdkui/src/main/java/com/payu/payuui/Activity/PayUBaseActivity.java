@@ -539,5 +539,4 @@ public class PayUBaseActivity extends FragmentActivity implements PaymentRelated
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-
 }

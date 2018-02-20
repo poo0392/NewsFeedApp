@@ -30,6 +30,7 @@ import java.util.List;
 
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.db.DBHelper;
+import job.com.news.db.NewsListTable;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
@@ -50,7 +51,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class NewsFeedFragment extends Fragment {
-    private RecyclerView mRecyclerView;
+    public RecyclerView mRecyclerView;
     private ImageAdapter adapter;
     private NewsFeedApplication newsFeedApplication;
     LinearLayoutManager layoutManager;
@@ -66,6 +67,7 @@ public class NewsFeedFragment extends Fragment {
     int memberId;
     ProgressDialog mProgressDialog;
     DBHelper db;
+    NewsListTable newsListTable;
     //changes added on 09/02
 
 
@@ -75,6 +77,7 @@ public class NewsFeedFragment extends Fragment {
         newsFeedApplication = NewsFeedApplication.getApp();
         mContext = getActivity();
         db = new DBHelper(mContext);
+        newsListTable=new NewsListTable(mContext);
         return inflater.inflate(R.layout.fragment_news_feed, container, false);
     }
 
@@ -84,7 +87,7 @@ public class NewsFeedFragment extends Fragment {
 
         attachViews(view);
         getPrefData();
-        callNewsListAPI(memberToken, memberId);
+        //callNewsListAPI(memberToken, memberId);
         // setData();
         /*addNewsFeedItems();
         mAdapter = new HomeDashboardAdapter(HomeActivity.this, mNewsFeedList);
@@ -198,16 +201,11 @@ public class NewsFeedFragment extends Fragment {
     }
 
     private void loadDatatoList() {
-        try {
-            db.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        newsFeedList = db.getAllNewsRecords();
+
+        newsFeedList = newsListTable.getAllNewsRecords();
         Log.v("db ","getNewsFeedList "+newsFeedList.toString());
         adapter = new ImageAdapter(getActivity(), newsFeedList);
         mRecyclerView.setAdapter(adapter);
-        db.close();
     }
 
     // Implement scroll listener

@@ -25,7 +25,9 @@
     <string name="toast_msg_city_validations">Please Select City</string>
     <string name="toast_msg_article_validations">Please Select Article Type</string>
     <string name="toast_msg_title_validations">Please Enter Title</string>
-    <string name="toast_msg_desc_validations">Please Please Enter Description</string>
+    <string name="toast_msg_desc_validations">Please Enter Description</string>
+    <string name="toast_msg_charges_validations">Please Select Duration of Post</string>
+    <string name="toast_msg_desc_select">Please select Description details (in words)</string>
 
 
     <!--Sign Up-->
@@ -114,7 +116,7 @@
     <string name="edu_menu">Educational</string>
 
     <string-array name="article_arr">
-        <item>Select Article Type</item>
+       <!-- <item>Select Article Type</item>-->
         <item>National and International</item>
         <item>Government News</item>
         <item>Social and Related News</item>

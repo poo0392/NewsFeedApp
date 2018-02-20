@@ -3,11 +3,20 @@
 
     <item
         is-multidex="false"
+        jar="C:\Users\POOJA\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp3\logging-interceptor\3.0.0-RC1\83fed2e3554b8bacf8209bc22b62d76d4f674533\logging-interceptor-3.0.0-RC1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="83fed2e3554b8bacf8209bc22b62d76d4f674533">
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\logging-interceptor-3.0.0-RC1_1369e31656293d934ed7a0a9bc0b1a64129ddbe6.jar" />
+    </item>
+    <item
+        is-multidex="false"
         jar="D:\Studio workspace\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.2"
-        sha1="d158f5684f57f23551675cdcdad677c9435db0dd">
+        sha1="2d616d5e2111ab61aaa7285c83127a2ab08ad6de">
         <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_677f20a55a5ade8c4e875300a85435038b20c8f9.jar" />
     </item>
 

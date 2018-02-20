@@ -58,10 +58,14 @@ import job.com.news.article.City;
 import job.com.news.article.City_Name;
 import job.com.news.article.State;
 import job.com.news.article.State_Name;
+import job.com.news.db.DBHelper;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
+import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.register.RegisterMember;
+import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -71,6 +75,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 //changes added on 09/02
 public class CreateArticle extends AppCompatActivity implements View.OnClickListener {
     private Spinner mStateSpinner, mCitySpinner, mArticleSpinner;
@@ -80,13 +85,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private ProgressDialog mProgressDialog;
     private Context mContext;
 
-    private HashMap<String, Integer> mapState;//changes done
+    private HashMap<String, Integer> mapState, cityMap;//changes done
 
     private ArrayList<HashMap<String, String>> stateList;
     private TextView mTotalChargesView, mDateView;
     private RadioGroup radioGroupDays, radioGroupWords;
     private String mRsSymbol;
-    private String mArticleCode;
+    private String mArticleCode, categoryId, stateId, cityId;
     private ImageView mArticleImage1, mArticleImage2, iv_info_desc, iv_info_title;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String mediaPath;
@@ -100,7 +105,14 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsPublishDaysSpinner;
     RadioButton article_100d_radio, article_200d_radio, article_300d_radio, article_400d_radio;
     private SessionManager session, langSelection;
-
+    DBHelper db;
+    List<RegisterMember> memberList;
+    String memberId, memberToken;
+    String base64Image;
+    String emailId, fullName, membertoken;
+    int memberid;
+    private MyPreferences myPreferences;
+    int wordsLength = 0;
     //Indonesia
 
 
@@ -112,11 +124,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         //  mProjectKey="0q4LozhupoQlXKFFiqtRHAZIJpdaHcObOO6gEKa6uuhQS4t1n33PutMsyyAm";
         mContext = this;
         langSelection = new SessionManager(getApplicationContext());
+        db = new DBHelper(mContext);
 
 
         // updateViews("hi_IN");
 
         setAppToolbar();
+        getPrefData();
         initializeComponents();
         setListeners();
 
@@ -226,7 +240,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
     private void initializeComponents() {
         Log.v("CreateArticle ", "current Lang " + Locale.getDefault().getDisplayLanguage().toString());
-
+        memberList = new ArrayList<>();
         mRsSymbol = getResources().getString(R.string.Rs);
         btn_submit = (Button) findViewById(R.id.article_btn_submit);
 
@@ -295,7 +309,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         iv_info_title.setOnClickListener(this);
         iv_info_desc.setOnClickListener(this);
 
-
+        if (wordsLength == 0) {
+            mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
+            Toast.makeText(getApplicationContext(),mContext.getResources().getString(R.string.toast_msg_desc_select),Toast.LENGTH_SHORT).show();
+        }
        /* bsArticleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -313,6 +330,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mArticleCode = "m" + position;
+                categoryId = String.valueOf(position + 1);
+                Log.v("bsArticleSpinner ", "categoryId " + categoryId);
                 // Toast.makeText(CreateArticle.this, mArticleCode, Toast.LENGTH_SHORT).show();
             }
         });
@@ -329,7 +348,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 int radioId = group.getCheckedRadioButtonId();
-                int wordsLength = setDescpWordsLength(radioId);
+                wordsLength = setDescpWordsLength(radioId);
                 Log.v("radioGroupWords ", "wordsLength " + wordsLength);
                 //  mDescEdit.setText("");
 
@@ -604,14 +623,16 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     // selectedState = parent.getSelectedItem().toString();
                     selectedState = parent.getItemAtPosition(position).toString();
+                    // stateId = String.valueOf(position + 1);
 
-                    Integer stateId = mapState.get(selectedState);
-                    System.out.println("State : " + selectedState + " ID :" + stateId);
+                    Integer state_id = mapState.get(selectedState);
+                    stateId = String.valueOf(state_id);
+                    System.out.println("State : " + selectedState + " stateId :" + state_id);
                     Log.v("ItemClickListener ", "selectedState " + selectedState);
                     // Toast.makeText(getApplicationContext(),selectedState,Toast.LENGTH_SHORT).show();
                     bsCitySpinner.setHint("Select City");
                     bsCitySpinner.setText("");
-                    loadCity(stateId);
+                    loadCity(state_id);
                 }
             });
 
@@ -677,9 +698,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private void displayCityData(ArrayList<City_Name> cityList) {
         try {
             ArrayList<String> list = new ArrayList();
+            cityMap = new HashMap<>();
             for (int i = 0; i < cityList.size(); i++) {
                 City_Name cityName = cityList.get(i);
                 list.add(cityName.getCity());
+                cityMap.put(cityName.getCity().trim(), cityName.getId());
             }
             bsCitySpinner.setFocusableInTouchMode(true);
             city_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
@@ -702,8 +725,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     selectedCity = parent.getItemAtPosition(position).toString();
-
-                    Log.v("bsCityItemClick ", "selectedCity " + selectedCity);
+                    cityId = String.valueOf(cityMap.get(selectedCity));
+                    Log.v("bsCityItemClick ", "selectedCity " + selectedCity + " cityId " + cityId);
                 }
             });
 
@@ -719,10 +742,22 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.article_btn_submit:
                 if (validateFields()) {
-                    /*Intent intent = new Intent(this, PayUActivity.class);
-                    intent.putExtra("Price", charges);
+                  /*  Intent intent = new Intent(this, PayUActivity.class);
+                    intent.putExtra("Price", 1);
                     startActivity(intent);
                     finish();*/
+//                    try {
+//                        db.open();
+//                    } catch (SQLException e) {
+//                        e.printStackTrace();
+//                    }
+//                    // memberList = db.getMember();
+//                   // memberList = db.getMember();
+//                    db.close();
+                    // memberId = String.valueOf(memberList.get(0).getMemberId());
+                    // memberToken = memberList.get(0).getMemberToken();
+                    // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
+                    postNewsAPI();
                 }
 
                 break;
@@ -752,6 +787,99 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
     }
 
+    private void getPrefData() {
+        myPreferences = MyPreferences.getMyAppPref(this);
+        memberid = myPreferences.getMemberId();
+        membertoken = myPreferences.getMemberToken().trim();
+
+        Log.v("getPrefData ", "memberid " + memberid);
+        // emailId = myPreferences.getEmailId().trim();
+        // fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
+    }
+
+    private void postNewsAPI() {
+        mProgressDialog = new ProgressDialog(CreateArticle.this);
+        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.show();
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        WebService webService = retrofit.create(WebService.class);
+        String newsTitle = mTitleEdit.getText().toString();
+        String newsDesc = mDescEdit.getText().toString();
+        String newsPic = base64Image;
+        String countryId = "1";
+
+        RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), membertoken);
+        RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberid);
+        RequestBody paramCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + categoryId);
+        RequestBody paramCountryId = RequestBody.create(MediaType.parse("text/plain"), "" + countryId);
+        RequestBody paramStateId = RequestBody.create(MediaType.parse("text/plain"), "" + stateId);
+        RequestBody paramCityId = RequestBody.create(MediaType.parse("text/plain"), "" + cityId);
+        RequestBody paramNewsTitle = RequestBody.create(MediaType.parse("text/plain"), "" + newsTitle);
+        RequestBody paramNewsDesc = RequestBody.create(MediaType.parse("text/plain"), "" + newsDesc);
+        RequestBody paramNewsPic = RequestBody.create(MediaType.parse("text/plain"), "" + newsPic);
+
+        Log.v("postNewsAPI ", "membertoken " + membertoken);
+        Log.v("postNewsAPI ", "memberid " + memberid);
+        Log.v("postNewsAPI ", "countryId " + countryId);
+        Log.v("postNewsAPI ", "stateId " + stateId);
+        Log.v("postNewsAPI ", "cityId " + cityId);
+        Log.v("postNewsAPI ", "newsTitle " + newsTitle);
+        Log.v("postNewsAPI ", "newsDesc " + newsDesc);
+        Log.v("postNewsAPI ", "newsPic " + newsPic);
+
+        Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
+                paramCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, paramNewsPic);
+        serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
+            @Override
+            public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
+                mProgressDialog.dismiss();
+                Log.v("PostNewsAPI ", " onResponse ");
+                if (response.isSuccessful()) {
+                    Log.v("PostNewsAPI ", "response " + new Gson().toJson(response.body()));
+                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
+                    }.getType();
+                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
+                            .fromJson(String.valueOf(response.body()), collectionType);*/
+
+                    NewsFeedModelResponse serverResponse = response.body();
+                    //    newsList=serverResponse.toString();
+                    if (serverResponse.getStatus() == 0) {
+                        //Log.v("PostNewsAPI ", "response " + new Gson().toJson(response.body()));
+                        Intent i = new Intent(CreateArticle.this, HomeActivity.class);
+                        startActivity(i);
+                        finish();
+                    } else {
+                        Log.v("PostNewsAPI ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
+                        ;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NewsFeedModelResponse> call, Throwable t) {
+                mProgressDialog.dismiss();
+                t.printStackTrace();
+                Log.v("PostNewsAPI ", "Failure " + t.getMessage());
+                Toast.makeText(mContext, "Failure", Toast.LENGTH_SHORT).show();
+                if (t instanceof NoConnectivityException) {
+                    // No internet connection
+                    // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                    // setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
+                }
+            }
+        });
+    }
+
     private void openAlertInfoForKbSettingPopup() {
         new MaterialStyledDialog.Builder(CreateArticle.this)
                 .setTitle("Please select keyboard from settings")
@@ -769,7 +897,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         //register success
-                        Intent intent=new Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS);
+                        Intent intent = new Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS);
                         startActivity(intent);
                         dialog.dismiss();
                     }
@@ -812,7 +940,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             Toast.makeText(mContext,
                     mContext.getResources().getString(R.string.toast_msg_title_validations), Toast.LENGTH_SHORT).show();
             return valid;
-        } else {
+        }
+       /* if (charges == 0) {
+            Toast.makeText(mContext,
+                    mContext.getResources().getString(R.string.toast_msg_charges_validations), Toast.LENGTH_SHORT).show();
+            return valid;
+        } */
+        else {
             valid = true;
         }
         return valid;
@@ -880,7 +1014,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             System.out.println("Profile Bitmap Size width : " + bmp.getWidth() + " height : " + bmp.getHeight());
 
-            String base64Image = getStringImage(bmp);
+            base64Image = getStringImage(bmp);
             //imgfriend.setImageBitmap(thumbnail);
             System.out.println("profile image : " + base64Image);
             //sendProfileImage(base64Image);

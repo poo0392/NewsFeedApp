@@ -102,7 +102,7 @@ public class UPIFragment extends Fragment {
 
             @Override
             public void updateDrawState(TextPaint ds) {
-                ds.setColor(getColor(getActivity().getApplicationContext(), R.color.cb_vpa_text_highlighter));
+                ds.setColor(getColor(getActivity(), R.color.cb_vpa_text_highlighter));
                 ds.setUnderlineText(true);
             }
         };
@@ -115,7 +115,7 @@ public class UPIFragment extends Fragment {
             }
             @Override
             public void updateDrawState(TextPaint ds) {
-                ds.setColor(getColor(getActivity().getApplicationContext(), R.color.cb_vpa_text_highlighter));
+                ds.setColor(getColor(getActivity(), R.color.cb_vpa_text_highlighter));
                 ds.setUnderlineText(true);
             }
         };

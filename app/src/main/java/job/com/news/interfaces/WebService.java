@@ -46,7 +46,7 @@ public interface WebService {
                                                 @Part("platform") RequestBody platform,
                                                 @Part("email") RequestBody email);
 
-    //http://thanehousingfederation.com/abhi/api/member/login
+    //http://thanehousingfederation.com/newsapp/api/member/login
     //login
     @Multipart
     @POST("login")
@@ -55,13 +55,14 @@ public interface WebService {
                                              @Part("Notification_id") RequestBody Notification_id,
                                              @Part("platform") RequestBody platform);
 
-    //:http://thanehousingfederation.com/abhi/api/member/forgotpassword
+
+    //http://thanehousingfederation.com/newsapp/api/member/forgotpassword
     //login
     @Multipart
     @POST("forgotpassword")
     Call<ForgotPasswordResp> forgotPasswordRequest(@Part("email_id") RequestBody email_id);
 
-    //:http://thanehousingfederation.com/abhi/api/member/forgotpassword
+    //http://thanehousingfederation.com/newsapp/api/member/forgotpassword
     //login
     @Multipart
     @POST("changepassword")
@@ -77,5 +78,24 @@ public interface WebService {
     @POST("news_list")
     Call<NewsFeedModelResponse> getNewsListRequest(@Part("member_token") RequestBody member_token,
                                                    @Part("member_id") RequestBody member_id);
+
+
+    //add_news
+    //http://thanehousingfederation.com/newsapp/api/member/add_news
+
+    @Multipart
+    @POST("add_news")
+    Call<NewsFeedModelResponse> post_news(@Part("member_token") RequestBody member_token,
+                                          @Part("member_id") RequestBody member_id,
+                                          @Part("category_id") RequestBody category_id,
+                                          @Part("country_id") RequestBody country_id,
+                                          @Part("state_id") RequestBody state_id,
+                                          @Part("city_id") RequestBody city_id,
+                                          @Part("news_title") RequestBody news_title,
+                                          @Part("news_desc") RequestBody news_desc,
+                                          @Part("news_pic") RequestBody news_pic);
+
+
+
 
 }
