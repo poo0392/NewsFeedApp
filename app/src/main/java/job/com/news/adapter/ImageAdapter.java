@@ -107,14 +107,16 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ArrayList<String> list = newsFeedApplication.hashMap.get("" + position);
             imageViewHolder.textViewSummary.setText(list.get(0));
             imageViewHolder.textViewDate.setText(list.get(2));*/
+Log.v("","clickedPosMemberID "+Integer.parseInt(newsFeedList.get(position).getMember_id()));
+            memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
 
-            // memberList = db.getMember();
-            memberList = memberTable.getMember(Integer.parseInt(newsFeedList.get(position).getMember_id()));
 
-           // String member_name = memberList.get(position).getFirstName();
+            //  String member_name=newsFeedList.get(position).getMember().getFirstName();
+            String member_name = memberList.get(0).getFirstName();
+
 //get Member from member_id in news List i.e select member from member_table where member_id = NewsListTable.Member_id;
             // RegisterMember
-           // imageViewHolder.txt_post_person_name.setText(member_name);
+            imageViewHolder.txt_post_person_name.setText(member_name);
             imageViewHolder.textViewSummary.setText(newsFeedList.get(position).getNews_title());
             imageViewHolder.txt_city.setText(newsFeedList.get(position).getCity());
             imageViewHolder.txt_news_category.setText(newsFeedList.get(position).getCategory());
@@ -201,6 +203,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             txt_desc = (TextView) itemView.findViewById(R.id.txt_desc);
             txt_city = (TextView) itemView.findViewById(R.id.txt_city);
             txt_state = (TextView) itemView.findViewById(R.id.txt_state);
+
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

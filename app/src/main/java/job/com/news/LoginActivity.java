@@ -30,6 +30,7 @@ import java.util.Locale;
 
 import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
+import job.com.news.db.PersonalDetails;
 import job.com.news.forgotpassword.ForgotPassword;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView sign_up, forgot_password;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
     MemberTable memberTable;
+    PersonalDetails pd;
     //changes added on 12/02
 
 
@@ -76,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
         memberTable = new MemberTable(LoginActivity.this);
+        pd =new PersonalDetails(LoginActivity.this);
 
         checkForLoginSession();
         //setLocaleLang();
@@ -271,7 +274,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             //  Log.v("Response", "MemberId " + serverResponse.getMember().getMemberId());
                             try {
-                                if (!memberTable.checkUser(serverResponse.getMember().getMemberId())) {
+                                if (!pd.checkUser(serverResponse.getMember().getMemberId())) {
                                     RegisterMember model = new RegisterMember();
                                     model.setMemberId(serverResponse.getMember().getMemberId());
                                     model.setMemberToken(serverResponse.getMember().getMemberToken().trim());
@@ -280,7 +283,7 @@ public class LoginActivity extends AppCompatActivity {
                                     model.setEmailId(serverResponse.getMember().getEmailId().trim());
                                     model.setMobile(serverResponse.getMember().getMobile());
 
-                                    memberTable.insertMembers(model);
+                                    pd.insertMember(model);
 
                                 }
                             } catch (Exception e) {

@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
 import job.com.news.db.NewsListTable;
+import job.com.news.db.PersonalDetails;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
@@ -59,6 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private MyPreferences myPreferences;
     MemberTable memberTable;
+    PersonalDetails pd;
     private SessionManager session;
     //changes added on 12/02
 
@@ -67,6 +69,8 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         memberTable = new MemberTable(getApplicationContext());
+        pd=new PersonalDetails(getApplicationContext());
+
         myPreferences = MyPreferences.getMyAppPref(this);
         session = new SessionManager(getApplicationContext());
         mFNameView = (EditText) findViewById(R.id.profile_first_name);
@@ -255,7 +259,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 
                                 //  Log.v("Response", "MemberId " + serverResponse.getMember().getMemberId());
-                                if (!memberTable.checkUser(serverResponse.getMember().getMemberId())) {
+                                if (!pd.checkUser(serverResponse.getMember().getMemberId())) {
                                     RegisterMember model = new RegisterMember();
                                     model.setMemberId(serverResponse.getMember().getMemberId());
                                     model.setMemberToken(serverResponse.getMember().getMemberToken().trim());
@@ -264,7 +268,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     model.setEmailId(serverResponse.getMember().getEmailId().trim());
                                     model.setMobile(serverResponse.getMember().getMobile());
 
-                                    memberTable.insertMembers(model);
+                                    pd.insertMember(model);
 
                                 }
                             } catch (Exception e) {

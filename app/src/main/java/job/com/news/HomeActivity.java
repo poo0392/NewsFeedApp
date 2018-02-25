@@ -51,6 +51,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +61,7 @@ import job.com.news.adapter.ExpandListAdapter;
 import job.com.news.adapter.HomeDashboardAdapter;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.changepassword.ChangePassword;
+import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
 import job.com.news.db.NewsListTable;
 import job.com.news.helper.ConnectivityInterceptor;
@@ -229,6 +231,16 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    private void syncNewsList() {
+        Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
+        boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
+        if(alarmRunning == false) {
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, 0);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 500000, pendingIntent);
+        }
+    }
+
 
     private void getPrefData() {
         myPreferences = MyPreferences.getMyAppPref(this);
@@ -381,8 +393,6 @@ public class HomeActivity extends AppCompatActivity
                             Log.v("", "newsFeedList " + newsFeedList.toString());
 
                             //   loadDatatoList(newsFeedList);
-
-
                             NewsFeedList model = new NewsFeedList();
                             try {
                                 RegisterMember member = new RegisterMember();
@@ -404,7 +414,7 @@ public class HomeActivity extends AppCompatActivity
 
                                         if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
                                             member.setMemberId(model.getMember().getId());
-                                            //   member.setMemberToken(model.getMember().getMemberToken().trim());
+                                            //member.setMemberToken(model.getMember().getMemberToken().trim());
                                             member.setFirstName(model.getMember().getFirstName().trim());
                                             member.setLastName(model.getMember().getLastName().trim());
                                             member.setEmailId(model.getMember().getEmailId().trim());
@@ -441,15 +451,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
     }
-    private void syncNewsList() {
-        Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
-        boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
-        if(alarmRunning == false) {
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, 0);
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 500000, pendingIntent);
-        }
-    }
+
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)
@@ -510,7 +512,7 @@ public class HomeActivity extends AppCompatActivity
         listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
 
-        //setGroupIndicatorToRight();
+        setGroupIndicatorToRight();
 
         expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
 
@@ -656,6 +658,7 @@ public class HomeActivity extends AppCompatActivity
         ActivityCompat.requestPermissions(HomeActivity.this, new String[]{
                 READ_EXTERNAL_STORAGE,
                 WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+
     }
 
     @Override

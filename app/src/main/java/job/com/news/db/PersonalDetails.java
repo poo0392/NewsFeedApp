@@ -3,6 +3,7 @@ package job.com.news.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
@@ -44,7 +45,7 @@ public class PersonalDetails {
 
     public void insertMember(RegisterMember model) {
         db = dbHelper.getWritableDatabase();
-      //  Log.v("DB ", "MEMBER_ID " + model.getMemberId());
+        //  Log.v("DB ", "MEMBER_ID " + model.getMemberId());
         ContentValues cv = new ContentValues();
         cv.put(PersonalDetails.MEMBER_ID, model.getMemberId());
         cv.put(PersonalDetails.MEMBER_TOKEN, model.getMemberToken());
@@ -56,5 +57,21 @@ public class PersonalDetails {
 
         db.insert(PersonalDetails.TABLE_NAME, null, cv);
         Toast.makeText(context, "Data inserted in db", Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean checkUser(int member_id) {
+        db = dbHelper.getWritableDatabase();
+        String query = "select * from Member where " + PersonalDetails.MEMBER_ID + " = " + member_id;
+
+        Cursor cursor = db.rawQuery(query, null);
+        int cursorCount = cursor.getCount();
+        //   if (cursor.getCount() > 0) {
+        cursor.close();
+        // mDb.close();
+        if (cursorCount > 0) {
+            return true;
+        }
+
+        return false;
     }
 }

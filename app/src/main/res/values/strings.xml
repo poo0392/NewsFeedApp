@@ -144,34 +144,6 @@
         <item>Educational</item>
     </string-array>
 
-    <string-array name="state_arr">
-        <item>Select Article Type</item>
-        <item>National and International</item>
-        <item>Government News</item>
-        <item>Social and Related News</item>
-        <item>Sports</item>
-        <item>Science and Technology</item>
-        <item>Economical News</item>
-        <item>Health Related</item>
-        <item>Business News</item>
-        <item>Agricultural News</item>
-        <item>Cinema Related</item>
-        <item>Small Classifieds</item>
-        <item>Property</item>
-        <item>Birthday ads</item>
-        <item>App Related Ads</item>
-        <item>Buy and Sell</item>
-        <item>Services</item>
-        <item>Loan related</item>
-        <item>Matrimony related</item>
-        <item>Books and Literature</item>
-        <item>Other and Uncategorized News</item>
-        <item>Entertainment News</item>
-        <item>Career Related</item>
-        <item>Job</item>
-        <item>Business</item>
-        <item>Educational</item>
-    </string-array>
 
     <!--menus-->
     <string name="create_article_menu">Create article</string>

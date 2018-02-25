@@ -29,7 +29,6 @@ public class NewsDetailScreen extends AppCompatActivity {
     TextView txtTitle, txtNewsdesc, date;
     ImageView ivBackground;
     int clickedPosition;
-    DBHelper db;
     NewsListTable newsListTable;
 
     @Override

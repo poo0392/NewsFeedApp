@@ -31,14 +31,12 @@ public class MemberTable {
     SQLiteDatabase db;
     Context context;
 
-    public MemberTable(Context context)
-    {
+    public MemberTable(Context context) {
         this.context = context;
         dbHelper = DBHelper.getInstance(context);
     }
 
-    public void CRUD(ContentValues cv)
-    {
+    public void CRUD(ContentValues cv) {
         dbHelper = DBHelper.getInstance(context);
         db = dbHelper.getWritableDatabase();
 
@@ -99,7 +97,7 @@ public class MemberTable {
         return listAll;
     }
 
-    public List<RegisterMember> getMember(int member_id) {// here member_id = news_list.member_id
+    public List<RegisterMember> getMemberListByMemberId(int member_id) {// here member_id = news_list.member_id
         db = dbHelper.getWritableDatabase();
 
         ArrayList<RegisterMember> listAll = new ArrayList<RegisterMember>();
@@ -126,6 +124,28 @@ public class MemberTable {
         return listAll;
 
 
+    }
+
+    public int getMemberByMemberId(int member_id) {// here member_id = news_list.member_id
+        int memberId = 0;
+        db = dbHelper.getWritableDatabase();
+
+        RegisterMember model;
+        // String query1 = "SELECT * FROM " + MemberTable.MEMBER_TABLE_NAME + " where " + MemberTable.MEMBER_ID + " = " + member_id;
+        String query1 = "select * from " + MemberTable.MEMBER_TABLE_NAME + " m INNER JOIN " + NewsListTable.NEWS_LIST_TABLE_NAME
+                + " n ON " + " m." + MemberTable.MEMBER_ID + " = " + " n." + NewsListTable.MEMBER_ID + " where "
+                + "n." + NewsListTable.MEMBER_ID + " = " + member_id;
+        Cursor cursor = db.rawQuery(query1, null);
+        //  while (cursor != null && cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
+            // model = new RegisterMember();
+            // model.setMemberId(cursor.getColumnIndex(MemberTable.MEMBER_ID));
+            memberId = cursor.getColumnIndex(MemberTable.MEMBER_ID);
+
+        }
+        cursor.close();
+        db.close();
+        return memberId;
     }
 
 }

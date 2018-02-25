@@ -244,11 +244,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mRsSymbol = getResources().getString(R.string.Rs);
         btn_submit = (Button) findViewById(R.id.article_btn_submit);
 
-        state_arr = getResources().getStringArray(R.array.article_arr);
         article_arr = getResources().getStringArray(R.array.article_arr);
         no_of_days_arr = getResources().getStringArray(R.array.no_of_days_publishing);
 
-        //  state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, state_arr);
         state_relative = (RelativeLayout) findViewById(R.id.article_state_spinner);
         mStateSpinner = (Spinner) state_relative.findViewById(R.id.spinner);
 
@@ -308,6 +306,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         btn_submit.setOnClickListener(this);
         iv_info_title.setOnClickListener(this);
         iv_info_desc.setOnClickListener(this);
+
 
         if (wordsLength == 0) {
             mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
@@ -746,14 +745,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     intent.putExtra("Price", 1);
                     startActivity(intent);
                     finish();*/
-//                    try {
-//                        db.open();
-//                    } catch (SQLException e) {
-//                        e.printStackTrace();
-//                    }
+//
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
-//                    db.close();
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);

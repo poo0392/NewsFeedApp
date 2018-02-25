@@ -95,6 +95,7 @@
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" scope="TEST" name="com.android.support.test:exposed-instrumentation-api-publish-0.5" level="project" />
+    <orderEntry type="library" exported="" name="com.google.code.gson:gson:2.8.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.squareup.okhttp3:logging-interceptor:3.0.0-RC1@jar" level="project" />
     <orderEntry type="library" exported="" name="com.squareup.okio:okio:1.8.0@jar" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit:junit:4.12@jar" level="project" />
@@ -110,7 +111,7 @@
     <orderEntry type="library" exported="" name="com.android.support.constraint:constraint-layout-solver:1.0.2@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-core-utils-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.android.support.constraint:constraint-layout-1.0.2" level="project" />
-    <orderEntry type="library" exported="" name="com.google.code.gson:gson:2.7@jar" level="project" />
+    <orderEntry type="library" exported="" name="com.amitshekhar.android:debug-db-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-v4-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.github.javiersantos:MaterialStyledDialogs-2.1" level="project" />
     <orderEntry type="library" exported="" name="me.zhanghai.android.materialprogressbar:library-1.1.7" level="project" />

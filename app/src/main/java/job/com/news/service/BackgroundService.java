@@ -4,18 +4,16 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import job.com.news.Constant;
 import job.com.news.NewsFeedFragment;
-import job.com.news.R;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
@@ -37,7 +35,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by POOJA on 2/20/2018.
+ * Created by Zafar.Hussain on 13/02/2018.
  */
 
 public class BackgroundService extends Service {
@@ -49,8 +47,8 @@ public class BackgroundService extends Service {
     private String emailId, fullName, memberToken;
     private int memberId;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
-    private List<NewsFeedList> newsFeedListTable = new ArrayList<>();
     private Gson gson;
+    private List<NewsFeedList> newsFeedListTable = new ArrayList<>();
     private MemberTable memberTable;
     private NewsListTable newsListTable;
     @Override
@@ -63,9 +61,6 @@ public class BackgroundService extends Service {
         this.context = this;
         this.isRunning = false;
         getPrefData();
-
-        memberTable=new MemberTable(context);
-        newsListTable=new NewsListTable(context);
         this.backgroundThread = new Thread(myTask);
         Log.v("BackgroundService ","Background Service Called");
 
@@ -81,7 +76,7 @@ public class BackgroundService extends Service {
         public void run() {
             // Do something here
             callNewsListAPI(memberToken, memberId);
-            // stopSelf();
+           // stopSelf();
         }
     };
 
@@ -99,9 +94,9 @@ public class BackgroundService extends Service {
         return START_STICKY;
     }
     private void callNewsListAPI(String memberToken, int memberId) {
-        //  mProgressDialog = new ProgressDialog(HomeActivity.this);
-        //  mProgressDialog.setMessage("Loading...");
-        //  mProgressDialog.show();
+      //  mProgressDialog = new ProgressDialog(HomeActivity.this);
+      //  mProgressDialog.setMessage("Loading...");
+      //  mProgressDialog.show();
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
@@ -122,7 +117,7 @@ public class BackgroundService extends Service {
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
-                // mProgressDialog.dismiss();
+               // mProgressDialog.dismiss();
                 String newsList = "";
                 if (response.isSuccessful()) {
 
@@ -204,13 +199,13 @@ public class BackgroundService extends Service {
 
             @Override
             public void onFailure(Call<NewsFeedModelResponse> call, Throwable t) {
-                // mProgressDialog.dismiss();
+               // mProgressDialog.dismiss();
                 t.printStackTrace();
 
                 if (t instanceof NoConnectivityException) {
                     // No internet connection
                     // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
-                    //  setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
+                  //  setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
                 }
             }
         });

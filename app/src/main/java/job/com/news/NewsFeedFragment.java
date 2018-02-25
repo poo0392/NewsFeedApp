@@ -66,9 +66,7 @@ public class NewsFeedFragment extends Fragment {
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
     int memberId;
     ProgressDialog mProgressDialog;
-    DBHelper db;
     NewsListTable newsListTable;
-    //changes added on 09/02
 
 
     @Nullable
@@ -76,7 +74,6 @@ public class NewsFeedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         newsFeedApplication = NewsFeedApplication.getApp();
         mContext = getActivity();
-        db = new DBHelper(mContext);
         newsListTable=new NewsListTable(mContext);
         return inflater.inflate(R.layout.fragment_news_feed, container, false);
     }
@@ -87,7 +84,7 @@ public class NewsFeedFragment extends Fragment {
 
         attachViews(view);
         getPrefData();
-        //callNewsListAPI(memberToken, memberId);
+       // callNewsListAPI(memberToken, memberId);
         // setData();
         /*addNewsFeedItems();
         mAdapter = new HomeDashboardAdapter(HomeActivity.this, mNewsFeedList);
