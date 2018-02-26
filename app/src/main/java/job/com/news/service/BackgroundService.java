@@ -8,14 +8,12 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import job.com.news.Constant;
 import job.com.news.NewsFeedFragment;
 import job.com.news.adapter.ImageAdapter;
-import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
 import job.com.news.db.NewsListTable;
 import job.com.news.helper.ConnectivityInterceptor;
@@ -62,6 +60,7 @@ public class BackgroundService extends Service {
         this.isRunning = false;
         getPrefData();
         this.backgroundThread = new Thread(myTask);
+        newsListTable=new NewsListTable(this);
         Log.v("BackgroundService ","Background Service Called");
 
     }

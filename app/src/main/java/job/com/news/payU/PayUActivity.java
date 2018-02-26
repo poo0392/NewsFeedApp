@@ -192,7 +192,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
          * For Test Environment, merchantKey = "gtKFFx"
          * For Production Environment, merchantKey should be your live key or for testing in live you can use "0MQaQP"
          */
-        mPaymentParams.setKey("0MQaQP");
+        mPaymentParams.setKey("WiCZgZAf"); //0MQaQP
         mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price",0)));
         mPaymentParams.setProductInfo("product_info");
         mPaymentParams.setFirstName("firstname");
