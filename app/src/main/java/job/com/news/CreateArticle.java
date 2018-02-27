@@ -30,6 +30,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -64,6 +65,7 @@ import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.payU.PayUActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -100,9 +102,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     boolean valid = false;
     private int charges;
     String state_arr[], article_arr[], no_of_days_arr[], selectedState, selectedCity, selectedDays;
-    ArrayAdapter<String> state_adapter, article_adapter, city_adapter, publish_days_adapter;
+    ArrayAdapter<String> state_adapter, article_adapter, sub_article_adapter, city_adapter, publish_days_adapter;
     RelativeLayout state_relative, city_relative, article_relative;
-    BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsPublishDaysSpinner;
+    BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsSubArticleSpinner, bsPublishDaysSpinner;
+    LinearLayout ll_sub_article;
     RadioButton article_100d_radio, article_200d_radio, article_300d_radio, article_400d_radio;
     private SessionManager session, langSelection;
     DBHelper db;
@@ -260,16 +263,18 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mDescEdit = (EditText) findViewById(R.id.article_description);
 
         mDateView = (TextView) findViewById(R.id.article_date_value);
-
+        ll_sub_article = (LinearLayout) findViewById(R.id.ll_sub_article);
         bsStateSpinner = (BetterSpinner) findViewById(R.id.state_better_spinner);
         bsCitySpinner = (BetterSpinner) findViewById(R.id.city_better_spinner);
         bsArticleSpinner = (BetterSpinner) findViewById(R.id.article_better_spinner);
+        bsSubArticleSpinner = (BetterSpinner) findViewById(R.id.sub_article_better_spinner);
         bsPublishDaysSpinner = (BetterSpinner) findViewById(R.id.publish_better_spinner);
         bsCitySpinner.setClickable(false);
         bsCitySpinner.setFocusableInTouchMode(false);
 
         article_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, article_arr);
         bsArticleSpinner.setAdapter(article_adapter);// changed mArticleSpinner to bsArticleSpinner
+
 
         publish_days_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, no_of_days_arr);
         bsPublishDaysSpinner.setAdapter(publish_days_adapter);
@@ -310,7 +315,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         if (wordsLength == 0) {
             mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
-            Toast.makeText(getApplicationContext(),mContext.getResources().getString(R.string.toast_msg_desc_select),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), mContext.getResources().getString(R.string.toast_msg_desc_select), Toast.LENGTH_SHORT).show();
         }
        /* bsArticleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -332,6 +337,19 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 categoryId = String.valueOf(position + 1);
                 Log.v("bsArticleSpinner ", "categoryId " + categoryId);
                 // Toast.makeText(CreateArticle.this, mArticleCode, Toast.LENGTH_SHORT).show();
+                if (categoryId.equals("11")) {
+                    ll_sub_article.setVisibility(View.VISIBLE);
+                    sub_article_adapter = new ArrayAdapter<String>(CreateArticle.this, R.layout.spinner_item, getResources().getStringArray(R.array.small_class_sub_category_items));
+                    bsSubArticleSpinner.setAdapter(sub_article_adapter);// changed mArticleSpinner to bsArticleSpinner
+                } else if (categoryId.equals("14")) {
+                    ll_sub_article.setVisibility(View.VISIBLE);
+
+                    sub_article_adapter = new ArrayAdapter<String>(CreateArticle.this, R.layout.spinner_item, getResources().getStringArray(R.array.career_related_sub_category_items));
+                    bsSubArticleSpinner.setAdapter(sub_article_adapter);// changed mArticleSpinner to bsArticleSpinner
+                } else {
+                    ll_sub_article.setVisibility(View.GONE);
+                }
+
             }
         });
 
@@ -741,17 +759,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.article_btn_submit:
                 if (validateFields()) {
-                  /*  Intent intent = new Intent(this, PayUActivity.class);
+                    Intent intent = new Intent(this, PayUActivity.class);
                     intent.putExtra("Price", 1);
                     startActivity(intent);
-                    finish();*/
+                    finish();
 //
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                    postNewsAPI();
+                    // postNewsAPI();
                 }
 
                 break;

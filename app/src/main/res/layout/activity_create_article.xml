@@ -97,6 +97,7 @@
                 </LinearLayout>
             </LinearLayout>
             <!--Article Views Spinner-->
+
             <TextView
                 android:id="@+id/article_type_text"
                 android:layout_width="match_parent"
@@ -116,6 +117,34 @@
                 android:hint="@string/hint_select_article"
                 android:textSize="@dimen/text_small" />
 
+
+            <!--Sub category Article Spinner-->
+
+        <LinearLayout
+            android:id="@+id/ll_sub_article"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/sub_article_type_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingLeft="5dp"
+                android:text="@string/sub_article_lbl"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_small"
+                android:visibility="visible" />
+
+            <com.weiwangcn.betterspinner.library.BetterSpinner
+                android:id="@+id/sub_article_better_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:hint="@string/hint_select_article_sub"
+                android:textSize="@dimen/text_small" />
+        </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

@@ -23,12 +23,10 @@ import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
 import job.com.news.db.PersonalDetails;
 import job.com.news.forgotpassword.ForgotPassword;
@@ -241,16 +239,16 @@ public class LoginActivity extends AppCompatActivity {
 
 
             Call<LoginRegisterResponse> serverResponse = webService.loginRequest(bodyUsername, bodyPwd, bodyNoti, bodyPlat);
-            Log.v("sendlogin ","LoginParameters url : "+serverResponse.request().url());
-            Log.v("sendlogin ","LoginParameters : "+serverResponse.request().body().toString());
-            Log.v("sendlogin ","LoginParameters req : "+serverResponse.request().toString());
+//            Log.v("sendlogin ","LoginParameters url : "+serverResponse.request().url());
+//            Log.v("sendlogin ","LoginParameters : "+serverResponse.request().body().toString());
+//            Log.v("sendlogin ","LoginParameters req : "+serverResponse.request().toString());
            String reqParam = bodyToString(serverResponse.request().body());
-            Log.v("sendlogin ","reqParam : "+reqParam);
+          //  Log.v("sendlogin ","reqParam : "+reqParam);
             serverResponse.enqueue(new Callback<LoginRegisterResponse>() {
                 @Override
                 public void onResponse(Call<LoginRegisterResponse> call, Response<LoginRegisterResponse> response) {
                     progressDialog.dismiss();
-                    Log.v("LoginAPI ", "response " + new Gson().toJson(response.body()));
+                  //  Log.v("LoginAPI ", "response " + new Gson().toJson(response.body()));
                     if (response.isSuccessful()) {
                         LoginRegisterResponse serverResponse = response.body();
                         if (serverResponse.getStatus() == 0) {
@@ -295,8 +293,8 @@ public class LoginActivity extends AppCompatActivity {
                             //login failed
                           //  String desc = serverResponse.getDescription().trim();
                             // Toast.makeText(LoginActivity.this, "Login failed." + desc, Toast.LENGTH_SHORT).show();
-                            Log.v(" sendlogin "," desc "+serverResponse.getDescription());
-                            setFailedAlertDialog(LoginActivity.this, "Failed", serverResponse.getDescription());
+                           // Log.v(" sendlogin "," desc "+serverResponse.getDescription());
+                            setFailedAlertDialog(LoginActivity.this, "Failed", "Invalid Credentials.");
                         }
                     }
                 }

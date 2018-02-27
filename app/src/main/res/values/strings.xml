@@ -19,7 +19,9 @@
     <string name="change_password">Change password</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+    <string name="email_pattern_error">Please enter valid email id</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."
+
     </string>
     <string name="toast_msg_state_validations">Please Select State</string>
     <string name="toast_msg_city_validations">Please Select City</string>
@@ -75,6 +77,8 @@
     <string name="state_lbl">State</string>
     <string name="city_lbl">City</string>
     <string name="article_lbl">Article Type</string>
+    <string name="sub_article_lbl">Sub Article Type</string>
+
     <string name="date_lbl">Date</string>
     <string name="desc_lbl">Description</string>
     <string name="title_lbl">Title</string>
@@ -82,6 +86,7 @@
     <string name="hint_select_state">Select State</string>
     <string name="hint_select_city">Select City</string>
     <string name="hint_select_article">Select Article Category</string>
+    <string name="hint_select_article_sub">Select Article Sub Category</string>
 
 
     <!-- Rupee symbol-->
@@ -116,7 +121,7 @@
     <string name="edu_menu">Educational</string>
 
     <string-array name="article_arr">
-       <!-- <item>Select Article Type</item>-->
+        <!-- <item>Select Article Type</item>-->
         <item>National and International</item>
         <item>Government News</item>
         <item>Social and Related News</item>
@@ -128,6 +133,12 @@
         <item>Agricultural News</item>
         <item>Cinema Related</item>
         <item>Small Classifieds</item>
+        <item>Other and Uncategorized News</item>
+        <item>Entertainment News</item>
+        <item>Career Related</item>
+    </string-array>
+
+    <string-array name="small_class_sub_category_items">
         <item>Property</item>
         <item>Birthday ads</item>
         <item>App Related Ads</item>
@@ -136,9 +147,9 @@
         <item>Loan related</item>
         <item>Matrimony related</item>
         <item>Books and Literature</item>
-        <item>Other and Uncategorized News</item>
-        <item>Entertainment News</item>
-        <item>Career Related</item>
+    </string-array>
+
+    <string-array name="career_related_sub_category_items">
         <item>Job</item>
         <item>Business</item>
         <item>Educational</item>

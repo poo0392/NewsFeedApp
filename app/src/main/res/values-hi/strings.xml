@@ -12,6 +12,7 @@
     <string name="change_password">पासवर्ड बदलें</string>
     <string name="error_incorrect_password">यह पासवर्ड गलत है</string>
     <string name="error_field_required">यह फ़ील्ड आवश्यक है</string>
+    <string name="email_pattern_error">कृपया वैध ईमेल आईडी दर्ज करें</string>
 
     <!--Sign Up-->
     <string name="prompt_first_name">पहला नाम</string>
@@ -60,6 +61,7 @@
     <string name="state_lbl">राज्य</string>
     <string name="city_lbl">शहर</string>
     <string name="article_lbl">अनुच्छेद प्रकार</string>
+    <string name="sub_article_lbl">उप लेख प्रकार</string>
     <string name="date_lbl">तारीख</string>
     <string name="desc_lbl">विवरण</string>
     <string name="title_lbl">शीर्षक</string>
@@ -67,6 +69,7 @@
     <string name="hint_select_state">राज्य चुनें</string>
     <string name="hint_select_city">शहर चुनें</string>
     <string name="hint_select_article">अनुच्छेद श्रेणी चुनें</string>
+    <string name="hint_select_article_sub">अनुच्छेद उप श्रेणी का चयन करें</string>
 
     <!-- navigation text-->
     <string name="recent_news">ताज़ा खबर</string>
@@ -108,6 +111,12 @@
         <item>व्यापार समाचार</item>
         <item>कृषि समाचार</item>
         <item>सिनेमा संबंधित</item>
+        <item>लघु वर्गीकरण</item>
+        <item>अन्य और अवर्गीकृत समाचार</item>
+        <item>मनोरंजन समाचार</item>
+        <item>कैरियर संबंधित</item>
+    </string-array>
+    <string-array name="small_class_sub_category_items">
         <item>संपत्ति</item>
         <item>जन्मदिन विज्ञापन</item>
         <item>ऐप संबंधित विज्ञापन</item>
@@ -116,12 +125,15 @@
         <item>संबंधित ऋण</item>
         <item>विवाह संबंधित</item>
         <item>किताबें और साहित्य</item>
-        <item>अन्य और अवर्गीकृत समाचार</item>
-        <item>मनोरंजन समाचार</item>
+    </string-array>
+
+    <string-array name="career_related_sub_category_items">
         <item>काम</item>
         <item>व्यापार</item>
         <item>शिक्षात्मक</item>
     </string-array>
+
+
 
     <!--menus-->
     <string name="create_article_menu">आलेख बनाएं</string>

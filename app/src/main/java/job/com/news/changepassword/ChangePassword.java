@@ -1,17 +1,24 @@
 package job.com.news.changepassword;
 
 import android.app.ProgressDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.github.javiersantos.materialstyleddialogs.enums.Style;
+
 import job.com.news.Constant;
 import job.com.news.R;
-import job.com.news.forgotpassword.ForgotPassword;
 import job.com.news.forgotpassword.ForgotPasswordResp;
 import job.com.news.interfaces.WebService;
 import job.com.news.sharedpref.MyPreferences;
@@ -28,6 +35,7 @@ public class ChangePassword extends AppCompatActivity {
     private EditText mPwdView;
     private ProgressDialog progressDialog;
     private MyPreferences myPreferences;
+    private int memberId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +44,7 @@ public class ChangePassword extends AppCompatActivity {
 
         myPreferences = MyPreferences.getMyAppPref(this);
         mPwdView = (EditText) findViewById(R.id.pwd_change_pwd);
-
+        getPrefrenceData();
         Button mSubmitButton = (Button) findViewById(R.id.change_pwd_submit_btn);
         mSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,7 +93,14 @@ public class ChangePassword extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
+    private void getPrefrenceData() {
+        //Load Data From SharedPrefernce in UserName & Passowrd
+        try {
+            memberId= myPreferences.getMemberId();
+        } catch (Exception e) {
+            Log.d("Core", "e :" + e.toString());
+        }
+    }
     private void sendForgotPwdReq(String pwd) {
         try {
 
@@ -102,10 +117,13 @@ public class ChangePassword extends AppCompatActivity {
 
             System.out.println(" Change Id : " + myPreferences.getMemberId() + " Token" + myPreferences.getMemberToken());
 
-            RequestBody bodyMemberId = RequestBody.create(MediaType.parse("text/plain"), myPreferences.getMemberId()+"");
-            RequestBody bodyMemberToken = RequestBody.create(MediaType.parse("text/plain"), myPreferences.getMemberToken().trim());
+            RequestBody bodyMemberId = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(memberId));
+            RequestBody bodyMemberToken = RequestBody.create(MediaType.parse("text/plain"), myPreferences.getMemberToken());
             RequestBody bodyPwd = RequestBody.create(MediaType.parse("text/plain"), pwd);
 
+            Log.v("ChangePassword ","bodyMemberId  : "+String.valueOf(memberId));
+            Log.v("ChangePassword ","bodyMemberToken  : "+myPreferences.getMemberToken());
+            Log.v("ChangePassword ","bodyPwd : "+pwd);
 
             Call<ForgotPasswordResp> serverResponse = webService.changePasswordRequest(bodyMemberId, bodyMemberToken, bodyPwd);
 
@@ -117,13 +135,15 @@ public class ChangePassword extends AppCompatActivity {
                         ForgotPasswordResp serverResponse = response.body();
                         if(serverResponse.getStatus() == 0){
                             //register success
-                            String desc = serverResponse.getDescription().trim();
-                            Toast.makeText(ChangePassword.this, desc , Toast.LENGTH_SHORT).show();
-                            finish();
+                            String desc = serverResponse.getDescription();
+                            Toast.makeText(ChangePassword.this, "0" , Toast.LENGTH_SHORT).show();
+                           // showSuccessAlertDialog(ChangePassword.this, "Success", "Your new password is sent to your email id");
+                         //   finish();
                         } else {
                             //login failed
-                            String desc = serverResponse.getDescription().trim();
-                            Toast.makeText(ChangePassword.this, desc , Toast.LENGTH_SHORT).show();
+                            String desc = serverResponse.getDescription();
+                            Toast.makeText(ChangePassword.this, "1" , Toast.LENGTH_SHORT).show();
+                           // setFailedAlertDialog(ChangePassword.this, "Failed", "Invalid Credentials.");
                         }
                     }
                 }
@@ -138,5 +158,36 @@ public class ChangePassword extends AppCompatActivity {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+    private void showSuccessAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_success)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        //password change success
+                        finish();
+                    }
+                })
+                .show();
+    }
+    private void setFailedAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_failed)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

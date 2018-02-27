@@ -11,6 +11,7 @@
     <string name="change_password">पासवर्ड बदला</string>
     <string name="error_incorrect_password">हा संकेतशब्द चुकीचा आहे</string>
     <string name="error_field_required">हे फील्ड आवश्यक आहे</string>
+    <string name="email_pattern_error">कृपया वैध ईमेल आयडी प्रविष्ट करा</string>
 
     <!--Sign Up-->
     <string name="prompt_first_name">पहिले नाव</string>
@@ -60,6 +61,7 @@
     <string name="state_lbl">राज्य</string>
     <string name="city_lbl">शहर</string>
     <string name="article_lbl">लेख प्रकार</string>
+    <string name="sub_article_lbl">उप लेख प्रकार</string>
     <string name="date_lbl">तारीख</string>
     <string name="desc_lbl">वर्णन</string>
     <string name="title_lbl">शीर्षक</string>
@@ -68,6 +70,7 @@
     <string name="hint_select_state">राज्य निवडा</string>
     <string name="hint_select_city">शहर निवडा</string>
     <string name="hint_select_article">अनुच्छेद श्रेणी निवडा</string>
+    <string name="hint_select_article_sub">अनुच्छेद उप श्रेणी निवडा</string>
 
     <!-- navigation text-->
     <string name="recent_news">ताजी बातमी</string>
@@ -98,7 +101,7 @@
     <string name="edu_menu">शैक्षणिक</string>
 
     <string-array name="article_arr">
-       <!-- <item>लेख प्रकार निवडा</item>-->
+        <!-- <item>लेख प्रकार निवडा</item>-->
         <item>राष्ट्रीय आणि आंतरराष्ट्रीय</item>
         <item>सरकारी बातम्या</item>
         <item>सामाजिक आणि संबंधित बातम्या</item>
@@ -109,6 +112,12 @@
         <item>व्यवसाय बातम्या</item>
         <item>कृषी बातम्य</item>
         <item>सिनेमा संबंधित</item>
+        <item>छोट्या जाहिराती</item>
+        <item>इतर आणि अश्रेणीबद्ध बातम्या</item>
+        <item>मनोरंजन बातम्या</item>
+        <item>करियर संबंधित</item>
+    </string-array>
+    <string-array name="small_class_sub_category_items">
         <item>मालमत्ता</item>
         <item>वाढदिवस जाहिराती</item>
         <item>अॅप संबंधित जाहिराती</item>
@@ -117,12 +126,15 @@
         <item>कर्ज संबंधित</item>
         <item>विवाह संबंधित</item>
         <item>पुस्तके आणि साहित्य</item>
-        <item>इतर आणि अश्रेणीबद्ध बातम्या</item>
-        <item>मनोरंजन बातम्या</item>
+    </string-array>
+
+
+    <string-array name="career_related_sub_category_items">
         <item>जॉब</item>
         <item>व्यवसाय</item>
         <item>शैक्षणिक</item>
     </string-array>
+
 
     <!--menus-->
     <string name="create_article_menu">लेख तयार करा</string>

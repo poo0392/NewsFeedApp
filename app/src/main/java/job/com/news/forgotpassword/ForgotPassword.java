@@ -1,21 +1,27 @@
 package job.com.news.forgotpassword;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.github.javiersantos.materialstyleddialogs.enums.Style;
+
 import job.com.news.Constant;
-import job.com.news.HomeActivity;
-import job.com.news.LoginActivity;
 import job.com.news.R;
 import job.com.news.interfaces.WebService;
-import job.com.news.register.LoginRegisterResponse;
+import job.com.news.sharedpref.MyPreferences;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -28,6 +34,7 @@ public class ForgotPassword extends AppCompatActivity {
 
     private EditText mEmailView;
     private ProgressDialog progressDialog;
+    private MyPreferences myPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,12 @@ public class ForgotPassword extends AppCompatActivity {
             // Check for a valid password, if the user entered one.
             if (TextUtils.isEmpty(email)) {
                 mEmailView.setError(getString(R.string.error_field_required));
+
+                focusView = mEmailView;
+                cancel = true;
+            } else if (!TextUtils.isEmpty(email) && !(Patterns.EMAIL_ADDRESS.matcher(email).matches())) {
+                mEmailView.setError(getString(R.string.email_pattern_error));
+
                 focusView = mEmailView;
                 cancel = true;
             }
@@ -79,7 +92,7 @@ public class ForgotPassword extends AppCompatActivity {
                 sendForgotPwdReq(email);
             }
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -106,17 +119,20 @@ public class ForgotPassword extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ForgotPasswordResp> call, Response<ForgotPasswordResp> response) {
                     progressDialog.dismiss();
-                    if(response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         ForgotPasswordResp serverResponse = response.body();
-                        if(serverResponse.getStatus() == 0){
+                        if (serverResponse.getStatus() == 0) {
                             //register success
-                            String desc = serverResponse.getDescription().trim();
-                            Toast.makeText(ForgotPassword.this, desc , Toast.LENGTH_SHORT).show();
-                            finish();
+                            String desc = serverResponse.getDescription();
+                            Toast.makeText(ForgotPassword.this, desc, Toast.LENGTH_SHORT).show();
+                            showSuccessAlertDialog(ForgotPassword.this, "Success", "Your new password is sent to your email id");
+
                         } else {
                             //login failed
-                            String desc = serverResponse.getDescription().trim();
-                            Toast.makeText(ForgotPassword.this, desc , Toast.LENGTH_SHORT).show();
+                            String desc = serverResponse.getDescription();
+                            Log.v("", "desc : " + desc);
+                          //  Toast.makeText(ForgotPassword.this, "failed", Toast.LENGTH_SHORT).show();
+                            setFailedAlertDialog(ForgotPassword.this, "Failed", "Invalid Credentials.");
                         }
                     }
                 }
@@ -128,8 +144,39 @@ public class ForgotPassword extends AppCompatActivity {
                 }
             });
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    private void showSuccessAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_success)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        //password change success
+                        finish();
+                    }
+                })
+                .show();
+    }
+    private void setFailedAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_failed)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

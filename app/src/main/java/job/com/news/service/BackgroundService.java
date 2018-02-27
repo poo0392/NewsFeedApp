@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import job.com.news.Constant;
-import job.com.news.NewsFeedFragment;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.db.MemberTable;
 import job.com.news.db.NewsListTable;
@@ -185,8 +184,8 @@ public class BackgroundService extends Service {
                             newsFeedListTable = newsListTable.getAllNewsRecords();
                             Log.v("db ","getNewsFeedList "+newsFeedList.toString());
                             ImageAdapter adapter = new ImageAdapter(context, newsFeedList);
-                            NewsFeedFragment frag =new NewsFeedFragment();
-                            frag.mRecyclerView.setAdapter(adapter);
+                            /*NewsFeedFragment frag =new NewsFeedFragment();
+                            frag.mRecyclerView.setAdapter(adapter);*/
 
                         } catch (Exception e) {
                             e.printStackTrace();
