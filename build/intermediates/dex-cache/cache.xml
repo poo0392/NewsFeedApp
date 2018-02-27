@@ -3,39 +3,12 @@
 
     <item
         is-multidex="false"
-        jar="C:\Users\Zafar.Hussain\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.8.0\c4ba5371a29ac9b2ad6129b1d39ea38750043eff\gson-2.8.0.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="c4ba5371a29ac9b2ad6129b1d39ea38750043eff">
-        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\gson-2.8.0_c343cfbd236ecc58f36b2b2944a491cd433ab1dd.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
+        jar="D:\Studio workspace\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.2"
         sha1="2d616d5e2111ab61aaa7285c83127a2ab08ad6de">
-        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_820bc9bb229642784d59810b3429fd90799ebdf6.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\Zafar.Hussain\.android\build-cache\b8fb4c275b012fd2b061597c75f92a1910009e3e\output\jars\classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="3d7ba2eb647e082275b2a65ddcf2233d4c1e3c1a">
-        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_3a0f03bbe070cd4e142a967dab0f8ba3d56286f9.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="C:\Users\Zafar.Hussain\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp3\logging-interceptor\3.0.0-RC1\83fed2e3554b8bacf8209bc22b62d76d4f674533\logging-interceptor-3.0.0-RC1.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="83fed2e3554b8bacf8209bc22b62d76d4f674533">
-        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\logging-interceptor-3.0.0-RC1_e9a2a522264f1045995174dfb3e4443942361aca.jar" />
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_677f20a55a5ade8c4e875300a85435038b20c8f9.jar" />
     </item>
 
 </items>

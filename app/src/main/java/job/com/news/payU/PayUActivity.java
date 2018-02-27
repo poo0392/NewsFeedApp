@@ -192,17 +192,17 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
          * For Test Environment, merchantKey = "gtKFFx"
          * For Production Environment, merchantKey should be your live key or for testing in live you can use "0MQaQP"
          */
-      /*  mPaymentParams.setKey("WiCZgZAf"); //0MQaQP
+        mPaymentParams.setKey("WiCZgZAf"); //0MQaQP
         mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price",0)));
         mPaymentParams.setProductInfo("product_info");
         mPaymentParams.setFirstName("Siddheshwar");
-        mPaymentParams.setEmail("siddheshwarbhise@yahoo.com");*/
+        mPaymentParams.setEmail("siddheshwarbhise@yahoo.com");
 
-        mPaymentParams.setKey("0MQaQP"); //
+       /* mPaymentParams.setKey("0MQaQP"); //
         mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price",0)));
         mPaymentParams.setProductInfo("product_info");
         mPaymentParams.setFirstName("firstname");
-        mPaymentParams.setEmail("@gmail.com");
+        mPaymentParams.setEmail("@gmail.com");*/
 
 
         /*
@@ -250,7 +250,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
          * if your server side hash generation code is not completely setup. While going live this approach for hash generation
          * should not be used.
          * */
-        String salt = "13p0PXZk";
+        String salt = "fkv0nUwlRI";
         generateHashFromSDK(mPaymentParams, salt);
 
     }
