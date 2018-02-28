@@ -2,7 +2,10 @@ package job.com.news.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     List<RegisterMember> memberList;
     DBHelper db;
     MemberTable memberTable;
+    Bitmap decodedByte;
     //changes added
 
     public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList) {
@@ -107,7 +110,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ArrayList<String> list = newsFeedApplication.hashMap.get("" + position);
             imageViewHolder.textViewSummary.setText(list.get(0));
             imageViewHolder.textViewDate.setText(list.get(2));*/
-Log.v("","clickedPosMemberID "+Integer.parseInt(newsFeedList.get(position).getMember_id()));
+            Log.v("", "clickedPosMemberID " + Integer.parseInt(newsFeedList.get(position).getMember_id()));
             memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
 
 
@@ -123,7 +126,23 @@ Log.v("","clickedPosMemberID "+Integer.parseInt(newsFeedList.get(position).getMe
             imageViewHolder.txt_desc.setText(newsFeedList.get(position).getNews_description());
             imageViewHolder.txt_state.setText(newsFeedList.get(position).getState());
 
-            if (position == 0) {
+            String pic = newsFeedList.get(position).getNews_pic();
+            pic = pic.substring(0, pic.length() - 4);
+            Log.v("", "pic " + pic);
+            byte[] decodedString = Base64.decode(pic, Base64.DEFAULT);
+            decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            Log.v("", "bitmap get image:=>" + decodedByte);
+            try {
+                if (decodedByte == null || decodedByte.equals("")) {
+                    imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
+                } else {
+                    imageViewHolder.imageView.setImageBitmap(decodedByte);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /*if (position == 0) {
                 //lebaon
                 imageViewHolder.imageView.setBackgroundResource(R.drawable.lebanon);
             } else if (position == 1) {
@@ -138,7 +157,7 @@ Log.v("","clickedPosMemberID "+Integer.parseInt(newsFeedList.get(position).getMe
             } else if (position == 4) {
                 //kuldeep
                 imageViewHolder.imageView.setBackgroundResource(R.drawable.kuldeep_yadav);
-            }
+            }*/
 
 
             imageViewHolder.setClickListener(new ItemClickListener() {

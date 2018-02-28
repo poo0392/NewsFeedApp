@@ -12,11 +12,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import job.com.news.db.DBHelper;
 import job.com.news.db.NewsListTable;
 import job.com.news.models.NewsFeedList;
 
@@ -51,6 +49,8 @@ public class NewsDetailScreen extends AppCompatActivity {
 
 
     }
+
+
 
     private void setData() {
         mNewsFeedList = newsListTable.getAllNewsRecords();

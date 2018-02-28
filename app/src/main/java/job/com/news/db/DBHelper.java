@@ -1,19 +1,9 @@
 package job.com.news.db;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import android.widget.Toast;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import job.com.news.models.NewsFeedList;
-import job.com.news.register.RegisterMember;
 
 import static job.com.news.db.MemberTable.MEMBER_ID;
 
@@ -65,7 +55,7 @@ public class DBHelper extends SQLiteOpenHelper{
             NewsListTable.COUNTRY + " TEXT," + NewsListTable.STATE + " TEXT," + NewsListTable.CITY + " TEXT," +
             NewsListTable.NEWS_TITLE + " TEXT," + NewsListTable.NEWS_DESCRIPTION + " TEXT," + NewsListTable.NEWS_PIC + " TEXT," +
             NewsListTable.LIKE_COUNT + " TEXT," + NewsListTable.MEMBER_ID + " INTEGER," +
-            " INTEGER," + NewsListTable.CREATED_AT + " TEXT,"
+            NewsListTable.CREATED_AT + " TEXT,"
             + NewsListTable.IS_UPDATED + " TEXT," + NewsListTable.STATUS + " TEXT," +
             " FOREIGN KEY(" + NewsListTable.MEMBER_ID + ") REFERENCES " +
             MemberTable.MEMBER_TABLE_NAME + "(id)" + ")";

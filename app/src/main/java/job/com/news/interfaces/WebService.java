@@ -85,6 +85,7 @@ public interface WebService {
 
     @Multipart
     @POST("add_news")
+
     Call<NewsFeedModelResponse> post_news(@Part("member_token") RequestBody member_token,
                                           @Part("member_id") RequestBody member_id,
                                           @Part("category_id") RequestBody category_id,
@@ -93,7 +94,9 @@ public interface WebService {
                                           @Part("city_id") RequestBody city_id,
                                           @Part("news_title") RequestBody news_title,
                                           @Part("news_desc") RequestBody news_desc,
-                                          @Part("news_pic") RequestBody news_pic);
+                                         // @Part("news_pic") RequestBody news_pic,
+                                          @Part("news_pic") String news_pic);
+
 
 
 

@@ -70,7 +70,7 @@ public class NewsListTable {
         cv.put(NewsListTable.LIKE_COUNT, model.getLike_count());
         cv.put(NewsListTable.MEMBER_ID, model.getMember_id());
         cv.put(NewsListTable.CREATED_AT, model.getCreated_at());
-        cv.put(NewsListTable.IS_UPDATED, "N");
+        cv.put(NewsListTable.IS_UPDATED, "Y");
         cv.put(NewsListTable.STATUS, "A");
         db.insert(NewsListTable.NEWS_LIST_TABLE_NAME, null, cv);
         Toast.makeText(context, "Data inserted in NewsList Table", Toast.LENGTH_SHORT).show();

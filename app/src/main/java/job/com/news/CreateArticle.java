@@ -45,6 +45,7 @@ import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 import com.weiwangcn.betterspinner.library.BetterSpinner;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -54,6 +55,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import job.com.news.article.City;
 import job.com.news.article.City_Name;
@@ -65,7 +67,6 @@ import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
-import job.com.news.payU.PayUActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -408,7 +409,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 if (wordsLength == 0) {
                     mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
                     Toast.makeText(getApplicationContext(), mContext.getResources().getString(R.string.toast_msg_desc_select), Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     wordsCount = charSequence.toString().trim().length();
                     Log.v("mDescEdit ", "wordsCount " + wordsCount);
                     radioGroupDays.clearCheck();
@@ -774,7 +775,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                     postNewsAPI();
+                    postNewsAPI();
                 }
 
                 break;
@@ -820,6 +821,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mProgressDialog.show();
 
         OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(600000, TimeUnit.MILLISECONDS)
+                .readTimeout(600000, TimeUnit.MILLISECONDS)
                 .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
                 .build();
 
@@ -856,12 +859,12 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         Log.v("postNewsAPI ", "newsPic " + newsPic);
 
         Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
-                paramCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, paramNewsPic);
+                paramCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, newsPic);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
                 mProgressDialog.dismiss();
-                Log.v("PostNewsAPI ", " onResponse ");
+                Log.v("PostNewsAPI ", " onResponse "+ response);
                 if (response.isSuccessful()) {
                     Log.v("PostNewsAPI ", "response " + new Gson().toJson(response.body()));
                   /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
@@ -878,7 +881,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                         finish();
                     } else {
                         Log.v("PostNewsAPI ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
-                        ;
+                        Toast.makeText(mContext,"status " + serverResponse.getStatus() + "\n Failure ", Toast.LENGTH_SHORT).show();
+
                     }
                 }
             }
@@ -1016,36 +1020,74 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             mediaPath = cursor.getString(columnIndex);
+            Log.v("onSelectFromGallery "," mediaPath "+mediaPath);
             String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
+
+            Bitmap original = BitmapFactory.decodeFile(mediaPath);
+            Log.v("onSelectFromGallery "," originalSize "+original.getByteCount());
+
             // Set the Image in ImageView for Previewing the Media
             if (currentImageView == 1) {
                 mArticleImage1.setBackgroundResource(0);
-                mArticleImage1.setImageBitmap(BitmapFactory.decodeFile(mediaPath));
+                 mArticleImage1.setImageBitmap(original);
+               // mArticleImage1.setImageBitmap(decoded);
+
             } else if (currentImageView == 2) {
                 mArticleImage2.setBackgroundResource(0);
-                mArticleImage2.setImageBitmap(BitmapFactory.decodeFile(mediaPath));
+                mArticleImage2.setImageBitmap(original);
+               // mArticleImage2.setImageBitmap(decoded);
             }
 
             cursor.close();
 
+
             Bitmap bmp = BitmapFactory.decodeFile(mediaPath);
 
-            System.out.println("Profile Bitmap Size width : " + bmp.getWidth() + " height : " + bmp.getHeight());
 
+          //  System.out.println("ProfileBitmapSize :"+bmp.getByteCount() +" width : " + bmp.getWidth() + " height : " + bmp.getHeight());
+
+         //   base64Image = getStringImage(decoded);
             base64Image = getStringImage(bmp);
             //imgfriend.setImageBitmap(thumbnail);
-           // System.out.println("profile image : " + base64Image);
+            // System.out.println("profile image : " + base64Image);
             //sendProfileImage(base64Image);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
 
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
     public String getStringImage(Bitmap bmp) {
-
+        Bitmap bp = Bitmap.createScaledBitmap(bmp, 500, 500, false);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 50, baos);
+        //bmp.compress(Bitmap.CompressFormat.PNG, 50, baos);
+        bp.compress(Bitmap.CompressFormat.JPEG, 70, baos);
         //bmp.recycle();
+
+        Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(baos.toByteArray()));
+        Log.v("getStringImage "," compressedSize "+decoded.getByteCount());
+
+
         try {
             baos.close();
         } catch (IOException e) {

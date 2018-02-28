@@ -24,12 +24,10 @@ import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import job.com.news.adapter.ImageAdapter;
-import job.com.news.db.DBHelper;
 import job.com.news.db.NewsListTable;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
@@ -69,13 +67,21 @@ public class NewsFeedFragment extends Fragment {
     NewsListTable newsListTable;
 
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.fragment_news_feed, container, false);
         newsFeedApplication = NewsFeedApplication.getApp();
         mContext = getActivity();
         newsListTable=new NewsListTable(mContext);
-        return inflater.inflate(R.layout.fragment_news_feed, container, false);
+        attachViews(view);
+        loadDatatoList();
+        return view;
     }
 
     @Override
@@ -277,7 +283,7 @@ public class NewsFeedFragment extends Fragment {
                 adapter.notifyDataSetChanged();// notify adapter
 
                 // Toast for task completion
-                Toast.makeText(getActivity(), "Items Updated.",
+                Toast.makeText(mContext, "Items Updated.",
                         Toast.LENGTH_SHORT).show();
 
                 // After adding new data hide the view.
