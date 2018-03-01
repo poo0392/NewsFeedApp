@@ -11,7 +11,7 @@ import static job.com.news.db.MemberTable.MEMBER_ID;
  * Created by POOJA on 2/10/2018.
  */
 
-public class DBHelper extends SQLiteOpenHelper{
+public class DBHelper extends SQLiteOpenHelper {
 
     public static SQLiteDatabase mDb;
     private static DBHelper mInstance = null;
@@ -19,17 +19,16 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME = "NewsApp";
     private static final int DATABASE_VERSION = 1;
 
-    public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
-    {
+    public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
 
-    public DBHelper(Context context)
-    {
+    public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
 
     }
+
     public static synchronized DBHelper getInstance(Context context) {
         if (mInstance == null) {
             mInstance = new DBHelper(context);
@@ -37,7 +36,7 @@ public class DBHelper extends SQLiteOpenHelper{
         return mInstance;
     }
 
-    String personal_details=" CREATE TABLE IF NOT EXISTS " + PersonalDetails.TABLE_NAME +
+    String personal_details = " CREATE TABLE IF NOT EXISTS " + PersonalDetails.TABLE_NAME +
             "(" + PersonalDetails._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + PersonalDetails.MEMBER_ID + " INTEGER," + PersonalDetails.MEMBER_TOKEN + " TEXT,"
             + PersonalDetails.FIRST_NAME + " TEXT," + PersonalDetails.LAST_NAME + " TEXT,"
@@ -60,6 +59,16 @@ public class DBHelper extends SQLiteOpenHelper{
             " FOREIGN KEY(" + NewsListTable.MEMBER_ID + ") REFERENCES " +
             MemberTable.MEMBER_TABLE_NAME + "(id)" + ")";
 
+    String category_query = " CREATE TABLE IF NOT EXISTS " + CategoryMasterTable.CATEGORY_TABLE_NAME +
+            "("/*+CategoryMasterTable.COLUMN_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT,"*/ +
+            CategoryMasterTable.CATEGORY_ID + " INTEGER," + CategoryMasterTable.CATEGORY_NAME + " TEXT)";
+
+    String sub_category_query = " CREATE TABLE IF NOT EXISTS " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME +
+            "(" /*+ SubCategoryTable.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"*/ +
+            SubCategoryTable.SUB_CATEGORY_ID + " INTEGER," + SubCategoryTable.SUB_CATEGORY_NAME + " TEXT," +
+            SubCategoryTable.CATEGORY_ID + " INTEGER," +
+            " FOREIGN KEY(" + SubCategoryTable.CATEGORY_ID + ") REFERENCES " +
+            CategoryMasterTable.CATEGORY_TABLE_NAME + "(category_id)" + ")";
 
       /*
   public void Reset() {
@@ -86,6 +95,11 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL(personal_details);
         db.execSQL(query_member);
         db.execSQL(query_news_list);
+        db.execSQL(category_query);
+        db.execSQL(sub_category_query);
+
+        insertCategory(db);
+        insertSubCategory(db);
         Toast.makeText(context, "Table Created in db", Toast.LENGTH_SHORT).show();
     }
 
@@ -94,11 +108,95 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS " + personal_details);
         db.execSQL("DROP TABLE IF EXISTS " + query_member);
         db.execSQL("DROP TABLE IF EXISTS " + query_news_list);
+        db.execSQL("DROP TABLE IF EXISTS " + category_query);
+        db.execSQL("DROP TABLE IF EXISTS " + sub_category_query);
         onCreate(db);
     }
 
 
+    public void insertCategory(SQLiteDatabase db) {
+//        db = this.getWritableDatabase();
+        db.beginTransaction();
 
+        String ls_sql;
+        /*ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(1,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(2,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(3,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(4,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(5,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(6,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(7,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(8,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(9,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(10,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(11,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(12,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+        ls_sql="INSERT INTO "+CATEGORY_TABLE_NAME+" VALUES(13,"+context.getResources().getString(R.string.national_inter_menu)+")"; db.execSQL(ls_sql);
+*/
 
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(1,'National and International')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(2,'Government News')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(3,'Social and Related News')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(4,'Sports')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(5,'Science and Technology')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(6,'Economical News')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(7,'Health Related')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(8,'Business News')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(9,'Agricultural News')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(10,'Cinema Related')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(11,'Small Classifieds')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(12,'Other and Uncategorized News')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(13,'Entertainment News')";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + CategoryMasterTable.CATEGORY_TABLE_NAME + " VALUES(14,'Career Related')";
+        db.execSQL(ls_sql);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void insertSubCategory(SQLiteDatabase db) {
+     //   db = this.getWritableDatabase();
+        db.beginTransaction();
+
+        String ls_sql;
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(1,'Property',11)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(2,'Birthday Ads',11)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(3,'App Related Ads',11)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(4,'Buy and Sell',11)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(5,'Services',11)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(6,'Loan related',11)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(7,'Matrimony related',11)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(8,'Books and Literature',11)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(9,'Job',14)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(10,'Business',14)";
+        db.execSQL(ls_sql);
+        ls_sql = "INSERT INTO " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " VALUES(11,'Educational',14)";
+        db.execSQL(ls_sql);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
 
 }

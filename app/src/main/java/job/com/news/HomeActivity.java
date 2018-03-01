@@ -51,7 +51,6 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,9 +60,11 @@ import job.com.news.adapter.ExpandListAdapter;
 import job.com.news.adapter.HomeDashboardAdapter;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.changepassword.ChangePassword;
+import job.com.news.db.CategoryMasterTable;
 import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
 import job.com.news.db.NewsListTable;
+import job.com.news.db.SubCategoryTable;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
@@ -121,6 +122,9 @@ public class HomeActivity extends AppCompatActivity
     Gson gson;
     NewsListTable newsListTable;
     MemberTable memberTable;
+    CategoryMasterTable categoryMasterTable;
+    SubCategoryTable subCategoryTable;
+    DBHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,11 +133,18 @@ public class HomeActivity extends AppCompatActivity
         mContext = this;
         newsListTable = new NewsListTable(mContext);
         memberTable = new MemberTable(mContext);
+        categoryMasterTable=new CategoryMasterTable(mContext);
+        subCategoryTable=new SubCategoryTable(mContext);
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
 
-        // DatabaseHelper.getInstance(getApplicationContext());
+        //DBHelper.getInstance(getApplicationContext());
+
+
+
+
+
         gson = new Gson();
         getPrefData();
         callNewsListAPI(memberToken, memberId);
@@ -144,7 +155,8 @@ public class HomeActivity extends AppCompatActivity
         setLocaleLang();
 
         setAppToolbar();
-
+       /* categoryMasterTable.insertCategory();
+        subCategoryTable.insertSubCategory();*/
         /*initialializeComponents();
         setListeners();
         syncNewsList();*/
@@ -486,7 +498,12 @@ public class HomeActivity extends AppCompatActivity
                 R.string.health_rel_menu,
                 R.string.business_news_menu,
                 R.string.agri_news_menu,
-                R.string.cinema_menu
+                R.string.cinema_menu,
+                R.string.small_class_menu,
+                R.string.other_uncat_menu,
+                R.string.ent_news_menu,
+                R.string.career_rel_menu
+
         };
     }
 

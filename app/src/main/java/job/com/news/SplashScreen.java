@@ -1,7 +1,6 @@
 package job.com.news;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -21,6 +20,7 @@ import job.com.news.sharedpref.SessionManager;
 public class SplashScreen extends AppCompatActivity {
     private SessionManager session;
     String DB_PATH;
+    DBHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +28,7 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.splash_screen);
         session = new SessionManager(getApplicationContext());
         DBHelper.getInstance(getApplicationContext());
+
         try {
            /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 DB_PATH = getApplicationContext().getFilesDir().getAbsolutePath().replace("files", "databases") + File.separator;
