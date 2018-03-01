@@ -135,17 +135,19 @@ public class HomeActivity extends AppCompatActivity
 
         // DatabaseHelper.getInstance(getApplicationContext());
         gson = new Gson();
+        getPrefData();
+        callNewsListAPI(memberToken, memberId);
         if (!checkPermission()) {
             requestPermission();
 
         }
         setLocaleLang();
-        getPrefData();
+
         setAppToolbar();
-        callNewsListAPI(memberToken, memberId);
-        initialializeComponents();
+
+        /*initialializeComponents();
         setListeners();
-        syncNewsList();
+        syncNewsList();*/
 
 
         LinearLayout mMenuLayout = (LinearLayout) findViewById(R.id.main_menu_layout);
@@ -427,12 +429,16 @@ public class HomeActivity extends AppCompatActivity
 
                                     }
                                 }
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        initialializeComponents();
+                        setListeners();
+                        syncNewsList();
 
                     }
                 }

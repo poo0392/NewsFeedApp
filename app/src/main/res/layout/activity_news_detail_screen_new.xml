@@ -34,6 +34,8 @@
                 android:layout_gravity="top"
                 android:background="@android:color/transparent"
                 android:minHeight="?attr/actionBarSize"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"
                 app:layout_collapseMode="pin"
                 app:navigationIcon="?attr/homeAsUpIndicator"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">

@@ -25,8 +25,7 @@
             <ImageView
                 android:id="@+id/row_image"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:padding="3dp" />
+                android:layout_height="200dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -69,7 +68,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@+id/txt_post_person_name"
                 android:text="15 mins ago"
-                android:textSize="12sp" />
+                android:textSize="13sp" />
         </RelativeLayout>
         <TextView
             android:id="@+id/txt_desc"

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,6 +128,19 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             imageViewHolder.txt_news_category.setText(newsFeedList.get(position).getCategory());
             imageViewHolder.txt_desc.setText(newsFeedList.get(position).getNews_description());
             imageViewHolder.txt_state.setText(newsFeedList.get(position).getState());
+            String dateTime = newsFeedList.get(position).getCreated_at();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long time = 0;
+            try {
+                time = sdf.parse(dateTime).getTime();
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            long now = System.currentTimeMillis();
+//2018-02-03 14:37:06
+            CharSequence ago = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
+            imageViewHolder.txt_post_time.setText(ago);
 
             String pic = newsFeedList.get(position).getNews_pic();
             pic = pic.substring(0, pic.length() - 4);

@@ -88,15 +88,15 @@ public class NewsFeedFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        attachViews(view);
-        getPrefData();
+     //   attachViews(view);
+     //   getPrefData();
        // callNewsListAPI(memberToken, memberId);
         // setData();
         /*addNewsFeedItems();
         mAdapter = new HomeDashboardAdapter(HomeActivity.this, mNewsFeedList);
         mRecyclerView.setAdapter(mAdapter);*/
         setListeners();
-        loadDatatoList();
+       // loadDatatoList();
     }
 
     private void setListeners() {
