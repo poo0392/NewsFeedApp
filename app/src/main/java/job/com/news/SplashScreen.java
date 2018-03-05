@@ -21,7 +21,7 @@ public class SplashScreen extends AppCompatActivity {
     private SessionManager session;
     String DB_PATH;
     DBHelper db;
-
+    //changes reflect to be 05/03
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

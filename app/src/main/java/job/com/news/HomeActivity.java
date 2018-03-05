@@ -90,7 +90,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 //changes added on 09/02
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
-
+//changes reflect to be 05/03
     private Context mContext;
     private RecyclerView mRecyclerView;
     private ImageAdapter adapter;

@@ -28,6 +28,7 @@ import job.com.news.register.RegisterMember;
 
 public class NewsDetailScreen extends AppCompatActivity {
     //changes added on 09/02
+    //changes reflect to be 05/03
     CollapsingToolbarLayout collapsingToolbar;
     Toolbar mToolbar;
     List<NewsFeedList> mNewsFeedList;

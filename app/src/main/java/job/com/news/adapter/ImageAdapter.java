@@ -47,7 +47,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     MemberTable memberTable;
     Bitmap decodedByte;
     //changes added
-
+//changes reflect to be 05/03
     public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList) {
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;

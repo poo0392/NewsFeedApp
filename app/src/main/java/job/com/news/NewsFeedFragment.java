@@ -49,6 +49,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class NewsFeedFragment extends Fragment {
+    //changes reflect to be 05/03
     public RecyclerView mRecyclerView;
     private ImageAdapter adapter;
     private NewsFeedApplication newsFeedApplication;
