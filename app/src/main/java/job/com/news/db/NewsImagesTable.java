@@ -2,8 +2,13 @@ package job.com.news.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import job.com.news.models.NewsImages;
 
@@ -26,13 +31,12 @@ public class NewsImagesTable {
     SQLiteDatabase db;
     Context context;
 
-    public NewsImagesTable(Context context)
-    {
+    public NewsImagesTable(Context context) {
         this.context = context;
         dbHelper = DBHelper.getInstance(context);
     }
-    public void CRUD(ContentValues cv)
-    {
+
+    public void CRUD(ContentValues cv) {
         dbHelper = DBHelper.getInstance(context);
         db = dbHelper.getWritableDatabase();
 
@@ -51,6 +55,35 @@ public class NewsImagesTable {
 
         db.insert(NEWS_IMAGES_TABLE_NAME, null, cv);
         Toast.makeText(context, "Data inserted in NewsImages Table", Toast.LENGTH_SHORT).show();
+    }
+
+    //
+    public List<NewsImages> getNewsImagesList(int news_id) {
+        db = dbHelper.getWritableDatabase();
+        // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
+        ArrayList<NewsImages> listAll = new ArrayList<NewsImages>();
+        NewsImages model;
+        String query1 = "SELECT * FROM " + NEWS_IMAGES_TABLE_NAME; /*+ " where " + NEWS_ID + " = " + news_id;*/
+        Cursor cursor = db.rawQuery(query1, null);
+
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                model = new NewsImages();
+                model.setId(cursor.getColumnIndex(IMAGE_ID));
+                model.setNews_id(cursor.getString(cursor.getColumnIndex(NEWS_ID)));
+                model.setNews_pic(cursor.getString(cursor.getColumnIndex(NEWS_PIC)));
+                model.setCreated_at(cursor.getString(cursor.getColumnIndex(IMAGE_CREATED_AT)));
+                model.setUpdated_at(cursor.getString(cursor.getColumnIndex(IMAGE_UPDATED_AT)));
+
+                listAll.add(model);
+
+            }
+        }
+        Log.v("DbHelper ", " list from db " + listAll.toString());
+        cursor.close();
+        db.close();
+        return listAll;
     }
 
 }

@@ -56,7 +56,7 @@ public class NewsFeedList {
         private UserModel user;*/
 
 
-    @SerializedName("newsimages")
+    @SerializedName("news_images")
     @Expose
     private List<NewsImages> news_images;
     @SerializedName("member")

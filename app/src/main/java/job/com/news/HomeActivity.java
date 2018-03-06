@@ -52,6 +52,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -122,7 +123,7 @@ public class HomeActivity extends AppCompatActivity
     int memberId;
     private ProgressDialog mProgressDialog;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
-    private List<String> categoryList,catDupList;
+    private List<String> categoryList, catDupList;
     Gson gson;
     NewsListTable newsListTable;
     MemberTable memberTable;
@@ -140,7 +141,7 @@ public class HomeActivity extends AppCompatActivity
         memberTable = new MemberTable(mContext);
         categoryMasterTable = new CategoryMasterTable(mContext);
         subCategoryTable = new SubCategoryTable(mContext);
-        newsImagesTable=new NewsImagesTable(mContext);
+        newsImagesTable = new NewsImagesTable(mContext);
         categoryList = new ArrayList<>();
         catDupList = new ArrayList<>();
         newsFeedApplication = NewsFeedApplication.getApp();
@@ -349,7 +350,6 @@ public class HomeActivity extends AppCompatActivity
         viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
 
 
-
         //
     }
 
@@ -373,7 +373,9 @@ public class HomeActivity extends AppCompatActivity
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
 
+        Log.v("", " memberToken " + memberToken);
         Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId);
+
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
@@ -390,6 +392,7 @@ public class HomeActivity extends AppCompatActivity
                     //    newsList=serverResponse.toString();
                     if (serverResponse.getStatus() == 0) {
                         Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
+                        System.out.println(new Gson().toJson(response.body()));
                         //   Log.v("", "Response " + serverResponse.getNewsFeedList().toString());
                       /*  Log.v("", "News Category " + serverResponse.getNewsFeedList().getCategory());
                         Log.v("", "News Desc " + serverResponse.getNewsFeedList().getNews_description());*/
@@ -406,8 +409,8 @@ public class HomeActivity extends AppCompatActivity
                             NewsFeedList model = new NewsFeedList();
                             try {
                                 RegisterMember member = new RegisterMember();
-                                List<NewsImages> imagesList=new ArrayList<>();
-                                NewsImages imagesModel =new NewsImages();
+                                List<NewsImages> imagesList = new ArrayList<>();
+                                NewsImages imagesModel = new NewsImages();
                                 for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
                                     if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
                                         model.setId(serverResponse.getNewsFeedList().get(i).getId());
@@ -425,6 +428,8 @@ public class HomeActivity extends AppCompatActivity
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
                                         model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
 
+                                        Log.v("", "Log" + Arrays.asList(serverResponse.getNewsFeedList().get(i).getNews_images()));
+
                                         if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
                                             member.setMemberId(model.getMember().getId());
                                             //member.setMemberToken(model.getMember().getMemberToken().trim());
@@ -436,16 +441,20 @@ public class HomeActivity extends AppCompatActivity
                                             memberTable.insertMembers(member);
 
                                         }
+                                        //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
+                                        if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
+                                            for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getNews_images().size(); j++) {
+                                                imagesModel.setId(model.getNews_images().get(j).getId());
+                                                imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
+                                                imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
+                                                imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
+                                                imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
 
-                                        imagesModel.setId(model.getNews_images().get(i).getId());
-                                        imagesModel.setNews_id(model.getNews_images().get(i).getNews_id());
-                                        imagesModel.setNews_pic(model.getNews_images().get(i).getNews_pic());
-                                        imagesModel.setCreated_at(model.getNews_images().get(i).getCreated_at());
-                                        imagesModel.setUpdated_at(model.getNews_images().get(i).getUpdated_at());
-
-                                        imagesList.add(imagesModel);
+                                                imagesList.add(imagesModel);
 //changes 06_03
-                                        newsImagesTable.insertNewsImages(imagesModel);
+                                                newsImagesTable.insertNewsImages(imagesModel);
+                                            }
+                                        }
 
                                         newsListTable.insertNewsList(model);
 
@@ -488,9 +497,9 @@ public class HomeActivity extends AppCompatActivity
 
         }*/
         newsFeedList = newsListTable.getAllNewsRecords();
-       // categoryList = newsListTable.getCategory();
+        // categoryList = newsListTable.getCategory();
 
-        Log.v("","newsFeedList.size() "+newsFeedList.size());
+        Log.v("", "newsFeedList.size() " + newsFeedList.size());
         for (int k = 0; k < newsFeedList.size(); k++) {
             catDupList.add(newsFeedList.get(k).getCategory());
 

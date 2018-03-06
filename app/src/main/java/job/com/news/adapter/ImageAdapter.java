@@ -24,8 +24,10 @@ import job.com.news.NewsFeedApplication;
 import job.com.news.R;
 import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
+import job.com.news.db.NewsImagesTable;
 import job.com.news.interfaces.ItemClickListener;
 import job.com.news.models.NewsFeedList;
+import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
 
 /**
@@ -43,8 +45,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private NewsFeedApplication newsFeedApplication;
     List<NewsFeedList> newsFeedList;
     List<RegisterMember> memberList;
+    List<NewsImages> imagesList;
     DBHelper db;
     MemberTable memberTable;
+    NewsImagesTable newsImagesTable;
     Bitmap decodedByte;
 
     //changes added
@@ -54,7 +58,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.mContext = mContext;
         this.newsFeedList = newsFeedList;
         memberTable = new MemberTable(mContext);
+        newsImagesTable = new NewsImagesTable(mContext);
         memberList = new ArrayList<>();
+        imagesList = new ArrayList<>();
             /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -142,10 +148,12 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 //2018-02-03 14:37:06
             CharSequence ago = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
             imageViewHolder.txt_post_time.setText(ago);
+            imagesList=newsImagesTable.getNewsImagesList(newsFeedList.get(position).getId());
 
-            String pic = newsFeedList.get(position).getNews_pic();
+            String pic = imagesList.get(7).getNews_pic().toString();
+           // Log.v("","pic "+pic);
             if (pic != null) {
-                pic = pic.substring(0, pic.length() - 4);
+                pic = pic.substring(1, pic.length() - 1);
                 Log.v("", "pic " + pic);
                 byte[] decodedString = Base64.decode(pic, Base64.DEFAULT);
                 decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);

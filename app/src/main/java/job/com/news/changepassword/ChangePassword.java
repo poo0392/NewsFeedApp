@@ -126,7 +126,7 @@ public class ChangePassword extends AppCompatActivity {
             Log.v("ChangePassword ","bodyPwd : "+pwd);
 
             Call<ForgotPasswordResp> serverResponse = webService.changePasswordRequest(bodyMemberId, bodyMemberToken, bodyPwd);
-
+            Log.v("ChangePassword ","LoginParameters url : "+serverResponse.request().url());
             serverResponse.enqueue(new Callback<ForgotPasswordResp>() {
                 @Override
                 public void onResponse(Call<ForgotPasswordResp> call, Response<ForgotPasswordResp> response) {
@@ -137,11 +137,12 @@ public class ChangePassword extends AppCompatActivity {
                             //register success
                             String desc = serverResponse.getDescription();
                             Toast.makeText(ChangePassword.this, "0" , Toast.LENGTH_SHORT).show();
-                           // showSuccessAlertDialog(ChangePassword.this, "Success", "Your new password is sent to your email id");
+                            showSuccessAlertDialog(ChangePassword.this, "Success", "Your new password is updated succesfully");
                          //   finish();
                         } else {
                             //login failed
                             String desc = serverResponse.getDescription();
+                            Log.v("ForgotPasswordResp ","failed_desc"+desc);
                             Toast.makeText(ChangePassword.this, "1" , Toast.LENGTH_SHORT).show();
                            // setFailedAlertDialog(ChangePassword.this, "Failed", "Invalid Credentials.");
                         }

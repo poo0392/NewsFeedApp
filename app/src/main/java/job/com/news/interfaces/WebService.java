@@ -70,7 +70,7 @@ public interface WebService {
     @POST("changepassword")
     Call<ForgotPasswordResp> changePasswordRequest(@Part("member_id") RequestBody member_id,
                                                    @Part("member_token") RequestBody member_token,
-                                                   @Part("new_password") RequestBody new_password);
+                                                   @Part("password") RequestBody new_password);
 
     //http://thanehousingfederation.com/newsapp/api/member/news_list
     //@GET("member_token/{member_token}/member_id/{member_id}")
