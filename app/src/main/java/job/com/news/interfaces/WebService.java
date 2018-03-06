@@ -1,5 +1,7 @@
 package job.com.news.interfaces;
 
+import java.util.List;
+
 import job.com.news.article.City;
 import job.com.news.article.State;
 import job.com.news.forgotpassword.ForgotPasswordResp;
@@ -85,7 +87,7 @@ public interface WebService {
 
     @Multipart
     @POST("add_news")
-
+//changes 06_03
     Call<NewsFeedModelResponse> post_news(@Part("member_token") RequestBody member_token,
                                           @Part("member_id") RequestBody member_id,
                                           @Part("category_id") RequestBody category_id,
@@ -95,7 +97,9 @@ public interface WebService {
                                           @Part("news_title") RequestBody news_title,
                                           @Part("news_desc") RequestBody news_desc,
                                          // @Part("news_pic") RequestBody news_pic,
-                                          @Part("news_pic") String news_pic);
+                                          //@Part("news_pic") String[] news_pic);
+                                          @Part("news_pic") List<String> news_pic);
+                                         // @Body String[] news_pic);
 
 
 

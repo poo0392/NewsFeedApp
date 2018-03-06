@@ -46,8 +46,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     DBHelper db;
     MemberTable memberTable;
     Bitmap decodedByte;
+
     //changes added
-//changes reflect to be 05/03
+//changes 06_03
     public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList) {
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;
@@ -143,19 +144,23 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             imageViewHolder.txt_post_time.setText(ago);
 
             String pic = newsFeedList.get(position).getNews_pic();
-            pic = pic.substring(0, pic.length() - 4);
-            Log.v("", "pic " + pic);
-            byte[] decodedString = Base64.decode(pic, Base64.DEFAULT);
-            decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            Log.v("", "bitmap get image:=>" + decodedByte);
-            try {
-                if (decodedByte == null || decodedByte.equals("")) {
-                    imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
-                } else {
-                    imageViewHolder.imageView.setImageBitmap(decodedByte);
+            if (pic != null) {
+                pic = pic.substring(0, pic.length() - 4);
+                Log.v("", "pic " + pic);
+                byte[] decodedString = Base64.decode(pic, Base64.DEFAULT);
+                decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                Log.v("", "bitmap get image:=>" + decodedByte);
+                try {
+                    if (decodedByte == null || decodedByte.equals("")) {
+                        imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
+                    } else {
+                        imageViewHolder.imageView.setImageBitmap(decodedByte);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            }else{
+                imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
             }
 
             /*if (position == 0) {

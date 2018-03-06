@@ -17,6 +17,7 @@ import job.com.news.models.NewsFeedList;
  */
 
 public class NewsListTable {
+    //changes 06_03
     public static final String NEWS_LIST_TABLE_NAME = "NewsList";
     public static final String COLUMN_ID = "column_id";
     public static final String NEWS_ID = "id";
@@ -126,6 +127,26 @@ public class NewsListTable {
             }
         }
         Log.v("DbHelper ", " list from db " + listAll.toString());
+        cursor.close();
+        db.close();
+        return listAll;
+    }
+
+    public List<String> getCategory() {
+        db = dbHelper.getWritableDatabase();
+        ArrayList<String> listAll = new ArrayList<String>();
+
+        String query1 = "SELECT category FROM " + NewsListTable.NEWS_LIST_TABLE_NAME;
+        Cursor cursor = db.rawQuery(query1, null);
+
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+               // model = new NewsFeedList();
+                cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY));
+            }
+        }
+        Log.v("DbHelper getCategory", " list from db " + listAll.toString());
         cursor.close();
         db.close();
         return listAll;

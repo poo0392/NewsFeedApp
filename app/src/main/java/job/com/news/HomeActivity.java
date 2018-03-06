@@ -53,6 +53,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -63,6 +64,7 @@ import job.com.news.changepassword.ChangePassword;
 import job.com.news.db.CategoryMasterTable;
 import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
+import job.com.news.db.NewsImagesTable;
 import job.com.news.db.NewsListTable;
 import job.com.news.db.SubCategoryTable;
 import job.com.news.helper.ConnectivityInterceptor;
@@ -71,6 +73,7 @@ import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedDetails;
 import job.com.news.models.NewsFeedList;
 import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
 import job.com.news.service.AlarmReceiver;
 import job.com.news.sharedpref.MyPreferences;
@@ -90,7 +93,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 //changes added on 09/02
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
-//changes reflect to be 05/03
+    //changes reflect to be 05/03
     private Context mContext;
     private RecyclerView mRecyclerView;
     private ImageAdapter adapter;
@@ -119,9 +122,11 @@ public class HomeActivity extends AppCompatActivity
     int memberId;
     private ProgressDialog mProgressDialog;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
+    private List<String> categoryList,catDupList;
     Gson gson;
     NewsListTable newsListTable;
     MemberTable memberTable;
+    NewsImagesTable newsImagesTable;
     CategoryMasterTable categoryMasterTable;
     SubCategoryTable subCategoryTable;
     DBHelper db;
@@ -133,16 +138,16 @@ public class HomeActivity extends AppCompatActivity
         mContext = this;
         newsListTable = new NewsListTable(mContext);
         memberTable = new MemberTable(mContext);
-        categoryMasterTable=new CategoryMasterTable(mContext);
-        subCategoryTable=new SubCategoryTable(mContext);
+        categoryMasterTable = new CategoryMasterTable(mContext);
+        subCategoryTable = new SubCategoryTable(mContext);
+        newsImagesTable=new NewsImagesTable(mContext);
+        categoryList = new ArrayList<>();
+        catDupList = new ArrayList<>();
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
 
         //DBHelper.getInstance(getApplicationContext());
-
-
-
 
 
         gson = new Gson();
@@ -248,7 +253,7 @@ public class HomeActivity extends AppCompatActivity
     private void syncNewsList() {
         Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
         boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
-        if(alarmRunning == false) {
+        if (alarmRunning == false) {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, 0);
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 500000, pendingIntent);
@@ -343,16 +348,7 @@ public class HomeActivity extends AppCompatActivity
         viewPager = (ViewPager) findViewById(R.id.home_viewpager);
         viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
 
-        pages = new FragmentPagerItems(HomeActivity.this);
-        FragmentPagerItems pages = new FragmentPagerItems(this);
-        for (int titleResId : tabsValues()) {
-            pages.add(FragmentPagerItem.of(getString(titleResId), NewsFeedFragment.class));
-        }
 
-        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(getSupportFragmentManager(), pages);
-
-        viewPager.setAdapter(adapter);
-        viewPagerTab.setViewPager(viewPager);
 
         //
     }
@@ -410,6 +406,8 @@ public class HomeActivity extends AppCompatActivity
                             NewsFeedList model = new NewsFeedList();
                             try {
                                 RegisterMember member = new RegisterMember();
+                                List<NewsImages> imagesList=new ArrayList<>();
+                                NewsImages imagesModel =new NewsImages();
                                 for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
                                     if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
                                         model.setId(serverResponse.getNewsFeedList().get(i).getId());
@@ -421,6 +419,7 @@ public class HomeActivity extends AppCompatActivity
                                         model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
                                         model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
                                         model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
+                                        model.setNews_images(serverResponse.getNewsFeedList().get(i).getNews_images());
                                         model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
                                         model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
@@ -437,6 +436,17 @@ public class HomeActivity extends AppCompatActivity
                                             memberTable.insertMembers(member);
 
                                         }
+
+                                        imagesModel.setId(model.getNews_images().get(i).getId());
+                                        imagesModel.setNews_id(model.getNews_images().get(i).getNews_id());
+                                        imagesModel.setNews_pic(model.getNews_images().get(i).getNews_pic());
+                                        imagesModel.setCreated_at(model.getNews_images().get(i).getCreated_at());
+                                        imagesModel.setUpdated_at(model.getNews_images().get(i).getUpdated_at());
+
+                                        imagesList.add(imagesModel);
+//changes 06_03
+                                        newsImagesTable.insertNewsImages(imagesModel);
+
                                         newsListTable.insertNewsList(model);
 
                                     }
@@ -451,6 +461,7 @@ public class HomeActivity extends AppCompatActivity
                         initialializeComponents();
                         setListeners();
                         syncNewsList();
+                        loadCategoryUI();
 
                     }
                 }
@@ -470,6 +481,31 @@ public class HomeActivity extends AppCompatActivity
         });
     }
 
+    private void loadCategoryUI() {
+        pages = new FragmentPagerItems(HomeActivity.this);
+        FragmentPagerItems pages = new FragmentPagerItems(this);
+        /*for (int titleResId : tabsValues()) {
+
+        }*/
+        newsFeedList = newsListTable.getAllNewsRecords();
+       // categoryList = newsListTable.getCategory();
+
+        Log.v("","newsFeedList.size() "+newsFeedList.size());
+        for (int k = 0; k < newsFeedList.size(); k++) {
+            catDupList.add(newsFeedList.get(k).getCategory());
+
+        }
+        categoryList.addAll(new HashSet<>(catDupList));
+        for (int i = 0; i < categoryList.size(); i++) {
+            pages.add(FragmentPagerItem.of(categoryList.get(i), NewsFeedFragment.class));
+        }
+
+        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(getSupportFragmentManager(), pages);
+
+        viewPager.setAdapter(adapter);
+        viewPagerTab.setViewPager(viewPager);
+    }
+
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)
@@ -487,6 +523,8 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private int[] tabsValues() {
+
+
         return new int[]{
                 R.string.recent_news,
                 R.string.national_inter_menu,

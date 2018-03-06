@@ -3,14 +3,16 @@ package job.com.news.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 import job.com.news.register.RegisterMember;
 
 /**
- * Created by Zafar.Hussain on 12/02/2018.
+ * Created by Pooja.Patil on 12/02/2018.
  */
 
 public class NewsFeedList {
-    //changes added on 09/02
+    //changes 06_03
 
     @SerializedName("id")
     @Expose
@@ -52,6 +54,11 @@ public class NewsFeedList {
         /*@SerializedName("user")
         @Expose
         private UserModel user;*/
+
+
+    @SerializedName("newsimages")
+    @Expose
+    private List<NewsImages> news_images;
     @SerializedName("member")
     @Expose
     private RegisterMember member;
@@ -118,6 +125,14 @@ public class NewsFeedList {
 
     public void setNews_description(String news_description) {
         this.news_description = news_description;
+    }
+
+    public List<NewsImages> getNews_images() {
+        return news_images;
+    }
+
+    public void setNews_images(List<NewsImages> news_images) {
+        this.news_images = news_images;
     }
 
     public String getNews_pic() {

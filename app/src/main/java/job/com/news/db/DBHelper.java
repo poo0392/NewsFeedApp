@@ -12,7 +12,7 @@ import static job.com.news.db.MemberTable.MEMBER_ID;
  */
 
 public class DBHelper extends SQLiteOpenHelper {
-
+    //changes 06_03
     public static SQLiteDatabase mDb;
     private static DBHelper mInstance = null;
     private Context context;
@@ -69,7 +69,11 @@ public class DBHelper extends SQLiteOpenHelper {
             SubCategoryTable.CATEGORY_ID + " INTEGER," +
             " FOREIGN KEY(" + SubCategoryTable.CATEGORY_ID + ") REFERENCES " +
             CategoryMasterTable.CATEGORY_TABLE_NAME + "(category_id)" + ")";
-
+    String images_query = " CREATE TABLE IF NOT EXISTS " + NewsImagesTable.NEWS_IMAGES_TABLE_NAME +
+            "(" + NewsImagesTable.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            NewsImagesTable.IMAGE_ID + " INTEGER," + NewsImagesTable.NEWS_ID + " TEXT," +
+            NewsImagesTable.NEWS_PIC + " TEXT," + NewsImagesTable.IMAGE_CREATED_AT + " TEXT," +
+            NewsImagesTable.IMAGE_UPDATED_AT + " TEXT)";
       /*
   public void Reset() {
         mDbHelper.onUpgrade(mDb, 1, 1);
@@ -97,6 +101,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(query_news_list);
         db.execSQL(category_query);
         db.execSQL(sub_category_query);
+        db.execSQL(images_query);
 
         insertCategory(db);
         insertSubCategory(db);
@@ -110,6 +115,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + query_news_list);
         db.execSQL("DROP TABLE IF EXISTS " + category_query);
         db.execSQL("DROP TABLE IF EXISTS " + sub_category_query);
+        db.execSQL("DROP TABLE IF EXISTS " + images_query);
         onCreate(db);
     }
 
@@ -168,7 +174,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void insertSubCategory(SQLiteDatabase db) {
-     //   db = this.getWritableDatabase();
+        //   db = this.getWritableDatabase();
         db.beginTransaction();
 
         String ls_sql;

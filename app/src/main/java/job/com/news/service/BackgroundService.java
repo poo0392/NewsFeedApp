@@ -186,6 +186,9 @@ public class BackgroundService extends Service {
                             ImageAdapter adapter = new ImageAdapter(context, newsFeedList);
                             /*NewsFeedFragment frag =new NewsFeedFragment();
                             frag.mRecyclerView.setAdapter(adapter);*/
+                            //recyclerView.setAdapter(new RecyclerViewAdapter(newList));
+                            adapter.notifyDataSetChanged();
+                            //changes 06_03
 
                         } catch (Exception e) {
                             e.printStackTrace();

@@ -9,9 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
  */
 
 public class CategoryMasterTable {
-    //added on 01/03
+    //changes 06_03
     public static final String CATEGORY_TABLE_NAME = "category_master";
-   // public static final String COLUMN_ID = "column_id";
+    // public static final String COLUMN_ID = "column_id";
     public static final String CATEGORY_ID = "category_id";
     public static final String CATEGORY_NAME = "category_name";
     //  public static final String CATEGORY_ID = "category_id"; // changes

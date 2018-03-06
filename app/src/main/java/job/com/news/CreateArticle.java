@@ -73,6 +73,7 @@ import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okio.Buffer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -112,11 +113,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     DBHelper db;
     List<RegisterMember> memberList;
     String memberId, memberToken;
-    String base64Image;
+    String base64Image1, base64Image2;
     String emailId, fullName, membertoken;
     int memberid;
     private MyPreferences myPreferences;
     int wordsLength = 0;
+    List<String> newsPic;
+
     //Indonesia
 
 
@@ -245,6 +248,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private void initializeComponents() {
         Log.v("CreateArticle ", "current Lang " + Locale.getDefault().getDisplayLanguage().toString());
         memberList = new ArrayList<>();
+        newsPic=new ArrayList<>();
         mRsSymbol = getResources().getString(R.string.Rs);
         btn_submit = (Button) findViewById(R.id.article_btn_submit);
 
@@ -820,6 +824,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mProgressDialog.setMessage("Loading...");
         mProgressDialog.show();
 
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(600000, TimeUnit.MILLISECONDS)
                 .readTimeout(600000, TimeUnit.MILLISECONDS)
@@ -835,7 +840,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         WebService webService = retrofit.create(WebService.class);
         String newsTitle = mTitleEdit.getText().toString();
         String newsDesc = mDescEdit.getText().toString();
-        String newsPic = base64Image;
+        String newsList[] = {base64Image1, base64Image2};
+
+
         String countryId = "1";
 
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), membertoken);
@@ -856,15 +863,20 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         Log.v("postNewsAPI ", "cityId " + cityId);
         Log.v("postNewsAPI ", "newsTitle " + newsTitle);
         Log.v("postNewsAPI ", "newsDesc " + newsDesc);
-        Log.v("postNewsAPI ", "newsPic " + newsPic);
+     //   Log.v("postNewsAPI ", "newsPic " + Arrays.toString(newsPic));
 
+//changes 06_03
         Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
                 paramCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, newsPic);
+        String reqParam = bodyToString(serverResponse.request().body());
+        Log.v("postNewsAPI ","reqParam : "+reqParam);
+        Log.v("postNewsAPI ","LoginParameters : "+serverResponse.request().body().toString());
+        Log.v("postNewsAPI ","postNewsAPI req : "+serverResponse.request().toString());
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
                 mProgressDialog.dismiss();
-                Log.v("PostNewsAPI ", " onResponse "+ response);
+                Log.v("PostNewsAPI ", " onResponse " + response);
                 if (response.isSuccessful()) {
                     Log.v("PostNewsAPI ", "response " + new Gson().toJson(response.body()));
                   /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
@@ -881,7 +893,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                         finish();
                     } else {
                         Log.v("PostNewsAPI ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
-                        Toast.makeText(mContext,"status " + serverResponse.getStatus() + "\n Failure ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "status " + serverResponse.getStatus() + "\n Failure ", Toast.LENGTH_SHORT).show();
 
                     }
                 }
@@ -900,6 +912,20 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 }
             }
         });
+    }
+
+    private String bodyToString(final RequestBody request) {
+        try {
+            final RequestBody copy = request;
+            final Buffer buffer = new Buffer();
+            if (copy != null)
+                copy.writeTo(buffer);
+            else
+                return "";
+            return buffer.readUtf8();
+        } catch (final IOException e) {
+            return "did not work";
+        }
     }
 
     private void openAlertInfoForKbSettingPopup() {
@@ -1010,6 +1036,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void onSelectFromGalleryResult(Intent data) {
+
         try {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
@@ -1020,34 +1047,38 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             mediaPath = cursor.getString(columnIndex);
-            Log.v("onSelectFromGallery "," mediaPath "+mediaPath);
+            Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
             String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
 
             Bitmap original = BitmapFactory.decodeFile(mediaPath);
-            Log.v("onSelectFromGallery "," originalSize "+original.getByteCount());
+            Log.v("onSelectFromGallery ", " originalSize " + original.getByteCount());
+
+            Bitmap bmp = BitmapFactory.decodeFile(mediaPath);
 
             // Set the Image in ImageView for Previewing the Media
             if (currentImageView == 1) {
                 mArticleImage1.setBackgroundResource(0);
-                 mArticleImage1.setImageBitmap(original);
-               // mArticleImage1.setImageBitmap(decoded);
+                mArticleImage1.setImageBitmap(original);
+                // mArticleImage1.setImageBitmap(decoded);
+
+                base64Image1 = getStringImage(bmp);
+                newsPic.add(base64Image1);
+
 
             } else if (currentImageView == 2) {
                 mArticleImage2.setBackgroundResource(0);
                 mArticleImage2.setImageBitmap(original);
-               // mArticleImage2.setImageBitmap(decoded);
+                // mArticleImage2.setImageBitmap(decoded);
+                base64Image2 = getStringImage(bmp);
+                newsPic.add(base64Image2);
             }
-
             cursor.close();
 
 
-            Bitmap bmp = BitmapFactory.decodeFile(mediaPath);
+            //  System.out.println("ProfileBitmapSize :"+bmp.getByteCount() +" width : " + bmp.getWidth() + " height : " + bmp.getHeight());
 
+            //   base64Image = getStringImage(decoded);
 
-          //  System.out.println("ProfileBitmapSize :"+bmp.getByteCount() +" width : " + bmp.getWidth() + " height : " + bmp.getHeight());
-
-         //   base64Image = getStringImage(decoded);
-            base64Image = getStringImage(bmp);
             //imgfriend.setImageBitmap(thumbnail);
             // System.out.println("profile image : " + base64Image);
             //sendProfileImage(base64Image);
@@ -1055,6 +1086,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             e.printStackTrace();
         }
     }
+
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
@@ -1077,6 +1109,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         return inSampleSize;
     }
+
     public String getStringImage(Bitmap bmp) {
         Bitmap bp = Bitmap.createScaledBitmap(bmp, 500, 500, false);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -1085,7 +1118,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         //bmp.recycle();
 
         Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(baos.toByteArray()));
-        Log.v("getStringImage "," compressedSize "+decoded.getByteCount());
+        Log.v("getStringImage ", " compressedSize " + decoded.getByteCount());
 
 
         try {
