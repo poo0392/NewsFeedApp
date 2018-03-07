@@ -22,23 +22,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import job.com.news.db.MemberTable;
+import job.com.news.db.NewsImagesTable;
 import job.com.news.db.NewsListTable;
 import job.com.news.models.NewsFeedList;
+import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
 
 public class NewsDetailScreen extends AppCompatActivity {
-    //changes added on 09/02
-    //changes reflect to be 05/03
+    //changes added on 08/03
     CollapsingToolbarLayout collapsingToolbar;
     Toolbar mToolbar;
     List<NewsFeedList> mNewsFeedList;
     List<RegisterMember> memberList;
+    List<NewsImages> imagesList;
     NewsFeedApplication newsFeedApplication;
     TextView txtTitle, txtNewsdesc, date,txt_post_time,txt_post_person_name;
     ImageView ivBackground;
     int clickedPosition;
     NewsListTable newsListTable;
     MemberTable memberTable;
+    NewsImagesTable newsImagesTable;
     Bitmap decodedByte;
 
     @Override
@@ -50,8 +53,10 @@ public class NewsDetailScreen extends AppCompatActivity {
 
         newsFeedApplication = NewsFeedApplication.getApp();
         mNewsFeedList = new ArrayList<>();
+        imagesList = new ArrayList<>();
         newsListTable=new NewsListTable(this);
         memberTable=new MemberTable(this);
+        newsImagesTable = new NewsImagesTable(this);
         setAppToolbar();
         getIntentData();
         initializeCompo();
@@ -81,10 +86,11 @@ public class NewsDetailScreen extends AppCompatActivity {
         collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         collapsingToolbar.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 
+        imagesList=newsImagesTable.getNewsImagesList(mNewsFeedList.get(clickedPosition).getId());
 
-        String pic = mNewsFeedList.get(clickedPosition).getNews_pic();
-        pic = pic.substring(0, pic.length() - 4);
-        Log.v("", "pic " + pic);
+        String pic = imagesList.get(7).getNews_pic().toString();
+//        pic = pic.substring(0, pic.length() - 4);
+       // Log.v("", "pic " + pic);
         byte[] decodedString = Base64.decode(pic, Base64.DEFAULT);
         decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         Log.v("", "bitmap get image:=>" + decodedByte);

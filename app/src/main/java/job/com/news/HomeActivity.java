@@ -91,7 +91,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-//changes added on 09/02
+//changes added on 08/03
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     //changes reflect to be 05/03
@@ -389,21 +389,14 @@ public class HomeActivity extends AppCompatActivity
                             .fromJson(String.valueOf(response.body()), collectionType);*/
 
                     NewsFeedModelResponse serverResponse = response.body();
+                    String serverResponse2 = new Gson().toJson(response.body());
+                    Log.v("callNewsListAPI ", "response "+serverResponse2);
                     //    newsList=serverResponse.toString();
                     if (serverResponse.getStatus() == 0) {
-                        Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
-                        System.out.println(new Gson().toJson(response.body()));
-                        //   Log.v("", "Response " + serverResponse.getNewsFeedList().toString());
-                      /*  Log.v("", "News Category " + serverResponse.getNewsFeedList().getCategory());
-                        Log.v("", "News Desc " + serverResponse.getNewsFeedList().getNews_description());*/
-
-//                        serverResponse = gson.fromJson(newsList, NewsFeedModelResponse.class);
-                        //   newsFeedList = serverResponse.getNewsFeedList();
-                        //  gson.fromJson(serverResponse);
-                        //  Log.v("callNewsListAPI ", "response " + newsFeedList.toString());
+                     //   Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
                         try {
                             newsFeedList = serverResponse.getNewsFeedList();
-                            Log.v("", "newsFeedList " + newsFeedList.toString());
+                           // Log.v("", "newsFeedList " + newsFeedList.toString());
 
                             //   loadDatatoList(newsFeedList);
                             NewsFeedList model = new NewsFeedList();

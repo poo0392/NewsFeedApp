@@ -50,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -80,7 +81,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-//changes added on 09/02
+//changes added on 08/03
 public class CreateArticle extends AppCompatActivity implements View.OnClickListener {
     private Spinner mStateSpinner, mCitySpinner, mArticleSpinner;
     private EditText mTitleEdit, mDescEdit;
@@ -248,7 +249,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private void initializeComponents() {
         Log.v("CreateArticle ", "current Lang " + Locale.getDefault().getDisplayLanguage().toString());
         memberList = new ArrayList<>();
-        newsPic=new ArrayList<>();
+        newsPic = new ArrayList<>();
         mRsSymbol = getResources().getString(R.string.Rs);
         btn_submit = (Button) findViewById(R.id.article_btn_submit);
 
@@ -863,36 +864,40 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         Log.v("postNewsAPI ", "cityId " + cityId);
         Log.v("postNewsAPI ", "newsTitle " + newsTitle);
         Log.v("postNewsAPI ", "newsDesc " + newsDesc);
-     //   Log.v("postNewsAPI ", "newsPic " + Arrays.toString(newsPic));
+        String news_pic_str=Arrays.toString(newsList);
+        Log.v("postNewsAPI ", "newsPic " + news_pic_str);
 
 //changes 06_03
         Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
-                paramCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, newsPic);
+                paramCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, newsList);
         String reqParam = bodyToString(serverResponse.request().body());
-        Log.v("postNewsAPI ","reqParam : "+reqParam);
-        Log.v("postNewsAPI ","LoginParameters : "+serverResponse.request().body().toString());
-        Log.v("postNewsAPI ","postNewsAPI req : "+serverResponse.request().toString());
+        Log.v("postNewsAPI ", "reqParam : " + reqParam);
+        Log.v("postNewsAPI ", "LoginParameters : " + serverResponse.request().body().toString());
+        Log.v("postNewsAPI ", "postNewsAPI req : " + serverResponse.request().toString());
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
                 mProgressDialog.dismiss();
                 Log.v("PostNewsAPI ", " onResponse " + response);
                 if (response.isSuccessful()) {
-                    Log.v("PostNewsAPI ", "response " + new Gson().toJson(response.body()));
+
                   /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
                     }.getType();
                     List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
                             .fromJson(String.valueOf(response.body()), collectionType);*/
 
                     NewsFeedModelResponse serverResponse = response.body();
+                    String responseGson = new Gson().toJson(response.body());
+                    Log.v("PostNewsAPI ", "response " + responseGson);
                     //    newsList=serverResponse.toString();
                     if (serverResponse.getStatus() == 0) {
                         //Log.v("PostNewsAPI ", "response " + new Gson().toJson(response.body()));
-                        Intent i = new Intent(CreateArticle.this, HomeActivity.class);
-                        startActivity(i);
-                        finish();
+
+                        showSuccessAlertDialog(CreateArticle.this, "Success", "Your article created succesfully");
                     } else {
                         Log.v("PostNewsAPI ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
+                        setFailedAlertDialog(CreateArticle.this, serverResponse.getStatus().toString(), "Failure");
+
                         Toast.makeText(mContext, "status " + serverResponse.getStatus() + "\n Failure ", Toast.LENGTH_SHORT).show();
 
                     }
@@ -913,7 +918,38 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
         });
     }
-
+    private void showSuccessAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_success)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent i = new Intent(CreateArticle.this, HomeActivity.class);
+                        startActivity(i);
+                        finish();
+                    }
+                })
+                .show();
+    }
+    private void setFailedAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_failed)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
     private String bodyToString(final RequestBody request) {
         try {
             final RequestBody copy = request;

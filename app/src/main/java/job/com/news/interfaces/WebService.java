@@ -18,9 +18,9 @@ import retrofit2.http.Path;
 /**
  * Created by deepak on 5/16/2017.
  */
-
+//changes added on 08/03
 public interface WebService {
-    //changes added on 09/02
+
     //to get state list
     @GET("states")
     Call<State> getStateList();
@@ -97,8 +97,9 @@ public interface WebService {
                                           @Part("news_title") RequestBody news_title,
                                           @Part("news_desc") RequestBody news_desc,
                                          // @Part("news_pic") RequestBody news_pic,
-                                          //@Part("news_pic") String[] news_pic);
-                                          @Part("news_pic") List<String> news_pic);
+                                         // @Part("user_ids[]") String[] ids,
+                                          @Part("news_images[]") String[] news_pic);
+                                         // @Part("news_pic") List<String> news_pic);
                                          // @Body String[] news_pic);
 
 

@@ -33,7 +33,7 @@ import job.com.news.register.RegisterMember;
 /**
  * Created by POOJA on 1/27/2018.
  */
-
+//changes added on 08/03
 public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
@@ -51,8 +51,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     NewsImagesTable newsImagesTable;
     Bitmap decodedByte;
 
-    //changes added
-//changes 06_03
     public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList) {
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;
@@ -152,24 +150,28 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             String pic = imagesList.get(7).getNews_pic().toString();
            // Log.v("","pic "+pic);
-            if (pic != null) {
-                pic = pic.substring(1, pic.length() - 1);
-                Log.v("", "pic " + pic);
-                byte[] decodedString = Base64.decode(pic, Base64.DEFAULT);
-                decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                Log.v("", "bitmap get image:=>" + decodedByte);
-                try {
-                    if (decodedByte == null || decodedByte.equals("")) {
-                        imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
-                    } else {
-                        imageViewHolder.imageView.setImageBitmap(decodedByte);
+        /*    if (pic != null) {
+                //pic = pic.substring(1, pic.length() - 1);
+                //Log.v("", "pic " + pic);
+                //try {
+                    byte[] decodedString = Base64.decode(pic, Base64.DEFAULT);
+                    decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    Log.v("", "bitmap get image:=>" + decodedByte);
+                    try {
+                        if (decodedByte == null || decodedByte.equals("")) {
+                            imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
+                        } else {
+                            imageViewHolder.imageView.setImageBitmap(decodedByte);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
+               *//* }catch (Exception e){
                     e.printStackTrace();
-                }
-            }else{
+                }*//*
+            }else{*/
                 imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
-            }
+         //   }
 
             /*if (position == 0) {
                 //lebaon
