@@ -156,7 +156,7 @@ public class BackgroundService extends Service {
                                         model.setCity(serverResponse.getNewsFeedList().get(i).getCity());
                                         model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
                                         model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
-                                        model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
+                                     //   model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
                                         model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
                                         model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());

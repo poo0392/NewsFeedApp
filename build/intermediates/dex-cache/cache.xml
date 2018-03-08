@@ -3,12 +3,21 @@
 
     <item
         is-multidex="false"
-        jar="D:\Studio workspace\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
+        jar="C:\Users\Zafar.Hussain\.gradle\caches\modules-2\files-2.1\com.squareup.picasso\picasso\2.4.0\f36d2d4e3a36b3259aaf9d004d29b4cdc6c1bfb2\picasso-2.4.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="f36d2d4e3a36b3259aaf9d004d29b4cdc6c1bfb2">
+        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\picasso-2.4.0_798ba10e19e6b5823cd23b45e3fb62f3357eeb0f.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\sdkui\build\intermediates\bundles\default\classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.2"
         sha1="2d616d5e2111ab61aaa7285c83127a2ab08ad6de">
-        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_677f20a55a5ade8c4e875300a85435038b20c8f9.jar" />
+        <dex dex="C:\Users\Zafar.Hussain\Desktop\Pooja\Examples\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_820bc9bb229642784d59810b3429fd90799ebdf6.jar" />
     </item>
 
 </items>

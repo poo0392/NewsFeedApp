@@ -4,8 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,14 +65,14 @@ public class NewsListTable {
         cv.put(NewsListTable.CITY, model.getCity());
         cv.put(NewsListTable.NEWS_TITLE, model.getNews_title());
         cv.put(NewsListTable.NEWS_DESCRIPTION, model.getNews_description());
-        cv.put(NewsListTable.NEWS_PIC, model.getNews_pic());
+      //  cv.put(NewsListTable.NEWS_PIC, model.getNews_pic());
         cv.put(NewsListTable.LIKE_COUNT, model.getLike_count());
         cv.put(NewsListTable.MEMBER_ID, model.getMember_id());
         cv.put(NewsListTable.CREATED_AT, model.getCreated_at());
         cv.put(NewsListTable.IS_UPDATED, "Y");
         cv.put(NewsListTable.STATUS, "A");
         db.insert(NewsListTable.NEWS_LIST_TABLE_NAME, null, cv);
-        Toast.makeText(context, "Data inserted in NewsList Table", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(context, "Data inserted in NewsList Table", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -117,7 +115,7 @@ public class NewsListTable {
                 model.setCity(cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)));
                 model.setNews_title(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)));
                 model.setNews_description(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)));
-                model.setNews_pic(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_PIC)));
+              //  model.setNews_pic(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_PIC)));
                 model.setLike_count(cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)));
                 model.setMember_id(cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)));
                 model.setCreated_at(cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
@@ -126,7 +124,7 @@ public class NewsListTable {
 
             }
         }
-        Log.v("DbHelper ", " list from db " + listAll.toString());
+      //  Log.v("DbHelper ", " list from db " + listAll.toString());
         cursor.close();
         db.close();
         return listAll;
@@ -146,7 +144,7 @@ public class NewsListTable {
                 cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY));
             }
         }
-        Log.v("DbHelper getCategory", " list from db " + listAll.toString());
+      //  Log.v("DbHelper getCategory", " list from db " + listAll.toString());
         cursor.close();
         db.close();
         return listAll;

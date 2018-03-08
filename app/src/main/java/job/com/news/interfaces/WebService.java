@@ -1,7 +1,5 @@
 package job.com.news.interfaces;
 
-import java.util.List;
-
 import job.com.news.article.City;
 import job.com.news.article.State;
 import job.com.news.forgotpassword.ForgotPasswordResp;
@@ -104,6 +102,9 @@ public interface WebService {
 
 
 
+//http://thanehousingfederation.com/newsapp/storage/app/public/upload/news
 
+    @GET("/")
+    Call<String> getImageFromURL(String file_name);
 
 }

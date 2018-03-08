@@ -4,8 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +52,7 @@ public class NewsImagesTable {
         cv.put(IMAGE_UPDATED_AT, model.getUpdated_at());
 
         db.insert(NEWS_IMAGES_TABLE_NAME, null, cv);
-        Toast.makeText(context, "Data inserted in NewsImages Table", Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(context, "Data inserted in NewsImages Table", Toast.LENGTH_SHORT).show();
     }
 
     //
@@ -80,7 +78,7 @@ public class NewsImagesTable {
 
             }
         }
-        Log.v("DbHelper ", " list from db " + listAll.toString());
+       // Log.v("DbHelper ", " list from db " + listAll.toString());
         cursor.close();
         db.close();
         return listAll;

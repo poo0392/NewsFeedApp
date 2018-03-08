@@ -3,7 +3,6 @@ package job.com.news;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,16 +22,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,52 +37,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
-import com.github.javiersantos.materialstyleddialogs.enums.Style;
-import com.google.gson.Gson;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
 import job.com.news.adapter.ExpandListAdapter;
-import job.com.news.adapter.HomeDashboardAdapter;
-import job.com.news.adapter.ImageAdapter;
 import job.com.news.changepassword.ChangePassword;
-import job.com.news.db.CategoryMasterTable;
-import job.com.news.db.DBHelper;
-import job.com.news.db.MemberTable;
-import job.com.news.db.NewsImagesTable;
-import job.com.news.db.NewsListTable;
-import job.com.news.db.SubCategoryTable;
-import job.com.news.helper.ConnectivityInterceptor;
-import job.com.news.helper.NoConnectivityException;
-import job.com.news.interfaces.WebService;
-import job.com.news.models.NewsFeedDetails;
-import job.com.news.models.NewsFeedList;
-import job.com.news.models.NewsFeedModelResponse;
-import job.com.news.models.NewsImages;
-import job.com.news.register.RegisterMember;
 import job.com.news.service.AlarmReceiver;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -96,64 +56,38 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     //changes reflect to be 05/03
     private Context mContext;
-    private RecyclerView mRecyclerView;
-    private ImageAdapter adapter;
-    //private HashMap<String, ArrayList<String>> hashMap;
-    private NewsFeedApplication newsFeedApplication;
-
     private LinearLayout mSmallClassiLayout, mCareerLayout;
     private TextView menuSmallClassi;
     private TextView menuCareer, txt_header_username, txt_header_email;
     private static final int PERMISSION_REQUEST_CODE = 200;
     private SessionManager session, langSelection;
     Toolbar toolbar;
+    private MyPreferences myPreferences;
+    String emailId, fullName, memberToken;
+    int memberId;
+    LinearLayout ll_linBase;
+    private NewsFeedApplication newsFeedApplication;
     ExpandListAdapter listAdapter;
     List<String> listDataHeader;
     HashMap<String, List<String>> listDataChild, listThirdLevelChild;
     List<HashMap<String, List<String>>> data;
     ExpandableListView expListView;
-    HomeDashboardAdapter mAdapter;
-    List<NewsFeedDetails> mNewsFeedList;
-    private FragmentPagerItemAdapter mFPIAdapter;
-    private FragmentPagerItems pages;
-    private ViewPager viewPager;
-    private SmartTabLayout viewPagerTab;
-    private MyPreferences myPreferences;
-    String emailId, fullName, memberToken;
-    int memberId;
-    private ProgressDialog mProgressDialog;
-    private List<NewsFeedList> newsFeedList = new ArrayList<>();
-    private List<String> categoryList, catDupList;
-    Gson gson;
-    NewsListTable newsListTable;
-    MemberTable memberTable;
-    NewsImagesTable newsImagesTable;
-    CategoryMasterTable categoryMasterTable;
-    SubCategoryTable subCategoryTable;
-    DBHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mContext = this;
-        newsListTable = new NewsListTable(mContext);
-        memberTable = new MemberTable(mContext);
-        categoryMasterTable = new CategoryMasterTable(mContext);
-        subCategoryTable = new SubCategoryTable(mContext);
-        newsImagesTable = new NewsImagesTable(mContext);
-        categoryList = new ArrayList<>();
-        catDupList = new ArrayList<>();
         newsFeedApplication = NewsFeedApplication.getApp();
-        session = new SessionManager(getApplicationContext());
-        langSelection = new SessionManager(getApplicationContext());
-
+        session = new SessionManager(mContext);
+        langSelection = new SessionManager(mContext);
+        ll_linBase=(LinearLayout)findViewById(R.id.ll_linBase);
         //DBHelper.getInstance(getApplicationContext());
 
+        callHomeFragment();
 
-        gson = new Gson();
         getPrefData();
-        callNewsListAPI(memberToken, memberId);
+       // callNewsListAPI(memberToken, memberId);
         if (!checkPermission()) {
             requestPermission();
 
@@ -161,6 +95,7 @@ public class HomeActivity extends AppCompatActivity
         setLocaleLang();
 
         setAppToolbar();
+        initialializeComponents();
        /* categoryMasterTable.insertCategory();
         subCategoryTable.insertSubCategory();*/
         /*initialializeComponents();
@@ -250,7 +185,12 @@ public class HomeActivity extends AppCompatActivity
 
 
     }
-
+    public void callHomeFragment() {
+      FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        tx.replace(R.id.content_frame, new HomeFragment());
+        // tx.addToBackStack(null);
+        tx.commit();
+    }
     private void syncNewsList() {
         Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
         boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
@@ -262,13 +202,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-    private void getPrefData() {
-        myPreferences = MyPreferences.getMyAppPref(this);
-        memberId = myPreferences.getMemberId();
-        memberToken = myPreferences.getMemberToken().trim();
-        emailId = myPreferences.getEmailId().trim();
-        fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
-    }
+
     //navigation Change
 
     public void setLocale(String lang) {
@@ -346,216 +280,18 @@ public class HomeActivity extends AppCompatActivity
         // adapter = new ImageAdapter(HomeActivity.this);
         // mRecyclerView.setAdapter(adapter);
 
-        viewPager = (ViewPager) findViewById(R.id.home_viewpager);
-        viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
+       //
 
 
         //
     }
 
-    private void callNewsListAPI(String memberToken, int memberId) {
-        mProgressDialog = new ProgressDialog(HomeActivity.this);
-        mProgressDialog.setMessage("Loading...");
-        mProgressDialog.show();
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        WebService webService = retrofit.create(WebService.class);
-
-        RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
-        RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-
-        Log.v("", " memberToken " + memberToken);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId);
-
-        serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
-            @Override
-            public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
-                mProgressDialog.dismiss();
-                String newsList = "";
-                if (response.isSuccessful()) {
-
-                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
-                    }.getType();
-                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
-                            .fromJson(String.valueOf(response.body()), collectionType);*/
-
-                    NewsFeedModelResponse serverResponse = response.body();
-                    String serverResponse2 = new Gson().toJson(response.body());
-                    Log.v("callNewsListAPI ", "response "+serverResponse2);
-                    //    newsList=serverResponse.toString();
-                    if (serverResponse.getStatus() == 0) {
-                     //   Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
-                        try {
-                            newsFeedList = serverResponse.getNewsFeedList();
-                           // Log.v("", "newsFeedList " + newsFeedList.toString());
-
-                            //   loadDatatoList(newsFeedList);
-                            NewsFeedList model = new NewsFeedList();
-                            try {
-                                RegisterMember member = new RegisterMember();
-                                List<NewsImages> imagesList = new ArrayList<>();
-                                NewsImages imagesModel = new NewsImages();
-                                for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
-                                    if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
-                                        model.setId(serverResponse.getNewsFeedList().get(i).getId());
-                                        model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
-                                        model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
-                                        model.setCountry(serverResponse.getNewsFeedList().get(i).getCountry());
-                                        model.setState(serverResponse.getNewsFeedList().get(i).getState());
-                                        model.setCity(serverResponse.getNewsFeedList().get(i).getCity());
-                                        model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
-                                        model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
-                                        model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
-                                        model.setNews_images(serverResponse.getNewsFeedList().get(i).getNews_images());
-                                        model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
-                                        model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
-                                        model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
-                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
-
-                                        Log.v("", "Log" + Arrays.asList(serverResponse.getNewsFeedList().get(i).getNews_images()));
-
-                                        if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
-                                            member.setMemberId(model.getMember().getId());
-                                            //member.setMemberToken(model.getMember().getMemberToken().trim());
-                                            member.setFirstName(model.getMember().getFirstName().trim());
-                                            member.setLastName(model.getMember().getLastName().trim());
-                                            member.setEmailId(model.getMember().getEmailId().trim());
-                                            member.setMobile(model.getMember().getMobile());
-
-                                            memberTable.insertMembers(member);
-
-                                        }
-                                        //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
-                                        if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
-                                            for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getNews_images().size(); j++) {
-                                                imagesModel.setId(model.getNews_images().get(j).getId());
-                                                imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
-                                                imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
-                                                imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
-                                                imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
-
-                                                imagesList.add(imagesModel);
-//changes 06_03
-                                                newsImagesTable.insertNewsImages(imagesModel);
-                                            }
-                                        }
-
-                                        newsListTable.insertNewsList(model);
-
-                                    }
-                                }
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        initialializeComponents();
-                        setListeners();
-                        syncNewsList();
-                        loadCategoryUI();
-
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<NewsFeedModelResponse> call, Throwable t) {
-                mProgressDialog.dismiss();
-                t.printStackTrace();
-
-                if (t instanceof NoConnectivityException) {
-                    // No internet connection
-                    // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
-                    setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
-                }
-            }
-        });
-    }
-
-    private void loadCategoryUI() {
-        pages = new FragmentPagerItems(HomeActivity.this);
-        FragmentPagerItems pages = new FragmentPagerItems(this);
-        /*for (int titleResId : tabsValues()) {
-
-        }*/
-        newsFeedList = newsListTable.getAllNewsRecords();
-        // categoryList = newsListTable.getCategory();
-
-        Log.v("", "newsFeedList.size() " + newsFeedList.size());
-        for (int k = 0; k < newsFeedList.size(); k++) {
-            catDupList.add(newsFeedList.get(k).getCategory());
-
-        }
-        categoryList.addAll(new HashSet<>(catDupList));
-        for (int i = 0; i < categoryList.size(); i++) {
-            pages.add(FragmentPagerItem.of(categoryList.get(i), NewsFeedFragment.class));
-        }
-
-        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(getSupportFragmentManager(), pages);
-
-        viewPager.setAdapter(adapter);
-        viewPagerTab.setViewPager(viewPager);
-    }
-
-    private void setFailedAlertDialog(Context context, String title, String desc) {
-        new MaterialStyledDialog.Builder(context)
-                .setTitle(title)
-                .setDescription(desc)
-                .setStyle(Style.HEADER_WITH_ICON)
-                .setIcon(R.mipmap.ic_failed)
-                .setPositiveText(R.string.button_ok)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
-    private int[] tabsValues() {
-
-
-        return new int[]{
-                R.string.recent_news,
-                R.string.national_inter_menu,
-                R.string.gov_news_menu,
-                R.string.soc_rel_menu,
-                R.string.sports_menu,
-                R.string.sci_tech_menu,
-                R.string.eco_news_menu,
-                R.string.health_rel_menu,
-                R.string.business_news_menu,
-                R.string.agri_news_menu,
-                R.string.cinema_menu,
-                R.string.small_class_menu,
-                R.string.other_uncat_menu,
-                R.string.ent_news_menu,
-                R.string.career_rel_menu
-
-        };
-    }
-
-    private void addNewsFeedItems() {
-        mNewsFeedList = new ArrayList<>();
-        mNewsFeedList.add(new NewsFeedDetails("'We are here to stay', say Indian-Americans amid growing hate crime incidents in the US", "10 mins ago",
-                "1-01-2018", getResources().getDrawable(R.drawable.lebanon), "Mumbai", "Maharashtra", "John Williams"));
-        mNewsFeedList.add(new NewsFeedDetails("Development of all, appeasement of none: Yogi's mantra for UP", "1 day ago",
-                "12-07-2017", getResources().getDrawable(R.drawable.yogi_adinath), "Mumbai", "Maharashtra", "Richie K"));
-        mNewsFeedList.add(new NewsFeedDetails("India to seal border with Pakistan by 2018: Rajnath Singh", "20 mins ago",
-                "11-04-2017", getResources().getDrawable(R.drawable.india_pak_border), "Mumbai", "Maharashtra", "G K"));
-
+    private void getPrefData() {
+        myPreferences = MyPreferences.getMyAppPref(mContext);
+        memberId = myPreferences.getMemberId();
+        memberToken = myPreferences.getMemberToken().trim();
+        emailId = myPreferences.getEmailId().trim();
+        fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
     }
 
     private void enableExpandableList() {
@@ -572,7 +308,7 @@ public class HomeActivity extends AppCompatActivity
         // set adapter
         // expListView.setAdapter( threeLevelListAdapterAdapter );
 
-        listAdapter = new ExpandListAdapter(this, listDataHeader, listDataChild);
+        listAdapter = new ExpandListAdapter(mContext, listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
 
         setGroupIndicatorToRight();
@@ -582,15 +318,15 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v,
                                         int groupPosition, long id) {
-                Toast.makeText(getApplicationContext(),
+                Toast.makeText(mContext,
                         "Group Clicked " + listDataHeader.get(groupPosition),
                         Toast.LENGTH_SHORT).show();
                 String group = listDataHeader.get(groupPosition);
                 //Log.v(""," group "+group);
-                if (group.equals("Home")) {
+                /*if (group.equals("Home")) {
                     finish();
                     startActivity(getIntent());
-                }/*else if(group.equals("User Profile")){
+                }*//*else if(group.equals("User Profile")){
 
                 }*/
                 //else if()
@@ -636,7 +372,7 @@ public class HomeActivity extends AppCompatActivity
 
                 // till here
                 Toast.makeText(
-                        getApplicationContext(),
+                        mContext,
                         listDataHeader.get(groupPosition)
                                 + " : "
                                 + listDataChild.get(
@@ -647,25 +383,6 @@ public class HomeActivity extends AppCompatActivity
             }
         });
     }
-
-    private void setGroupIndicatorToRight() {
-    /* Get the screen width */
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int width = dm.widthPixels;
-
-        expListView.setIndicatorBounds(width - getDipsFromPixel(35), width
-                - getDipsFromPixel(5));
-    }
-
-    // Convert pixel to dip
-    public int getDipsFromPixel(float pixels) {
-        // Get the screen's density scale
-        final float scale = getResources().getDisplayMetrics().density;
-        // Convert the dps to pixels, based on density scale
-        return (int) (pixels * scale + 0.5f);
-    }
-
     private void prepareListData(List<String> listDataHeader, HashMap<String, List<String>> listDataChild, HashMap<String, List<String>> listThirdLevelChild) {
         listDataHeader.add("Home");
         listDataHeader.add("User Profile");
@@ -703,6 +420,59 @@ public class HomeActivity extends AppCompatActivity
 
         data.add(listThirdLevelChild);
     }
+    private void setGroupIndicatorToRight() {
+    /* Get the screen width */
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+
+        expListView.setIndicatorBounds(width - getDipsFromPixel(35), width
+                - getDipsFromPixel(5));
+    }
+
+    // Convert pixel to dip
+    public int getDipsFromPixel(float pixels) {
+        // Get the screen's density scale
+        final float scale = getResources().getDisplayMetrics().density;
+        // Convert the dps to pixels, based on density scale
+        return (int) (pixels * scale + 0.5f);
+    }
+
+
+    private int[] tabsValues() {
+
+
+        return new int[]{
+                R.string.recent_news,
+                R.string.national_inter_menu,
+                R.string.gov_news_menu,
+                R.string.soc_rel_menu,
+                R.string.sports_menu,
+                R.string.sci_tech_menu,
+                R.string.eco_news_menu,
+                R.string.health_rel_menu,
+                R.string.business_news_menu,
+                R.string.agri_news_menu,
+                R.string.cinema_menu,
+                R.string.small_class_menu,
+                R.string.other_uncat_menu,
+                R.string.ent_news_menu,
+                R.string.career_rel_menu
+
+        };
+    }
+
+    /*private void addNewsFeedItems() {
+        mNewsFeedList = new ArrayList<>();
+        mNewsFeedList.add(new NewsFeedDetails("'We are here to stay', say Indian-Americans amid growing hate crime incidents in the US", "10 mins ago",
+                "1-01-2018", getResources().getDrawable(R.drawable.lebanon), "Mumbai", "Maharashtra", "John Williams"));
+        mNewsFeedList.add(new NewsFeedDetails("Development of all, appeasement of none: Yogi's mantra for UP", "1 day ago",
+                "12-07-2017", getResources().getDrawable(R.drawable.yogi_adinath), "Mumbai", "Maharashtra", "Richie K"));
+        mNewsFeedList.add(new NewsFeedDetails("India to seal border with Pakistan by 2018: Rajnath Singh", "20 mins ago",
+                "11-04-2017", getResources().getDrawable(R.drawable.india_pak_border), "Mumbai", "Maharashtra", "G K"));
+
+    }*/
+
 
     private void setListeners() {
 

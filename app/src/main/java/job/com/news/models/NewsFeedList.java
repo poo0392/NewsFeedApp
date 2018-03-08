@@ -38,9 +38,9 @@ public class NewsFeedList {
     @SerializedName("news_description")
     @Expose
     private String news_description;
-    @SerializedName("news_pic")
-    @Expose
-    private String news_pic;
+    /* @SerializedName("news_pic")
+     @Expose
+     private String news_pic;*/
     @SerializedName("like_count")
     @Expose
     private String like_count;
@@ -135,13 +135,13 @@ public class NewsFeedList {
         this.news_images = news_images;
     }
 
-    public String getNews_pic() {
+   /* public String getNews_pic() {
         return news_pic;
     }
 
     public void setNews_pic(String news_pic) {
         this.news_pic = news_pic;
-    }
+    }*/
 
     public String getLike_count() {
         return like_count;
@@ -193,7 +193,7 @@ public class NewsFeedList {
                 ", city='" + city + '\'' +
                 ", news_title='" + news_title + '\'' +
                 ", news_description='" + news_description + '\'' +
-                ", news_pic='" + news_pic + '\'' +
+                // ", news_pic='" + news_pic + '\'' +
                 ", like_count='" + like_count + '\'' +
                 ", member_id='" + member_id + '\'' +
                 ", created_at='" + created_at + '\'' +

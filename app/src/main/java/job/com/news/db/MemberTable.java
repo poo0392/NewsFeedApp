@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +55,7 @@ public class MemberTable {
         cv.put(MemberTable.STATUS, "A");
 
         db.insert(MemberTable.MEMBER_TABLE_NAME, null, cv);
-        Toast.makeText(context, "Data inserted in db", Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(context, "Data inserted in db", Toast.LENGTH_SHORT).show();
     }
 
     public boolean checkUser(int member_id) {
@@ -91,7 +90,7 @@ public class MemberTable {
             model.setMobile(cursor.getString(cursor.getColumnIndex(MemberTable.MOBILE)));
             listAll.add(model);
         }
-        Log.v("DbHelper ", " list from db " + listAll.toString());
+     //   Log.v("DbHelper ", " list from db " + listAll.toString());
         cursor.close();
         db.close();
         return listAll;
@@ -118,7 +117,7 @@ public class MemberTable {
             model.setMobile(cursor.getString(cursor.getColumnIndex(MemberTable.MOBILE)));
             listAll.add(model);
         }
-        Log.v("DbHelper ", " MemList(mrm_id) " + listAll.toString());
+       // Log.v("DbHelper ", " MemList(mrm_id) " + listAll.toString());
         cursor.close();
         db.close();
         return listAll;

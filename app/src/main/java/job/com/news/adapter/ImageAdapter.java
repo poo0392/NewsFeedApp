@@ -1,18 +1,19 @@
 package job.com.news.adapter;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,6 +36,7 @@ import job.com.news.register.RegisterMember;
  */
 //changes added on 08/03
 public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private String IMAGE_URL="http://thanehousingfederation.com/newsapp/storage/app/public/uploads/news";
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
     //private OnLoadMoreListener mOnLoadMoreListener;
@@ -50,6 +52,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     MemberTable memberTable;
     NewsImagesTable newsImagesTable;
     Bitmap decodedByte;
+    ProgressDialog mProgressDialog;
 
     public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList) {
         newsFeedApplication = NewsFeedApplication.getApp();
@@ -118,12 +121,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ArrayList<String> list = newsFeedApplication.hashMap.get("" + position);
             imageViewHolder.textViewSummary.setText(list.get(0));
             imageViewHolder.textViewDate.setText(list.get(2));*/
-            Log.v("", "clickedPosMemberID " + Integer.parseInt(newsFeedList.get(position).getMember_id()));
+           // Log.v("", "clickedPosMemberID " + Integer.parseInt(newsFeedList.get(position).getMember_id()));
             memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
 
 
             //  String member_name=newsFeedList.get(position).getMember().getFirstName();
             String member_name = memberList.get(0).getFirstName();
+
+
 
 //get Member from member_id in news List i.e select member from member_table where member_id = NewsListTable.Member_id;
             // RegisterMember
@@ -148,8 +153,40 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             imageViewHolder.txt_post_time.setText(ago);
             imagesList=newsImagesTable.getNewsImagesList(newsFeedList.get(position).getId());
 
-            String pic = imagesList.get(7).getNews_pic().toString();
-           // Log.v("","pic "+pic);
+            String pic_name = imagesList.get(45).getNews_pic().toString();
+
+            String load_image = IMAGE_URL + "/" + "42IEt1OACW9x.png";
+
+            Picasso.with(mContext)
+                    .load(load_image)
+                    //.placeholder(R.drawable.default_no_image) //this is optional the image to display while the url image is downloading
+                   // .error(Your Drawable Resource)         //this is also optional if some error has occurred in downloading the image this image would be displayed
+                    .into(imageViewHolder.imageView);
+
+            //downloadImageFromURL(load_image);
+
+          //  new DownloadImageFromInternet().execute(load_image);
+
+            /*if(!pic_name.equals("") || (pic_name.substring(0,pic_name.length()-4).equals(".png"))) {
+                try {
+
+                    String load_image = IMAGE_URL + "/" + pic_name;
+                    URL url = new URL(load_image);
+                   // Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+                   // Bitmap bmp = BitmapFactory.decodeStream((InputStream)new URL(load_image).getContent());
+                    InputStream in = new java.net.URL(load_image).openStream();
+                    Bitmap bmp = BitmapFactory.decodeStream(in);
+                    imageViewHolder.imageView.setImageBitmap(bmp);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else {
+                imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
+            }*/
+            // Log.v("","pic "+pic);
         /*    if (pic != null) {
                 //pic = pic.substring(1, pic.length() - 1);
                 //Log.v("", "pic " + pic);
@@ -170,7 +207,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     e.printStackTrace();
                 }*//*
             }else{*/
-                imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
+
          //   }
 
             /*if (position == 0) {
@@ -211,6 +248,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 loadingViewHolder.progressBar.setIndeterminate(true);
             }*/
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -275,6 +314,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return true;
         }
     }
+
 
 }
 

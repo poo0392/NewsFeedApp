@@ -2,11 +2,8 @@ package job.com.news.db;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-import android.widget.Toast;
 
 import job.com.news.register.RegisterMember;
 
@@ -56,7 +53,7 @@ public class PersonalDetails {
         cv.put(PersonalDetails.STATUS, "A");
 
         db.insert(PersonalDetails.TABLE_NAME, null, cv);
-        Toast.makeText(context, "Data inserted in db", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(context, "Data inserted in db", Toast.LENGTH_SHORT).show();
     }
 
     public boolean checkUser(int member_id) {
