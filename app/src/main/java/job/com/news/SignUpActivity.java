@@ -44,7 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
+//chnages added on 3/9/2018.
 public class SignUpActivity extends AppCompatActivity {
 
     private TextView mFNameView;
@@ -62,7 +62,6 @@ public class SignUpActivity extends AppCompatActivity {
     MemberTable memberTable;
     PersonalDetails pd;
     private SessionManager session;
-    //changes added on 12/02
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -267,6 +266,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     model.setLastName(serverResponse.getMember().getLastName().trim());
                                     model.setEmailId(serverResponse.getMember().getEmailId().trim());
                                     model.setMobile(serverResponse.getMember().getMobile());
+                                    model.setRole(serverResponse.getMember().getRole());
 
                                     pd.insertMember(model);
 

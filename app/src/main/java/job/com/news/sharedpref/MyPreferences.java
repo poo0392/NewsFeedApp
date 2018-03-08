@@ -89,6 +89,13 @@ public class MyPreferences {
         manipulatePref.setString("membertoken", token);
     }
 
+    public String getRole() {
+        return manipulatePref.getString("role");
+    }
+    public void setRole(String role) {
+        manipulatePref.setString("role", role);
+    }
+
     class ManipulatePref {
 
         final String DEFAULT_Str = null;

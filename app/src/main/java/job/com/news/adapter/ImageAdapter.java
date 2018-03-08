@@ -34,7 +34,7 @@ import job.com.news.register.RegisterMember;
 /**
  * Created by POOJA on 1/27/2018.
  */
-//changes added on 08/03
+//changes added on 3/9/2018.
 public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String IMAGE_URL="http://thanehousingfederation.com/newsapp/storage/app/public/uploads/news";
     private final int VIEW_TYPE_ITEM = 0;
@@ -159,7 +159,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             Picasso.with(mContext)
                     .load(load_image)
-                    //.placeholder(R.drawable.default_no_image) //this is optional the image to display while the url image is downloading
+                    .placeholder(R.drawable.default_no_image) //this is optional the image to display while the url image is downloading
                    // .error(Your Drawable Resource)         //this is also optional if some error has occurred in downloading the image this image would be displayed
                     .into(imageViewHolder.imageView);
 
@@ -210,22 +210,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
          //   }
 
-            /*if (position == 0) {
-                //lebaon
-                imageViewHolder.imageView.setBackgroundResource(R.drawable.lebanon);
-            } else if (position == 1) {
-                //india us
-                imageViewHolder.imageView.setBackgroundResource(R.drawable.india_us);
-            } else if (position == 2) {
-                //yogi
-                imageViewHolder.imageView.setBackgroundResource(R.drawable.yogi_adinath);
-            } else if (position == 3) {
-                //india pak
-                imageViewHolder.imageView.setBackgroundResource(R.drawable.india_pak_border);
-            } else if (position == 4) {
-                //kuldeep
-                imageViewHolder.imageView.setBackgroundResource(R.drawable.kuldeep_yadav);
-            }*/
 
 
             imageViewHolder.setClickListener(new ItemClickListener() {

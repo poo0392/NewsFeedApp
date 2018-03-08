@@ -3,6 +3,7 @@ package job.com.news;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +30,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,21 +39,48 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.github.javiersantos.materialstyleddialogs.enums.Style;
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import job.com.news.adapter.ExpandListAdapter;
 import job.com.news.changepassword.ChangePassword;
+import job.com.news.db.CategoryMasterTable;
+import job.com.news.db.MemberTable;
+import job.com.news.db.NewsImagesTable;
+import job.com.news.db.NewsListTable;
+import job.com.news.db.SubCategoryTable;
+import job.com.news.helper.ConnectivityInterceptor;
+import job.com.news.helper.NoConnectivityException;
+import job.com.news.interfaces.WebService;
+import job.com.news.models.NewsFeedList;
+import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.models.NewsImages;
+import job.com.news.register.RegisterMember;
 import job.com.news.service.AlarmReceiver;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-//changes added on 08/03
+//changes added on 3/9/2018.
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     //changes reflect to be 05/03
@@ -65,6 +94,7 @@ public class HomeActivity extends AppCompatActivity
     private MyPreferences myPreferences;
     String emailId, fullName, memberToken;
     int memberId;
+    String role;
     LinearLayout ll_linBase;
     private NewsFeedApplication newsFeedApplication;
     ExpandListAdapter listAdapter;
@@ -72,6 +102,16 @@ public class HomeActivity extends AppCompatActivity
     HashMap<String, List<String>> listDataChild, listThirdLevelChild;
     List<HashMap<String, List<String>>> data;
     ExpandableListView expListView;
+    ProgressDialog mProgressDialog;
+    NewsListTable newsListTable;
+    MemberTable memberTable;
+    NewsImagesTable newsImagesTable;
+    CategoryMasterTable categoryMasterTable;
+    SubCategoryTable subCategoryTable;
+    private List<NewsFeedList> newsFeedList = new ArrayList<>();
+    private List<String> categoryList, catDupList;
+    Gson gson;
+    Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,13 +121,18 @@ public class HomeActivity extends AppCompatActivity
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(mContext);
         langSelection = new SessionManager(mContext);
-        ll_linBase=(LinearLayout)findViewById(R.id.ll_linBase);
+        ll_linBase = (LinearLayout) findViewById(R.id.ll_linBase);
         //DBHelper.getInstance(getApplicationContext());
 
-        callHomeFragment();
 
         getPrefData();
-       // callNewsListAPI(memberToken, memberId);
+
+        callNewsListAPI(memberToken, memberId);
+        if (role.equals("1")) {
+            callAdminHomeFragment();
+        } else {
+            callHomeFragment();
+        }
         if (!checkPermission()) {
             requestPermission();
 
@@ -185,12 +230,21 @@ public class HomeActivity extends AppCompatActivity
 
 
     }
+
+    private void callAdminHomeFragment() {
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        tx.replace(R.id.content_frame, new AdminHomeFragment());
+        // tx.addToBackStack(null);
+        tx.commit();
+    }
+
     public void callHomeFragment() {
-      FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
         tx.replace(R.id.content_frame, new HomeFragment());
         // tx.addToBackStack(null);
         tx.commit();
     }
+
     private void syncNewsList() {
         Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
         boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
@@ -201,8 +255,151 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+    private void callNewsListAPI(String memberToken, int memberId) {
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.show();
 
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new ConnectivityInterceptor(mContext))
+                .build();
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        WebService webService = retrofit.create(WebService.class);
+
+        RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
+        RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
+
+        Log.v("", " memberToken " + memberToken);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId);
+
+        serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
+            @Override
+            public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
+                mProgressDialog.dismiss();
+                String newsList = "";
+                if (response.isSuccessful()) {
+
+                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
+                    }.getType();
+                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
+                            .fromJson(String.valueOf(response.body()), collectionType);*/
+
+                    NewsFeedModelResponse serverResponse = response.body();
+                    String serverResponse2 = new Gson().toJson(response.body());
+                    Log.v("callNewsListAPI ", "response " + serverResponse2);
+                    //    newsList=serverResponse.toString();
+                    if (serverResponse.getStatus() == 0) {
+                        //   Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
+                        try {
+                            newsFeedList = serverResponse.getNewsFeedList();
+                            // Log.v("", "newsFeedList " + newsFeedList.toString());
+
+                            //   loadDatatoList(newsFeedList);
+                            NewsFeedList model = new NewsFeedList();
+                            try {
+                                RegisterMember member = new RegisterMember();
+                                List<NewsImages> imagesList = new ArrayList<>();
+                                NewsImages imagesModel = new NewsImages();
+                                for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
+                                    if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
+                                        model.setId(serverResponse.getNewsFeedList().get(i).getId());
+                                        model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
+                                        model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
+                                        model.setCountry(serverResponse.getNewsFeedList().get(i).getCountry());
+                                        model.setState(serverResponse.getNewsFeedList().get(i).getState());
+                                        model.setCity(serverResponse.getNewsFeedList().get(i).getCity());
+                                        model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
+                                        model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
+                                        //  model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
+                                        model.setNews_images(serverResponse.getNewsFeedList().get(i).getNews_images());
+                                        model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
+                                        model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
+                                        model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
+                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
+
+                                        Log.v("", "Log" + Arrays.asList(serverResponse.getNewsFeedList().get(i).getNews_images()));
+
+                                        if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
+                                            member.setMemberId(model.getMember().getId());
+                                            //member.setMemberToken(model.getMember().getMemberToken().trim());
+                                            member.setFirstName(model.getMember().getFirstName().trim());
+                                            member.setLastName(model.getMember().getLastName().trim());
+                                            member.setEmailId(model.getMember().getEmailId().trim());
+                                            member.setMobile(model.getMember().getMobile());
+
+                                            memberTable.insertMembers(member);
+
+                                        }
+                                        //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
+                                        if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
+                                            for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getNews_images().size(); j++) {
+                                                imagesModel.setId(model.getNews_images().get(j).getId());
+                                                imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
+                                                imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
+                                                imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
+                                                imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
+
+                                                imagesList.add(imagesModel);
+//changes 06_03
+                                                newsImagesTable.insertNewsImages(imagesModel);
+                                            }
+                                        }
+
+                                        newsListTable.insertNewsList(model);
+
+                                    }
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        //setListeners();
+                        syncNewsList();
+                        // loadCategoryUI();
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NewsFeedModelResponse> call, Throwable t) {
+                mProgressDialog.dismiss();
+                t.printStackTrace();
+
+                if (t instanceof NoConnectivityException) {
+                    // No internet connection
+                    // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                    setFailedAlertDialog(mContext, "Failed", "No Internet! Please Check Your internet connection");
+                }
+            }
+        });
+    }
+
+    private void setFailedAlertDialog(Context context, String title, String desc) {
+        new MaterialStyledDialog.Builder(context)
+                .setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON)
+                .setIcon(R.mipmap.ic_failed)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
     //navigation Change
 
     public void setLocale(String lang) {
@@ -248,7 +445,17 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void initialializeComponents() {
-
+        gson = new Gson();
+        newsListTable = new NewsListTable(mContext);
+        memberTable = new MemberTable(mContext);
+        categoryMasterTable = new CategoryMasterTable(mContext);
+        subCategoryTable = new SubCategoryTable(mContext);
+        newsImagesTable = new NewsImagesTable(mContext);
+        categoryList = new ArrayList<>();
+        catDupList = new ArrayList<>();
+        newsFeedApplication = NewsFeedApplication.getApp();
+        session = new SessionManager(mContext);
+        langSelection = new SessionManager(mContext);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -280,7 +487,7 @@ public class HomeActivity extends AppCompatActivity
         // adapter = new ImageAdapter(HomeActivity.this);
         // mRecyclerView.setAdapter(adapter);
 
-       //
+        //
 
 
         //
@@ -289,6 +496,7 @@ public class HomeActivity extends AppCompatActivity
     private void getPrefData() {
         myPreferences = MyPreferences.getMyAppPref(mContext);
         memberId = myPreferences.getMemberId();
+        role = myPreferences.getRole();
         memberToken = myPreferences.getMemberToken().trim();
         emailId = myPreferences.getEmailId().trim();
         fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
@@ -318,18 +526,25 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v,
                                         int groupPosition, long id) {
-                Toast.makeText(mContext,
-                        "Group Clicked " + listDataHeader.get(groupPosition),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Group Clicked " + listDataHeader.get(groupPosition), Toast.LENGTH_SHORT).show();
                 String group = listDataHeader.get(groupPosition);
                 //Log.v(""," group "+group);
-                /*if (group.equals("Home")) {
-                    finish();
-                    startActivity(getIntent());
-                }*//*else if(group.equals("User Profile")){
+                if (group.equals("Home")) {
+                    fragment = new HomeFragment();
+                }/*else if(group.equals("User Profile")){
 
                 }*/
                 //else if()
+
+                //replacing the fragment
+                if (fragment != null) {
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.content_frame, fragment);
+                    ft.addToBackStack(null);
+                    ft.commit();
+                }
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
                 return false;
             }
         });
@@ -383,6 +598,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
     }
+
     private void prepareListData(List<String> listDataHeader, HashMap<String, List<String>> listDataChild, HashMap<String, List<String>> listThirdLevelChild) {
         listDataHeader.add("Home");
         listDataHeader.add("User Profile");
@@ -420,6 +636,7 @@ public class HomeActivity extends AppCompatActivity
 
         data.add(listThirdLevelChild);
     }
+
     private void setGroupIndicatorToRight() {
     /* Get the screen width */
         DisplayMetrics dm = new DisplayMetrics();
@@ -751,6 +968,7 @@ public class HomeActivity extends AppCompatActivity
                 break;
 
         }*/
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

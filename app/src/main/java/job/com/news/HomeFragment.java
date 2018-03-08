@@ -64,7 +64,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Created by Pooaj.Patil on 08/03/2018.
  */
-
+//changes added on 3/9/2018.
 public class HomeFragment extends Fragment {
     Context mContext;
     Toolbar toolbar;
@@ -105,10 +105,12 @@ public class HomeFragment extends Fragment {
         //setHasOptionsMenu(false);
         mContext = getActivity();
         getPrefData();
-
+        initializeComponents();
         attachViews(view);
-        setClickListeners();
-        callNewsListAPI(memberToken, memberId);
+       // setClickListeners();
+      //  syncNewsList();
+        loadCategoryUI();
+
         return view;
     }
 
@@ -143,145 +145,8 @@ public class HomeFragment extends Fragment {
         viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpagertab);
     }
 
-    private void callNewsListAPI(String memberToken, int memberId) {
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setMessage("Loading...");
-        mProgressDialog.show();
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new ConnectivityInterceptor(mContext))
-                .build();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        WebService webService = retrofit.create(WebService.class);
-
-        RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
-        RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-
-        Log.v("", " memberToken " + memberToken);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId);
-
-        serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
-            @Override
-            public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
-                mProgressDialog.dismiss();
-                String newsList = "";
-                if (response.isSuccessful()) {
-
-                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
-                    }.getType();
-                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
-                            .fromJson(String.valueOf(response.body()), collectionType);*/
-
-                    NewsFeedModelResponse serverResponse = response.body();
-                    String serverResponse2 = new Gson().toJson(response.body());
-                    Log.v("callNewsListAPI ", "response " + serverResponse2);
-                    //    newsList=serverResponse.toString();
-                    if (serverResponse.getStatus() == 0) {
-                        //   Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
-                        try {
-                            newsFeedList = serverResponse.getNewsFeedList();
-                            // Log.v("", "newsFeedList " + newsFeedList.toString());
-
-                            //   loadDatatoList(newsFeedList);
-                            NewsFeedList model = new NewsFeedList();
-                            try {
-                                RegisterMember member = new RegisterMember();
-                                List<NewsImages> imagesList = new ArrayList<>();
-                                NewsImages imagesModel = new NewsImages();
-                                for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
-                                    if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
-                                        model.setId(serverResponse.getNewsFeedList().get(i).getId());
-                                        model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
-                                        model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
-                                        model.setCountry(serverResponse.getNewsFeedList().get(i).getCountry());
-                                        model.setState(serverResponse.getNewsFeedList().get(i).getState());
-                                        model.setCity(serverResponse.getNewsFeedList().get(i).getCity());
-                                        model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
-                                        model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
-                                        //  model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
-                                        model.setNews_images(serverResponse.getNewsFeedList().get(i).getNews_images());
-                                        model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
-                                        model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
-                                        model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
-                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
-
-                                        Log.v("", "Log" + Arrays.asList(serverResponse.getNewsFeedList().get(i).getNews_images()));
-
-                                        if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
-                                            member.setMemberId(model.getMember().getId());
-                                            //member.setMemberToken(model.getMember().getMemberToken().trim());
-                                            member.setFirstName(model.getMember().getFirstName().trim());
-                                            member.setLastName(model.getMember().getLastName().trim());
-                                            member.setEmailId(model.getMember().getEmailId().trim());
-                                            member.setMobile(model.getMember().getMobile());
-
-                                            memberTable.insertMembers(member);
-
-                                        }
-                                        //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
-                                        if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
-                                            for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getNews_images().size(); j++) {
-                                                imagesModel.setId(model.getNews_images().get(j).getId());
-                                                imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
-                                                imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
-                                                imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
-                                                imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
-
-                                                imagesList.add(imagesModel);
-//changes 06_03
-                                                newsImagesTable.insertNewsImages(imagesModel);
-                                            }
-                                        }
-
-                                        newsListTable.insertNewsList(model);
-
-                                    }
-                                }
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        initializeComponents();
-                        //setListeners();
-                        syncNewsList();
-                        loadCategoryUI();
-
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<NewsFeedModelResponse> call, Throwable t) {
-                mProgressDialog.dismiss();
-                t.printStackTrace();
-
-                if (t instanceof NoConnectivityException) {
-                    // No internet connection
-                    // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
-                    setFailedAlertDialog(mContext, "Failed", "No Internet! Please Check Your internet connection");
-                }
-            }
-        });
-    }
-
-    private void syncNewsList() {
-        Intent alarm = new Intent(getActivity(), AlarmReceiver.class);
-        boolean alarmRunning = (PendingIntent.getBroadcast(getActivity(), 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
-        if (alarmRunning == false) {
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, alarm, 0);
-            AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 1000000, pendingIntent);
-        }
-    }
 
     private void loadCategoryUI() {
         pages = new FragmentPagerItems(mContext);
@@ -309,20 +174,6 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void setFailedAlertDialog(Context context, String title, String desc) {
-        new MaterialStyledDialog.Builder(context)
-                .setTitle(title)
-                .setDescription(desc)
-                .setStyle(Style.HEADER_WITH_ICON)
-                .setIcon(R.mipmap.ic_failed)
-                .setPositiveText(R.string.button_ok)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
+
 }
 

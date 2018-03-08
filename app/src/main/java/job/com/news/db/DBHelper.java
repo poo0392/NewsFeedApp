@@ -12,7 +12,7 @@ import static job.com.news.db.MemberTable.MEMBER_ID;
  */
 
 public class DBHelper extends SQLiteOpenHelper {
-    //changes 06_03
+    //chnages added on 3/9/2018.
     public static SQLiteDatabase mDb;
     private static DBHelper mInstance = null;
     private Context context;
@@ -40,7 +40,8 @@ public class DBHelper extends SQLiteOpenHelper {
             "(" + PersonalDetails._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + PersonalDetails.MEMBER_ID + " INTEGER," + PersonalDetails.MEMBER_TOKEN + " TEXT,"
             + PersonalDetails.FIRST_NAME + " TEXT," + PersonalDetails.LAST_NAME + " TEXT,"
-            + PersonalDetails.EMAIL_ID + " TEXT," + PersonalDetails.MOBILE + " TEXT," + PersonalDetails.STATUS + " TEXT)";
+            + PersonalDetails.EMAIL_ID + " TEXT," + PersonalDetails.MOBILE + " TEXT," + PersonalDetails.ROLE + " TEXT,"
+            + PersonalDetails.STATUS + " TEXT)";
 
     String query_member = " CREATE TABLE IF NOT EXISTS " + MemberTable.MEMBER_TABLE_NAME +
             "(" + MemberTable.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"

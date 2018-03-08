@@ -22,6 +22,8 @@
     <color name="text_enabled">#FFFFFFFF</color>
     <color name="text_disabled">#4DFFFFFF</color>
 
+    <color name="inactiveIconColor">#CCFFFAF0</color>
+
 </resources>
     <!--  100% — FF
         95% — F2

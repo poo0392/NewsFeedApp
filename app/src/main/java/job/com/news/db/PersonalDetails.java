@@ -10,7 +10,7 @@ import job.com.news.register.RegisterMember;
 /**
  * Created by POOJA on 2/20/2018.
  */
-
+//chnages added on 3/9/2018.
 public class PersonalDetails {
     private static String TAG = "PersonalDetails";
     public static String TABLE_NAME = "personal_details";
@@ -21,6 +21,7 @@ public class PersonalDetails {
     public static final String LAST_NAME = "last_name";
     public static final String EMAIL_ID = "email_id";
     public static final String MOBILE = "mobile";
+    public static final String ROLE = "role";
     public static final String STATUS = "status";
 
     DBHelper dbHelper;
@@ -50,6 +51,7 @@ public class PersonalDetails {
         cv.put(PersonalDetails.LAST_NAME, model.getLastName());
         cv.put(PersonalDetails.EMAIL_ID, model.getEmailId());
         cv.put(PersonalDetails.MOBILE, model.getMobile());
+        cv.put(PersonalDetails.ROLE, model.getRole());
         cv.put(PersonalDetails.STATUS, "A");
 
         db.insert(PersonalDetails.TABLE_NAME, null, cv);

@@ -15,7 +15,7 @@ import job.com.news.models.NewsFeedList;
  */
 
 public class NewsListTable {
-    //changes 06_03
+    //chnages added on 3/9/2018.
     public static final String NEWS_LIST_TABLE_NAME = "NewsList";
     public static final String COLUMN_ID = "column_id";
     public static final String NEWS_ID = "id";
@@ -108,7 +108,7 @@ public class NewsListTable {
                 cursor.moveToNext();
                 model = new NewsFeedList();
                 model.setId(cursor.getColumnIndex(NewsListTable.NEWS_ID));
-                model.setNews_uuid(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
+                model.setNews_uuid(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)));
                 model.setCategory(cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)));
                 model.setCountry(cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)));
                 model.setState(cursor.getString(cursor.getColumnIndex(NewsListTable.STATE)));

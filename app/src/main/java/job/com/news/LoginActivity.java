@@ -49,7 +49,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
-
+    //chnages added on 3/9/2018.
     // UI references.
     private EditText mUsernameView, mPasswordView;
     private Button mSubmitBtn;
@@ -64,7 +64,6 @@ public class LoginActivity extends AppCompatActivity {
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
     MemberTable memberTable;
     PersonalDetails pd;
-    //changes added on 12/02
 
 
     @Override
@@ -251,14 +250,17 @@ public class LoginActivity extends AppCompatActivity {
                   //  Log.v("LoginAPI ", "response " + new Gson().toJson(response.body()));
                     if (response.isSuccessful()) {
                         LoginRegisterResponse serverResponse = response.body();
+                        String serverrespose2=new Gson().toJson(response.body());
+                        Log.v("LoginAPI ", "response " + serverrespose2);
                         if (serverResponse.getStatus() == 0) {
-                            Log.v("LoginAPI ", "response " + new Gson().toJson(response.body()));
+
                             myPreferences.setFirstName(serverResponse.getMember().getFirstName().trim());
                             myPreferences.setLastName(serverResponse.getMember().getLastName().trim());
                             myPreferences.setEmailId(serverResponse.getMember().getEmailId().trim());
                             myPreferences.setMobile(serverResponse.getMember().getMobile());
                             myPreferences.setMemberId(serverResponse.getMember().getMemberId());
                             myPreferences.setMemberToken(serverResponse.getMember().getMemberToken().trim());
+                            myPreferences.setRole(serverResponse.getMember().getRole());
 
                             System.out.println(
                                     " email : " + myPreferences.getEmailId().trim() + " mob : " + myPreferences.getMobile() + " memberId : "
@@ -280,6 +282,7 @@ public class LoginActivity extends AppCompatActivity {
                                     model.setLastName(serverResponse.getMember().getLastName().trim());
                                     model.setEmailId(serverResponse.getMember().getEmailId().trim());
                                     model.setMobile(serverResponse.getMember().getMobile());
+                                    model.setRole(serverResponse.getMember().getRole());
 
                                     pd.insertMember(model);
 
