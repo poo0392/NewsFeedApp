@@ -128,11 +128,13 @@ public class HomeActivity extends AppCompatActivity
         getPrefData();
 
         callNewsListAPI(memberToken, memberId);
-        if (role.equals("1")) {
+        /*if (role.equals("1")) {
             callAdminHomeFragment();
         } else {
             callHomeFragment();
-        }
+        }*/
+        callHomeFragment();
+
         if (!checkPermission()) {
             requestPermission();
 
@@ -141,11 +143,6 @@ public class HomeActivity extends AppCompatActivity
 
         setAppToolbar();
         initialializeComponents();
-       /* categoryMasterTable.insertCategory();
-        subCategoryTable.insertSubCategory();*/
-        /*initialializeComponents();
-        setListeners();
-        syncNewsList();*/
 
 
         LinearLayout mMenuLayout = (LinearLayout) findViewById(R.id.main_menu_layout);
@@ -274,9 +271,10 @@ public class HomeActivity extends AppCompatActivity
 
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
+       // RequestBody paramN = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
 
         Log.v("", " memberToken " + memberToken);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,"");
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
@@ -531,9 +529,12 @@ public class HomeActivity extends AppCompatActivity
                 //Log.v(""," group "+group);
                 if (group.equals("Home")) {
                     fragment = new HomeFragment();
-                }/*else if(group.equals("User Profile")){
-
-                }*/
+                }
+                if (role.equals("1")) {
+                    if (group.equals("Requests")) {
+                        callAdminHomeFragment();
+                    }
+                }
                 //else if()
 
                 //replacing the fragment
@@ -584,15 +585,16 @@ public class HomeActivity extends AppCompatActivity
                                         int groupPosition, int childPosition, long id) {
                 // TODO Auto-generated method stub
                 // Temporary code:
+               String group_name= listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
+                /*if(group_name.equals("Pending Requests")){
 
+                }else if(group_name.equals("Requests Status")){
+
+                }*/
                 // till here
                 Toast.makeText(
                         mContext,
-                        listDataHeader.get(groupPosition)
-                                + " : "
-                                + listDataChild.get(
-                                listDataHeader.get(groupPosition)).get(
-                                childPosition), Toast.LENGTH_SHORT)
+                        listDataHeader.get(groupPosition)+ " : "+ listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
                         .show();
                 return false;
             }

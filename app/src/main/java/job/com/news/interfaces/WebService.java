@@ -77,7 +77,8 @@ public interface WebService {
     @Multipart
     @POST("news_list")
     Call<NewsFeedModelResponse> getNewsListRequest(@Part("member_token") RequestBody member_token,
-                                                   @Part("member_id") RequestBody member_id);
+                                                   @Part("member_id") RequestBody member_id,
+                                                   @Part("news_status") String news_status);
 
 
     //add_news
