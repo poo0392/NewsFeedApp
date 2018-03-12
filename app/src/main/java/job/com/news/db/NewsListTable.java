@@ -130,6 +130,46 @@ public class NewsListTable {
         return listAll;
     }
 
+    public List<NewsFeedList> getNewsRecordsByCategory(String category) {
+        db = dbHelper.getWritableDatabase();
+        // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
+        ArrayList<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
+        NewsFeedList model;
+        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME+" where "+NewsListTable.CATEGORY+" = '"+category+"'";
+        Cursor cursor = db.rawQuery(query1, null);
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                model = new NewsFeedList();
+                model.setId(cursor.getColumnIndex(NewsListTable.NEWS_ID));
+                model.setNews_uuid(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)));
+                model.setCategory(cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)));
+                model.setCountry(cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)));
+                model.setState(cursor.getString(cursor.getColumnIndex(NewsListTable.STATE)));
+                model.setCity(cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)));
+                model.setNews_title(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)));
+                model.setNews_description(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)));
+                //  model.setNews_pic(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_PIC)));
+                model.setLike_count(cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)));
+                model.setMember_id(cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)));
+                model.setCreated_at(cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
+                // model.setMember(c.getString(c.getColumnIndex(MemberTable.FIRST_NAME)));
+                listAll.add(model);
+            }
+        }
+        return listAll;
+    }
+public int getLastId(){//SELECT last_insert_rowid();
+    db = dbHelper.getWritableDatabase();
+    String query1 = "SELECT last_insert_rowid() ";
+    Cursor cursor = db.rawQuery(query1, null);
+    String id = null;
+    if (cursor.getCount() > 0) {
+        id=  cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_ID));
+    }
+    return Integer.parseInt(id);
+}
+
     public List<String> getCategory() {
         db = dbHelper.getWritableDatabase();
         ArrayList<String> listAll = new ArrayList<String>();

@@ -59,9 +59,16 @@ public class NewsFeedList {
     @SerializedName("news_images")
     @Expose
     private List<NewsImages> news_images;
+
+   /* @SerializedName("member")
+    @Expose
+    private RegisterMember member;*/
+
+
+
     @SerializedName("member")
     @Expose
-    private RegisterMember member;
+    private  List<RegisterMember> membersList;
 
     public int getId() {
         return id;
@@ -174,14 +181,21 @@ public class NewsFeedList {
      public void setUser(UserModel user) {
          this.user = user;
      }*/
-    public RegisterMember getMember() {
+   /* public RegisterMember getMember() {
         return member;
     }
 
     public void setMember(RegisterMember member) {
         this.member = member;
+    }*/
+
+    public List<RegisterMember> getMembersList() {
+        return membersList;
     }
 
+    public void setMembersList(List<RegisterMember> membersList) {
+        this.membersList = membersList;
+    }
     @Override
     public String toString() {
         return "NewsFeedList{" +

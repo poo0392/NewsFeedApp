@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -27,6 +28,7 @@ import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
 import job.com.news.db.NewsImagesTable;
 import job.com.news.interfaces.ItemClickListener;
+import job.com.news.interfaces.OnLoadMoreListener;
 import job.com.news.models.NewsFeedList;
 import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
@@ -37,12 +39,10 @@ import job.com.news.register.RegisterMember;
 //changes added on 3/9/2018.
 public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String IMAGE_URL="http://thanehousingfederation.com/newsapp/storage/app/public/uploads/news";
-    private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
+    private final int VIEW_ITEM = 0;
+    private final int VIEW_PROG = 1;
     //private OnLoadMoreListener mOnLoadMoreListener;
     private boolean isLoading;
-    private int visibleThreshold = 1;
-    private int lastVisibleItem, totalItemCount;
     Context mContext;
     private NewsFeedApplication newsFeedApplication;
     List<NewsFeedList> newsFeedList;
@@ -53,15 +53,25 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     NewsImagesTable newsImagesTable;
     Bitmap decodedByte;
     ProgressDialog mProgressDialog;
+    String from;
 
-    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList) {
+    // The minimum amount of items to have below your current scroll position
+// before loading more.
+    private int visibleThreshold = 10;
+    private int lastVisibleItem, totalItemCount;
+    private boolean loading;
+    private OnLoadMoreListener onLoadMoreListener;
+
+
+    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView,String from) {
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;
         this.newsFeedList = newsFeedList;
+        this.from = from;
         memberTable = new MemberTable(mContext);
         newsImagesTable = new NewsImagesTable(mContext);
-        memberList = new ArrayList<>();
-        imagesList = new ArrayList<>();
+        this.memberList = new ArrayList<>();
+        this.imagesList = new ArrayList<>();
             /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -70,14 +80,27 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     totalItemCount = linearLayoutManager.getItemCount();
                     lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
                     if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                        if (mOnLoadMoreListener != null) {
-                            mOnLoadMoreListener.onLoadMore();
+                        if (onLoadMoreListener != null) {
+                            onLoadMoreListener.onLoadMore();
                         }
                         isLoading = true;
 
                     }
                 }
             });*/
+    }
+
+    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView, List<RegisterMember> memberList, List<NewsImages> imagesList,String from) {
+        newsFeedApplication = NewsFeedApplication.getApp();
+        this.mContext = mContext;
+        this.newsFeedList = newsFeedList;
+        this.memberList = memberList;
+        this.imagesList = imagesList;
+        this.from = from;
+        memberTable = new MemberTable(mContext);
+        newsImagesTable = new NewsImagesTable(mContext);
+
+
     }
 
         /*public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
@@ -92,13 +115,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_ITEM) {
+        if (viewType == VIEW_ITEM) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.news_feed_item, parent, false);
             return new ImageViewHolder(view);
-        } /*else if (viewType == VIEW_TYPE_LOADING) {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.layout_loading_item, parent, false);
-                return new LoadingViewHolder(view);
-            }*/
+        } else if (viewType == VIEW_PROG) {
+               // View view = LayoutInflater.from(mContext).inflate(R.layout.layout_loading_item, parent, false);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.load_more_progressbar, parent, false);
+                return new ProgressViewHolder(view);
+            }
         return null;
     }
 
@@ -122,12 +146,15 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             imageViewHolder.textViewSummary.setText(list.get(0));
             imageViewHolder.textViewDate.setText(list.get(2));*/
            // Log.v("", "clickedPosMemberID " + Integer.parseInt(newsFeedList.get(position).getMember_id()));
-            memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
+            String member_name;
+          //  if(!from.equals("fromApi")) {
+                memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
+                 member_name = memberList.get(0).getFirstName();
+            //}else {
 
-
-            //  String member_name=newsFeedList.get(position).getMember().getFirstName();
-            String member_name = memberList.get(0).getFirstName();
-
+                //  String member_name=newsFeedList.get(position).getMember().getFirstName();
+                 member_name = memberList.get(0).getFirstName();
+          //  }
 
 
 //get Member from member_id in news List i.e select member from member_table where member_id = NewsListTable.Member_id;
@@ -151,9 +178,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 //2018-02-03 14:37:06
             CharSequence ago = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
             imageViewHolder.txt_post_time.setText(ago);
-            imagesList=newsImagesTable.getNewsImagesList(newsFeedList.get(position).getId());
-
-            String pic_name = imagesList.get(45).getNews_pic().toString();
+         //   imagesList=newsImagesTable.getNewsImagesList(newsFeedList.get(position).getId());
+           /* if(from.equals("fromApi")) {
+                String pic_name = imagesList.get(45).getNews_pic().toString();
+            }*/
 
             String load_image = IMAGE_URL + "/" + "42IEt1OACW9x.png";
 
@@ -227,10 +255,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
             });
 
-        }/* else if (holder instanceof LoadingViewHolder) {
-                LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
-                loadingViewHolder.progressBar.setIndeterminate(true);
-            }*/
+        } else  {
+            ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
+        }
+
     }
 
 
@@ -242,10 +270,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return newsFeedList.size();
     }
 
-        /*public void setLoaded() {
-            isLoading = false;
-        }
-
+   /* public void setLoaded() {
+        isLoading = false;
+    }*//*
         public void clearList(){
             app.mImageDetails.clear();
             notifyDataSetChanged();
@@ -255,6 +282,15 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             //addData
             notifyDataSetChanged();
         }*/
+
+    public static class ProgressViewHolder extends RecyclerView.ViewHolder {
+        public ProgressBar progressBar;
+
+        public ProgressViewHolder(View v) {
+            super(v);
+            progressBar = (ProgressBar) v.findViewById(R.id.progressBar1);
+        }
+    }
 
     public class ImageViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {

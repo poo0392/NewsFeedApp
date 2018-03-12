@@ -117,7 +117,8 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
                     /* 0MQaQP is test key in PRODUCTION_ENv just for testing purpose in this app. Merchant should use their
                     * own key in PRODUCTION_ENV
                     */
-                    ((EditText) findViewById(R.id.editTextMerchantKey)).setText("0MQaQP");
+                   // ((EditText) findViewById(R.id.editTextMerchantKey)).setText("0MQaQP");
+                    ((EditText) findViewById(R.id.editTextMerchantKey)).setText("WiCZgZAf");
                 }
                 else{
                     //set the test key in test environment
@@ -243,7 +244,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
         payuConfig.setEnvironment(environment);
 
         //TODO It is recommended to generate hash from server only. Keep your key and salt in server side hash generation code.
-       // generateHashFromServer(mPaymentParams);
+        generateHashFromServer(mPaymentParams);
 
         /**
          * Below approach for generating hash is not recommended. However, this approach can be used to test in PRODUCTION_ENV
@@ -251,7 +252,8 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
          * should not be used.
          * */
         String salt = "fkv0nUwlRI";
-        generateHashFromSDK(mPaymentParams, salt);
+      //  generateHashFromSDK(mPaymentParams, salt);
+
 
     }
 
@@ -402,7 +404,9 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
             try {
 
                 //TODO Below url is just for testing purpose, merchant needs to replace this with their server side hash generation url
-                URL url = new URL("https://payu.herokuapp.com/get_hash");
+              //  URL url = new URL("https://payu.herokuapp.com/get_hash");
+                URL url = new URL("http://thanehousingfederation.com/newsapp/payuhash.php");
+
 
                 // get the payuConfig first
                 String postParam = postParams[0];

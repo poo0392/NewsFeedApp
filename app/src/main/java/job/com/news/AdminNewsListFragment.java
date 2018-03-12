@@ -74,7 +74,7 @@ public class AdminNewsListFragment extends Fragment {
 
         newsFeedList = newsListTable.getAllNewsRecords();
         Log.v("db ","getNewsFeedList "+newsFeedList.toString());
-        adapter = new ImageAdapter(getActivity(), newsFeedList);
+        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "");
         mRecyclerView.setAdapter(adapter);
     }
 }

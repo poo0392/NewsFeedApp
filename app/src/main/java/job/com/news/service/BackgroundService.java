@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import job.com.news.Constant;
+import job.com.news.NewsFeedFragment;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.db.MemberTable;
 import job.com.news.db.NewsListTable;
@@ -107,11 +108,13 @@ public class BackgroundService extends Service {
                 .build();
 
         WebService webService = retrofit.create(WebService.class);
-
+        int id = newsListTable.getLastId();
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
+        RequestBody last_id = RequestBody.create(MediaType.parse("text/plain"), "" + id);
 
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,"");
+        Log.v("", " memberToken " + memberToken);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,last_id);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
@@ -160,18 +163,20 @@ public class BackgroundService extends Service {
                                         model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
                                         model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
-                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
+                                        model.setMembersList(serverResponse.getNewsFeedList().get(i).getMembersList());
 
-                                        if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
-                                            member.setMemberId(model.getMember().getId());
-                                            //   member.setMemberToken(model.getMember().getMemberToken().trim());
-                                            member.setFirstName(model.getMember().getFirstName().trim());
-                                            member.setLastName(model.getMember().getLastName().trim());
-                                            member.setEmailId(model.getMember().getEmailId().trim());
-                                            member.setMobile(model.getMember().getMobile());
+                                        for(int j=0;j<serverResponse.getNewsFeedList().get(i).getMembersList().size();j++) {
+                                            if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMembersList().get(j).getId())) {
+                                                member.setMemberId(model.getMembersList().get(j).getId());
+                                                //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
+                                                member.setFirstName(model.getMembersList().get(j).getFirstName().trim());
+                                                member.setLastName(model.getMembersList().get(j).getLastName().trim());
+                                                member.setEmailId(model.getMembersList().get(j).getEmailId().trim());
+                                                member.setMobile(model.getMembersList().get(j).getMobile());
 
-                                            memberTable.insertMembers(member);
+                                                memberTable.insertMembers(member);
 
+                                            }
                                         }
                                         newsListTable.insertNewsList(model);
 
@@ -180,12 +185,12 @@ public class BackgroundService extends Service {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            NewsFeedFragment frag =new NewsFeedFragment();
 
                             newsFeedListTable = newsListTable.getAllNewsRecords();
                             Log.v("db ","getNewsFeedList "+newsFeedList.toString());
-                            ImageAdapter adapter = new ImageAdapter(context, newsFeedList);
-                            /*NewsFeedFragment frag =new NewsFeedFragment();
-                            frag.mRecyclerView.setAdapter(adapter);*/
+                            ImageAdapter adapter = new ImageAdapter(context, newsFeedList, frag.mRecyclerView,  "fromAPi");
+                            /*frag.mRecyclerView.setAdapter(adapter);*/
                             //recyclerView.setAdapter(new RecyclerViewAdapter(newList));
                             adapter.notifyDataSetChanged();
                             //changes 06_03

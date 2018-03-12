@@ -44,6 +44,8 @@ public class RegisterMember {
     @Expose
     private String role;
 
+
+
     public String getFirstName() {
         return first_name;
     }

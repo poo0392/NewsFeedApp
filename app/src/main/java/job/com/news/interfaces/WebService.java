@@ -74,11 +74,13 @@ public interface WebService {
     //@GET("member_token/{member_token}/member_id/{member_id}")
 
     //changes added on 09/02
+    //http://thanehousingfederation.com/newsapp/api/member/news_list
     @Multipart
     @POST("news_list")
     Call<NewsFeedModelResponse> getNewsListRequest(@Part("member_token") RequestBody member_token,
                                                    @Part("member_id") RequestBody member_id,
-                                                   @Part("news_status") String news_status);
+                                                   //@Part("news_status") String news_status,
+                                                   @Part("last_id") RequestBody last_id);
 
 
     //add_news

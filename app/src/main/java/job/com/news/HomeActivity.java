@@ -46,7 +46,6 @@ import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -121,6 +120,7 @@ public class HomeActivity extends AppCompatActivity
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(mContext);
         langSelection = new SessionManager(mContext);
+        newsListTable = new NewsListTable(mContext);
         ll_linBase = (LinearLayout) findViewById(R.id.ll_linBase);
         //DBHelper.getInstance(getApplicationContext());
 
@@ -268,13 +268,18 @@ public class HomeActivity extends AppCompatActivity
                 .build();
 
         WebService webService = retrofit.create(WebService.class);
-
+        int id = newsListTable.getLastId();
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-       // RequestBody paramN = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
+        RequestBody last_id = RequestBody.create(MediaType.parse("text/plain"), "" + id);
+        String news_status="";
 
         Log.v("", " memberToken " + memberToken);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,"");
+        Log.v("", " memberId " + memberId);
+        Log.v("", " last_id " + "11");
+        Log.v("", " news_status " + news_status);
+
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,last_id);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
@@ -319,20 +324,20 @@ public class HomeActivity extends AppCompatActivity
                                         model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
                                         model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
-                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
+                                        model.setMembersList(serverResponse.getNewsFeedList().get(i).getMembersList());
 
-                                        Log.v("", "Log" + Arrays.asList(serverResponse.getNewsFeedList().get(i).getNews_images()));
+                                        for(int k=0;k<serverResponse.getNewsFeedList().get(i).getMembersList().size();k++) {
+                                            if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMembersList().get(k).getId())) {
+                                                member.setMemberId(model.getMembersList().get(k).getId());
+                                                //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
+                                                member.setFirstName(model.getMembersList().get(k).getFirstName().trim());
+                                                member.setLastName(model.getMembersList().get(k).getLastName().trim());
+                                                member.setEmailId(model.getMembersList().get(k).getEmailId().trim());
+                                                member.setMobile(model.getMembersList().get(k).getMobile());
 
-                                        if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
-                                            member.setMemberId(model.getMember().getId());
-                                            //member.setMemberToken(model.getMember().getMemberToken().trim());
-                                            member.setFirstName(model.getMember().getFirstName().trim());
-                                            member.setLastName(model.getMember().getLastName().trim());
-                                            member.setEmailId(model.getMember().getEmailId().trim());
-                                            member.setMobile(model.getMember().getMobile());
+                                                memberTable.insertMembers(member);
 
-                                            memberTable.insertMembers(member);
-
+                                            }
                                         }
                                         //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
                                         if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
@@ -444,7 +449,7 @@ public class HomeActivity extends AppCompatActivity
 
     private void initialializeComponents() {
         gson = new Gson();
-        newsListTable = new NewsListTable(mContext);
+
         memberTable = new MemberTable(mContext);
         categoryMasterTable = new CategoryMasterTable(mContext);
         subCategoryTable = new SubCategoryTable(mContext);
@@ -658,28 +663,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-    private int[] tabsValues() {
 
-
-        return new int[]{
-                R.string.recent_news,
-                R.string.national_inter_menu,
-                R.string.gov_news_menu,
-                R.string.soc_rel_menu,
-                R.string.sports_menu,
-                R.string.sci_tech_menu,
-                R.string.eco_news_menu,
-                R.string.health_rel_menu,
-                R.string.business_news_menu,
-                R.string.agri_news_menu,
-                R.string.cinema_menu,
-                R.string.small_class_menu,
-                R.string.other_uncat_menu,
-                R.string.ent_news_menu,
-                R.string.career_rel_menu
-
-        };
-    }
 
     /*private void addNewsFeedItems() {
         mNewsFeedList = new ArrayList<>();

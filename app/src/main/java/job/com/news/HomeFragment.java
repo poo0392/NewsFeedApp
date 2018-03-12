@@ -1,13 +1,8 @@
 package job.com.news;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -18,10 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
-import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
@@ -29,7 +20,6 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -41,25 +31,10 @@ import job.com.news.db.MemberTable;
 import job.com.news.db.NewsImagesTable;
 import job.com.news.db.NewsListTable;
 import job.com.news.db.SubCategoryTable;
-import job.com.news.helper.ConnectivityInterceptor;
-import job.com.news.helper.NoConnectivityException;
-import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedDetails;
 import job.com.news.models.NewsFeedList;
-import job.com.news.models.NewsFeedModelResponse;
-import job.com.news.models.NewsImages;
-import job.com.news.register.RegisterMember;
-import job.com.news.service.AlarmReceiver;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Pooaj.Patil on 08/03/2018.
@@ -70,7 +45,7 @@ public class HomeFragment extends Fragment {
     Toolbar toolbar;
     private ProgressDialog mProgressDialog;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
-    private List<String> categoryList, catDupList;
+    private List<String> categoryList, catListNew, catDupList;
     Gson gson;
     NewsListTable newsListTable;
     MemberTable memberTable;
@@ -107,8 +82,8 @@ public class HomeFragment extends Fragment {
         getPrefData();
         initializeComponents();
         attachViews(view);
-       // setClickListeners();
-      //  syncNewsList();
+        // setClickListeners();
+        //  syncNewsList();
         loadCategoryUI();
 
         return view;
@@ -122,6 +97,7 @@ public class HomeFragment extends Fragment {
         subCategoryTable = new SubCategoryTable(mContext);
         newsImagesTable = new NewsImagesTable(mContext);
         categoryList = new ArrayList<>();
+        catListNew = new ArrayList<>();
         catDupList = new ArrayList<>();
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(mContext);
@@ -146,14 +122,10 @@ public class HomeFragment extends Fragment {
     }
 
 
-
-
     private void loadCategoryUI() {
         pages = new FragmentPagerItems(mContext);
         FragmentPagerItems pages = new FragmentPagerItems(mContext);
-        /*for (int titleResId : tabsValues()) {
 
-        }*/
         newsFeedList = newsListTable.getAllNewsRecords();
         // categoryList = newsListTable.getCategory();
 
@@ -164,16 +136,87 @@ public class HomeFragment extends Fragment {
         }
         categoryList.addAll(new HashSet<>(catDupList));
         for (int i = 0; i < categoryList.size(); i++) {
-            pages.add(FragmentPagerItem.of(categoryList.get(i), NewsFeedFragment.class));
+            if (categoryList.get(i).equals("National and International")) {
+                catListNew.add(mContext.getResources().getString(R.string.national_inter_menu));
+            } else if (categoryList.get(i).equals("Government News")) {
+                catListNew.add(mContext.getResources().getString(R.string.gov_news_menu));
+            } else if (categoryList.get(i).equals("Social and Related News")) {
+                catListNew.add(mContext.getResources().getString(R.string.soc_rel_menu));
+            } else if (categoryList.get(i).equals("Sports")) {
+                catListNew.add(mContext.getResources().getString(R.string.sports_menu));
+            } else if (categoryList.get(i).equals("Science and Technology")) {
+                catListNew.add(mContext.getResources().getString(R.string.sci_tech_menu));
+            } else if (categoryList.get(i).equals("Economical News")) {
+                catListNew.add(mContext.getResources().getString(R.string.eco_news_menu));
+            } else if (categoryList.get(i).equals("Health Related")) {
+                catListNew.add(mContext.getResources().getString(R.string.health_rel_menu));
+            } else if (categoryList.get(i).equals("Business News")) {
+                catListNew.add(mContext.getResources().getString(R.string.business_news_menu));
+            } else if (categoryList.get(i).equals("Agricultural News")) {
+                catListNew.add(mContext.getResources().getString(R.string.agri_news_menu));
+            } else if (categoryList.get(i).equals("Cinema Related")) {
+                catListNew.add(mContext.getResources().getString(R.string.cinema_menu));
+            } else if (categoryList.get(i).equals("Small Classifieds")) {
+                catListNew.add(mContext.getResources().getString(R.string.small_class_menu));
+            }/*else if (categoryList.get(i).equals("Property")) {
+                catListNew.add(mContext.getResources().getString(R.string.cinema_menu));
+            }else if (categoryList.get(i).equals("Birthday ads")) {
+                catListNew.add(mContext.getResources().getString(R.string.birth_menu));
+            }else if (categoryList.get(i).equals("App Related Ads")) {
+                catListNew.add(mContext.getResources().getString(R.string.app_rel_menu));
+            }else if (categoryList.get(i).equals("Buy and Sell")) {
+                catListNew.add(mContext.getResources().getString(R.string.buy_sell_menu));
+            }else if (categoryList.get(i).equals("Services")) {
+                catListNew.add(mContext.getResources().getString(R.string.services_menu));
+            }else if (categoryList.get(i).equals("Loan related")) {
+                catListNew.add(mContext.getResources().getString(R.string.loan_rel_menu));
+            }else if (categoryList.get(i).equals("Matrimony related")) {
+                catListNew.add(mContext.getResources().getString(R.string.mat_rel_menu));
+            }else if (categoryList.get(i).equals("Books and Literature")) {
+                catListNew.add(mContext.getResources().getString(R.string.book_lit_menu));
+            }*/ else if (categoryList.get(i).equals("Career Related")) {
+                catListNew.add(mContext.getResources().getString(R.string.career_rel_menu));
+            }/*else if (categoryList.get(i).equals("Job")) {
+                catListNew.add(mContext.getResources().getString(R.string.job_menu));
+            }else if (categoryList.get(i).equals("Business")) {
+                catListNew.add(mContext.getResources().getString(R.string.business_menu));
+            }else if (categoryList.get(i).equals("Educational")) {
+                catListNew.add(mContext.getResources().getString(R.string.edu_menu));
+            }*/
         }
-
+        for (int i = 0; i < catListNew.size(); i++) {
+            pages.add(FragmentPagerItem.of(catListNew.get(i), NewsFeedFragment.class/*,new  Bundler().putString("NewsDetails",newsFeedList)*/));
+        }
+       /* for (int titleResId : tabsValues()) {
+            pages.add(FragmentPagerItem.of(getString(titleResId), NewsFeedFragment.class));
+        }*/
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(getFragmentManager(), pages);//getSupportFragmentManager
 
         viewPager.setAdapter(adapter);
         viewPagerTab.setViewPager(viewPager);
     }
+    private int[] tabsValues() {
 
 
+        return new int[]{
+               // R.string.recent_news,
+                R.string.national_inter_menu,
+                R.string.gov_news_menu,
+                R.string.soc_rel_menu,
+                R.string.sports_menu,
+                R.string.sci_tech_menu,
+                R.string.eco_news_menu,
+                R.string.health_rel_menu,
+                R.string.business_news_menu,
+                R.string.agri_news_menu,
+                R.string.cinema_menu,
+                R.string.small_class_menu,
+                R.string.other_uncat_menu,
+                R.string.ent_news_menu,
+                R.string.career_rel_menu
+
+        };
+    }
 
 }
 
