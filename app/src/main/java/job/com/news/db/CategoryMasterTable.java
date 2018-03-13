@@ -33,6 +33,14 @@ public class CategoryMasterTable {
         db.insert(CATEGORY_TABLE_NAME, null, cv);
     }
 
+ /*   public int getCategoryIdByName(String catgName){
+        db = dbHelper.getWritableDatabase();
+        int id;
+        String query1 = "select DISTINCT category_master.category_id from category_master  INNER JOIN  NewsList  ON NewsList.category = category_master.category_name";
+        Cursor cursor = db.rawQuery(query1, null);
+
+        return id;
+    }*/
 
 
 }

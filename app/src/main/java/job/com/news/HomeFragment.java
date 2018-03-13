@@ -19,6 +19,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +46,8 @@ public class HomeFragment extends Fragment {
     Toolbar toolbar;
     private ProgressDialog mProgressDialog;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
-    private List<String> categoryList, catListNew, catDupList;
+    private List<NewsFeedList> newsFeedListNew = new ArrayList<>();
+    private List<String> categoryList, catListNew, catListNewEn, catDupList;
     Gson gson;
     NewsListTable newsListTable;
     MemberTable memberTable;
@@ -68,6 +70,7 @@ public class HomeFragment extends Fragment {
     //private HashMap<String, ArrayList<String>> hashMap;
     private NewsFeedApplication newsFeedApplication;
     private SessionManager session, langSelection;
+    NewsFeedList model = new NewsFeedList();
 
     @Nullable
     @Override
@@ -98,6 +101,7 @@ public class HomeFragment extends Fragment {
         newsImagesTable = new NewsImagesTable(mContext);
         categoryList = new ArrayList<>();
         catListNew = new ArrayList<>();
+        catListNewEn = new ArrayList<>();
         catDupList = new ArrayList<>();
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(mContext);
@@ -134,30 +138,42 @@ public class HomeFragment extends Fragment {
             catDupList.add(newsFeedList.get(k).getCategory());
 
         }
+
         categoryList.addAll(new HashSet<>(catDupList));
         for (int i = 0; i < categoryList.size(); i++) {
             if (categoryList.get(i).equals("National and International")) {
                 catListNew.add(mContext.getResources().getString(R.string.national_inter_menu));
+                catListNewEn.add("National and International");
             } else if (categoryList.get(i).equals("Government News")) {
                 catListNew.add(mContext.getResources().getString(R.string.gov_news_menu));
+                catListNewEn.add("Government News");
             } else if (categoryList.get(i).equals("Social and Related News")) {
                 catListNew.add(mContext.getResources().getString(R.string.soc_rel_menu));
+                catListNewEn.add("Social and Related News");
             } else if (categoryList.get(i).equals("Sports")) {
                 catListNew.add(mContext.getResources().getString(R.string.sports_menu));
+                catListNewEn.add("Sports");
             } else if (categoryList.get(i).equals("Science and Technology")) {
                 catListNew.add(mContext.getResources().getString(R.string.sci_tech_menu));
+                catListNewEn.add("Science and Technology");
             } else if (categoryList.get(i).equals("Economical News")) {
                 catListNew.add(mContext.getResources().getString(R.string.eco_news_menu));
+                catListNewEn.add("Economical News");
             } else if (categoryList.get(i).equals("Health Related")) {
                 catListNew.add(mContext.getResources().getString(R.string.health_rel_menu));
+                catListNewEn.add("National and International");
             } else if (categoryList.get(i).equals("Business News")) {
                 catListNew.add(mContext.getResources().getString(R.string.business_news_menu));
+                catListNewEn.add("Business News");
             } else if (categoryList.get(i).equals("Agricultural News")) {
                 catListNew.add(mContext.getResources().getString(R.string.agri_news_menu));
+                catListNewEn.add("Agricultural News");
             } else if (categoryList.get(i).equals("Cinema Related")) {
                 catListNew.add(mContext.getResources().getString(R.string.cinema_menu));
+                catListNewEn.add("Cinema Related");
             } else if (categoryList.get(i).equals("Small Classifieds")) {
                 catListNew.add(mContext.getResources().getString(R.string.small_class_menu));
+                catListNewEn.add("Small Classifieds");
             }/*else if (categoryList.get(i).equals("Property")) {
                 catListNew.add(mContext.getResources().getString(R.string.cinema_menu));
             }else if (categoryList.get(i).equals("Birthday ads")) {
@@ -176,6 +192,7 @@ public class HomeFragment extends Fragment {
                 catListNew.add(mContext.getResources().getString(R.string.book_lit_menu));
             }*/ else if (categoryList.get(i).equals("Career Related")) {
                 catListNew.add(mContext.getResources().getString(R.string.career_rel_menu));
+                catListNewEn.add("Career Related");
             }/*else if (categoryList.get(i).equals("Job")) {
                 catListNew.add(mContext.getResources().getString(R.string.job_menu));
             }else if (categoryList.get(i).equals("Business")) {
@@ -184,8 +201,28 @@ public class HomeFragment extends Fragment {
                 catListNew.add(mContext.getResources().getString(R.string.edu_menu));
             }*/
         }
+        Log.v("", "catListNewEn.size() " + catListNewEn.size());
+        for (int i = 0; i < catListNewEn.size(); i++) {
+
+            newsFeedListNew = newsListTable.getNewsRecordsByCategory(catListNewEn.get(i));
+            Log.v("HomeFragment ", " newsFeedListNew " + newsFeedListNew);
+            Log.v("", " newsFeedListNew.size " + newsFeedListNew.size());
+        }
+
+
+        Bundle args = new Bundle();
+        args.putSerializable("news", (Serializable) newsFeedListNew);
+        //   args.putStringArrayList("category", (ArrayList<String>) catListNewEn);
+        // for (int i = 0; i < catListNewEn.size(); i++) {
+        // args.putString("category", catListNewEn.get(i));
+        //}
+
+        //bundle.putSerializable("lstContact", (Serializable) lstObject);
+        //lstObj = (List<Contacts>) bundle.getSerializable("lstContact");
         for (int i = 0; i < catListNew.size(); i++) {
-            pages.add(FragmentPagerItem.of(catListNew.get(i), NewsFeedFragment.class/*,new  Bundler().putString("NewsDetails",newsFeedList)*/));
+
+            pages.add(i, FragmentPagerItem.of(catListNew.get(i), NewsFeedFragment.class,args
+                    /*,new Bundler().putString("NewsDetails", obj.getString())*/));
         }
        /* for (int titleResId : tabsValues()) {
             pages.add(FragmentPagerItem.of(getString(titleResId), NewsFeedFragment.class));
@@ -195,11 +232,12 @@ public class HomeFragment extends Fragment {
         viewPager.setAdapter(adapter);
         viewPagerTab.setViewPager(viewPager);
     }
+
     private int[] tabsValues() {
 
 
         return new int[]{
-               // R.string.recent_news,
+                // R.string.recent_news,
                 R.string.national_inter_menu,
                 R.string.gov_news_menu,
                 R.string.soc_rel_menu,

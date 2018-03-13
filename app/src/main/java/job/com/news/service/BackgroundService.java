@@ -49,6 +49,7 @@ public class BackgroundService extends Service {
     private List<NewsFeedList> newsFeedListTable = new ArrayList<>();
     private MemberTable memberTable;
     private NewsListTable newsListTable;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -60,10 +61,11 @@ public class BackgroundService extends Service {
         this.isRunning = false;
         getPrefData();
         this.backgroundThread = new Thread(myTask);
-        newsListTable=new NewsListTable(this);
-        Log.v("BackgroundService ","Background Service Called");
+        newsListTable = new NewsListTable(this);
+        Log.v("BackgroundService ", "Background Service Called");
 
     }
+
     private void getPrefData() {
         myPreferences = MyPreferences.getMyAppPref(this);
         memberId = myPreferences.getMemberId();
@@ -71,11 +73,12 @@ public class BackgroundService extends Service {
         emailId = myPreferences.getEmailId().trim();
         fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
     }
+
     private Runnable myTask = new Runnable() {
         public void run() {
             // Do something here
             callNewsListAPI(memberToken, memberId);
-           // stopSelf();
+            // stopSelf();
         }
     };
 
@@ -86,16 +89,17 @@ public class BackgroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(!this.isRunning) {
+        if (!this.isRunning) {
             this.isRunning = true;
             this.backgroundThread.start();
         }
         return START_STICKY;
     }
+
     private void callNewsListAPI(String memberToken, int memberId) {
-      //  mProgressDialog = new ProgressDialog(HomeActivity.this);
-      //  mProgressDialog.setMessage("Loading...");
-      //  mProgressDialog.show();
+        //  mProgressDialog = new ProgressDialog(HomeActivity.this);
+        //  mProgressDialog.setMessage("Loading...");
+        //  mProgressDialog.show();
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
@@ -108,17 +112,18 @@ public class BackgroundService extends Service {
                 .build();
 
         WebService webService = retrofit.create(WebService.class);
-        int id = newsListTable.getLastId();
+        long id = newsListTable.getLastId();
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-        RequestBody last_id = RequestBody.create(MediaType.parse("text/plain"), "" + id);
-
+       // RequestBody last_id = RequestBody.create(MediaType.parse("text/plain"), "" + id);
+        String news_status = "";
         Log.v("", " memberToken " + memberToken);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,last_id);
+      //  Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, news_status, last_id);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
-               // mProgressDialog.dismiss();
+                // mProgressDialog.dismiss();
                 String newsList = "";
                 if (response.isSuccessful()) {
 
@@ -159,13 +164,13 @@ public class BackgroundService extends Service {
                                         model.setCity(serverResponse.getNewsFeedList().get(i).getCity());
                                         model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
                                         model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
-                                     //   model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
+                                        //   model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
                                         model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
                                         model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
                                         model.setMembersList(serverResponse.getNewsFeedList().get(i).getMembersList());
 
-                                        for(int j=0;j<serverResponse.getNewsFeedList().get(i).getMembersList().size();j++) {
+                                        for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getMembersList().size(); j++) {
                                             if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMembersList().get(j).getId())) {
                                                 member.setMemberId(model.getMembersList().get(j).getId());
                                                 //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
@@ -185,11 +190,11 @@ public class BackgroundService extends Service {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            NewsFeedFragment frag =new NewsFeedFragment();
+                            NewsFeedFragment frag = new NewsFeedFragment();
 
                             newsFeedListTable = newsListTable.getAllNewsRecords();
-                            Log.v("db ","getNewsFeedList "+newsFeedList.toString());
-                            ImageAdapter adapter = new ImageAdapter(context, newsFeedList, frag.mRecyclerView,  "fromAPi");
+                            Log.v("db ", "getNewsFeedList " + newsFeedList.toString());
+                            ImageAdapter adapter = new ImageAdapter(context, newsFeedList, frag.mRecyclerView, "fromAPi");
                             /*frag.mRecyclerView.setAdapter(adapter);*/
                             //recyclerView.setAdapter(new RecyclerViewAdapter(newList));
                             adapter.notifyDataSetChanged();
@@ -205,13 +210,13 @@ public class BackgroundService extends Service {
 
             @Override
             public void onFailure(Call<NewsFeedModelResponse> call, Throwable t) {
-               // mProgressDialog.dismiss();
+                // mProgressDialog.dismiss();
                 t.printStackTrace();
 
                 if (t instanceof NoConnectivityException) {
                     // No internet connection
                     // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
-                  //  setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
+                    //  setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
                 }
             }
         });

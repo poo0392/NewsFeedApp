@@ -70,11 +70,15 @@ public class NewsFeedFragment extends Fragment {
     Context mContext;
     private MyPreferences myPreferences;
     String emailId, fullName, memberToken;
+    String category;
     private List<NewsFeedList> newsFeedListAll = new ArrayList<>();
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
+    private List<NewsFeedList> newsFeedListNew = new ArrayList<>();
     private List<RegisterMember> memberList = new ArrayList<>();
     private List<NewsImages> imagesList = new ArrayList<>();
+    ArrayList<String> categoryListBundle=new ArrayList<>();
     int memberId;
+    int pos;
     ProgressDialog mProgressDialog;
     NewsListTable newsListTable;
     protected Handler handler;
@@ -99,15 +103,34 @@ public class NewsFeedFragment extends Fragment {
         catListNew = new ArrayList<>();
         catDupList = new ArrayList<>();
         getPrefData();
+        getBundleData();
         attachViews(view);
         //loadDatatoList();
         return view;
     }
 
+    private void getBundleData() {
+        if(null!=getArguments().getSerializable("news")){
+            //newsFeedListNew = getArguments().getString("news");
+            newsFeedListNew = (List<NewsFeedList>) getArguments().getSerializable("news");
+            Log.v("getBundleData ","newsFeedListNew "+newsFeedListNew);
+
+        }
+       /*if(null!=getArguments().getString("category")){
+           category=getArguments().getString("category");
+           Log.v("getBundleData ","category "+category);
+       }*/
+     /* if(null!=getArguments().getStringArrayList("category")){
+          categoryListBundle =getArguments().getStringArrayList("category");
+
+          Log.v("getBundleData ","category "+categoryListBundle.toString());
+      }*/
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        pos=FragmentPagerItem.getPosition(getArguments());
         //   attachViews(view);
         //   getPrefData();
         // callNewsListAPI(memberToken, memberId);
@@ -142,7 +165,7 @@ public class NewsFeedFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
     }
 
-    private void callNewsListAPI(String memberToken, int memberId, int last_id) {
+    private void callNewsListAPI(String memberToken, int memberId, long last_id) {
         mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setMessage("Loading...");
         mProgressDialog.show();
@@ -161,13 +184,15 @@ public class NewsFeedFragment extends Fragment {
 
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-        RequestBody paramLastId = RequestBody.create(MediaType.parse("text/plain"), "" + last_id);
+       // RequestBody paramLastId = RequestBody.create(MediaType.parse("text/plain"), "" + last_id);
+        String news_status="";
 
         Log.v("", " memberToken " + memberToken);
         Log.v("", " memberId " + memberId);
         Log.v("", " last_id " + "" + last_id);
 
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, paramLastId);
+      //  Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,news_status, paramLastId);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, last_id);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
@@ -238,14 +263,16 @@ public class NewsFeedFragment extends Fragment {
             newsFeedList = newsListTable.getNewsRecordsByCategory(getString(titleResId));
         }*/
 
-        for (int i = 0; i < newsFeedListAll.size(); i++) {
-            newsFeedList = newsListTable.getNewsRecordsByCategory(newsFeedListAll.get(i).getCategory());
-        }
-        // newsFeedList = newsListTable.getAllNewsRecords();
-        Log.v("db ", "getNewsFeedList " + newsFeedList.toString());
-        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "fromAPi");
-        mRecyclerView.setAdapter(adapter);
+        //for (int i = 0; i < categoryListBundle.size(); i++) {//.get(pos).
+            newsFeedList = newsListTable.getNewsRecordsByCategory(newsFeedListNew.get(pos).getCategory());
+            // }
+            // newsFeedList = newsListTable.getAllNewsRecords();
+            Log.v("db ", "getNewsFeedList " + newsFeedList.toString());
+            adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "fromAPi");
 
+            mRecyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+       // }
        /* if (newsFeedList.isEmpty()) {
             mRecyclerView.setVisibility(View.GONE);
             tvEmptyView.setVisibility(View.VISIBLE);

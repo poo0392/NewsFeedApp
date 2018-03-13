@@ -80,7 +80,7 @@ public interface WebService {
     Call<NewsFeedModelResponse> getNewsListRequest(@Part("member_token") RequestBody member_token,
                                                    @Part("member_id") RequestBody member_id,
                                                    //@Part("news_status") String news_status,
-                                                   @Part("last_id") RequestBody last_id);
+                                                   @Part("last_id") long last_id);
 
 
     //add_news

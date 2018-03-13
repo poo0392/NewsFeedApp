@@ -11,7 +11,7 @@ import job.com.news.register.RegisterMember;
  * Created by Pooja.Patil on 12/02/2018.
  */
 
-public class NewsFeedList {
+public class NewsFeedList  {
     //changes 06_03
 
     @SerializedName("id")

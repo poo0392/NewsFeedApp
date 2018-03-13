@@ -45,6 +45,8 @@ import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +96,7 @@ public class HomeActivity extends AppCompatActivity
     String emailId, fullName, memberToken;
     int memberId;
     String role;
+    String jsonResponse;
     LinearLayout ll_linBase;
     private NewsFeedApplication newsFeedApplication;
     ExpandListAdapter listAdapter;
@@ -111,6 +114,7 @@ public class HomeActivity extends AppCompatActivity
     private List<String> categoryList, catDupList;
     Gson gson;
     Fragment fragment;
+    JSONArray jsonArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -268,18 +272,24 @@ public class HomeActivity extends AppCompatActivity
                 .build();
 
         WebService webService = retrofit.create(WebService.class);
-        int id = newsListTable.getLastId();
+        long id= newsListTable.getLastId();
+       /* if (newsListTable.getLastId() == -1) {
+            id = 0;
+        } else {
+            id = newsListTable.getLastId();
+        }*/
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-        RequestBody last_id = RequestBody.create(MediaType.parse("text/plain"), "" + id);
-        String news_status="";
+      //  RequestBody last_id = RequestBody.create(MediaType.parse("text/plain"), "" + id);
+        String news_status = "";
 
         Log.v("", " memberToken " + memberToken);
         Log.v("", " memberId " + memberId);
-        Log.v("", " last_id " + "11");
+        Log.v("", " last_id " + id);
         Log.v("", " news_status " + news_status);
 
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,last_id);
+     //   Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,news_status, last_id);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
@@ -293,15 +303,26 @@ public class HomeActivity extends AppCompatActivity
                     List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
                             .fromJson(String.valueOf(response.body()), collectionType);*/
 
-                    NewsFeedModelResponse serverResponse = response.body();
-                    String serverResponse2 = new Gson().toJson(response.body());
-                    Log.v("callNewsListAPI ", "response " + serverResponse2);
+                  //  NewsFeedModelResponse serverResponse = new Gson().fromJson(response.body().toString(), NewsFeedModelResponse.class);
+                   NewsFeedModelResponse serverResponse = response.body();
+                  //  jsonResponse = new Gson().toJson(response.body());
+                  /*  JSONObject obj = null;
+                    try {
+                        obj = new JSONObject(jsonResponse);
+                        jsonArray = obj.getJSONArray("news");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+*/
+                  //  Log.v("callNewsListAPI ", "response " + jsonResponse);
+                //    Log.v("callNewsListAPI ", "res " + res);
+                //    Log.v("callNewsListAPI ", "jsonArray " + jsonArray);
                     //    newsList=serverResponse.toString();
                     if (serverResponse.getStatus() == 0) {
                         //   Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
                         try {
                             newsFeedList = serverResponse.getNewsFeedList();
-                            // Log.v("", "newsFeedList " + newsFeedList.toString());
+                             Log.v("", "newsFeedList " + newsFeedList.toString());
 
                             //   loadDatatoList(newsFeedList);
                             NewsFeedList model = new NewsFeedList();
@@ -326,7 +347,7 @@ public class HomeActivity extends AppCompatActivity
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
                                         model.setMembersList(serverResponse.getNewsFeedList().get(i).getMembersList());
 
-                                        for(int k=0;k<serverResponse.getNewsFeedList().get(i).getMembersList().size();k++) {
+                                        for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMembersList().size(); k++) {
                                             if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMembersList().get(k).getId())) {
                                                 member.setMemberId(model.getMembersList().get(k).getId());
                                                 //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
@@ -590,7 +611,7 @@ public class HomeActivity extends AppCompatActivity
                                         int groupPosition, int childPosition, long id) {
                 // TODO Auto-generated method stub
                 // Temporary code:
-               String group_name= listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
+                String group_name = listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
                 /*if(group_name.equals("Pending Requests")){
 
                 }else if(group_name.equals("Requests Status")){
@@ -599,7 +620,7 @@ public class HomeActivity extends AppCompatActivity
                 // till here
                 Toast.makeText(
                         mContext,
-                        listDataHeader.get(groupPosition)+ " : "+ listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
+                        listDataHeader.get(groupPosition) + " : " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
                         .show();
                 return false;
             }

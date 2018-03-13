@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,6 +137,7 @@ public class NewsListTable {
         ArrayList<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
         NewsFeedList model;
         String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME+" where "+NewsListTable.CATEGORY+" = '"+category+"'";
+        Log.v("","query1 "+query1);
         Cursor cursor = db.rawQuery(query1, null);
         if (cursor.getCount() > 0) {
             for (int i = 0; i < cursor.getCount(); i++) {
@@ -159,15 +161,21 @@ public class NewsListTable {
         }
         return listAll;
     }
-public int getLastId(){//SELECT last_insert_rowid();
+public long getLastId(){//SELECT last_insert_rowid();
     db = dbHelper.getWritableDatabase();
-    String query1 = "SELECT last_insert_rowid() ";
+    String query1 = "select seq from sqlite_sequence where name = '"+NewsListTable.NEWS_LIST_TABLE_NAME+"'";
     Cursor cursor = db.rawQuery(query1, null);
-    String id = null;
-    if (cursor.getCount() > 0) {
-        id=  cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_ID));
+    long id = 0;
+    if (cursor.moveToFirst()) {
+        id = cursor.getLong(cursor.getColumnIndex("seq"));
     }
-    return Integer.parseInt(id);
+  /*  if(cursor.moveToFirst()){
+        id = cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_ID));
+    }*/
+    Log.v("getLastId ","id "+id);
+    cursor.close();
+    db.close();
+    return id;
 }
 
     public List<String> getCategory() {
