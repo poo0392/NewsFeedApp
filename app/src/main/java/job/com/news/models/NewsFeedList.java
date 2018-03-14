@@ -11,7 +11,7 @@ import job.com.news.register.RegisterMember;
  * Created by Pooja.Patil on 12/02/2018.
  */
 
-public class NewsFeedList  {
+public class NewsFeedList {
     //changes 06_03
 
     @SerializedName("id")
@@ -23,6 +23,14 @@ public class NewsFeedList  {
     @SerializedName("category")
     @Expose
     private String category; //category
+
+
+
+    @SerializedName("sub_category_id")
+    @Expose
+    private String sub_category;
+
+
     @SerializedName("country")
     @Expose
     private String country;
@@ -68,7 +76,8 @@ public class NewsFeedList  {
 
     @SerializedName("member")
     @Expose
-    private  List<RegisterMember> membersList;
+    private RegisterMember member;
+   // private  List<RegisterMember> membersList;
 
     public int getId() {
         return id;
@@ -149,6 +158,13 @@ public class NewsFeedList  {
     public void setNews_pic(String news_pic) {
         this.news_pic = news_pic;
     }*/
+   public String getSub_category() {
+       return sub_category;
+   }
+
+    public void setSub_category(String sub_category) {
+        this.sub_category = sub_category;
+    }
 
     public String getLike_count() {
         return like_count;
@@ -181,21 +197,21 @@ public class NewsFeedList  {
      public void setUser(UserModel user) {
          this.user = user;
      }*/
-   /* public RegisterMember getMember() {
+    public RegisterMember getMember() {
         return member;
     }
 
     public void setMember(RegisterMember member) {
         this.member = member;
-    }*/
+    }
 
-    public List<RegisterMember> getMembersList() {
+   /* public List<RegisterMember> getMembersList() {
         return membersList;
     }
 
     public void setMembersList(List<RegisterMember> membersList) {
         this.membersList = membersList;
-    }
+    }*/
     @Override
     public String toString() {
         return "NewsFeedList{" +

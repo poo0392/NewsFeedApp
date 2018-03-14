@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -63,6 +64,7 @@ import job.com.news.article.City_Name;
 import job.com.news.article.State;
 import job.com.news.article.State_Name;
 import job.com.news.db.DBHelper;
+import job.com.news.db.SubCategoryTable;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
@@ -97,7 +99,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private TextView mTotalChargesView, mDateView;
     private RadioGroup radioGroupDays, radioGroupWords;
     private String mRsSymbol;
-    private String mArticleCode, categoryId, stateId, cityId;
+    private String mArticleCode, categoryId,subCategoryId, stateId, cityId;
     private ImageView mArticleImage1, mArticleImage2, iv_info_desc, iv_info_title;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String mediaPath;
@@ -121,6 +123,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private MyPreferences myPreferences;
     int wordsLength = 0;
     List<String> newsPic;
+    SubCategoryTable subCategoryTable;
 
     //Indonesia
 
@@ -134,7 +137,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mContext = this;
         langSelection = new SessionManager(getApplicationContext());
         db = new DBHelper(mContext);
-
+        subCategoryTable=new SubCategoryTable(mContext);
 
         // updateViews("hi_IN");
 
@@ -360,11 +363,30 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
         });
 
+        bsSubArticleSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                subCategoryId = String.valueOf(position+1);
+//                parent.getItemAtPosition(position);
+                Log.v("","Value "+parent.getItemAtPosition(position).toString());
+
+                String sub_cat_name= parent.getSelectedItem().toString();
+                //getStringByLocal(mContext,);
+                int sub_category_id=subCategoryTable.getSubCategoryIdByName(sub_cat_name);
+
+              //  String value = String.valueOf(item.getString(0));
+
+                Log.v("bsSubArticleSpinner ", "sub_category_id " + sub_category_id);
+                Log.v("bsSubArticleSpinner ", "subCategoryId " + subCategoryId);
+            }
+        });
+
         bsPublishDaysSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectedDays = parent.getItemAtPosition(position).toString();
                 Log.v("bsPublishDaysItemClick ", "selectedDays " + selectedDays);
+
             }
         });
 
@@ -429,7 +451,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
         });
     }
-
+    public static String getStringByLocal(Activity context, int id, String locale) {
+        Configuration configuration = new Configuration(context.getResources().getConfiguration());
+        configuration.setLocale(new Locale(locale));
+        return context.createConfigurationContext(configuration).getResources().getString(id);
+    }
     private int setDescpWordsLength(int radioId) {
         // int radioId = radioGroupWords.getCheckedRadioButtonId();
         Log.v("", "radioId " + radioId);
@@ -850,6 +876,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), membertoken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberid);
         RequestBody paramCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + categoryId);
+        RequestBody paramSubCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + subCategoryId);
         RequestBody paramCountryId = RequestBody.create(MediaType.parse("text/plain"), "" + countryId);
         RequestBody paramStateId = RequestBody.create(MediaType.parse("text/plain"), "" + stateId);
         RequestBody paramCityId = RequestBody.create(MediaType.parse("text/plain"), "" + cityId);
@@ -870,7 +897,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
 //changes 06_03
         Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
-                paramCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, newsList);
+                paramCategoryId,paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, newsList);
         String reqParam = bodyToString(serverResponse.request().body());
         Log.v("postNewsAPI ", "reqParam : " + reqParam);
         Log.v("postNewsAPI ", "LoginParameters : " + serverResponse.request().body().toString());

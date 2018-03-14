@@ -273,11 +273,6 @@ public class HomeActivity extends AppCompatActivity
 
         WebService webService = retrofit.create(WebService.class);
         long id= newsListTable.getLastId();
-       /* if (newsListTable.getLastId() == -1) {
-            id = 0;
-        } else {
-            id = newsListTable.getLastId();
-        }*/
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
       //  RequestBody last_id = RequestBody.create(MediaType.parse("text/plain"), "" + id);
@@ -305,26 +300,14 @@ public class HomeActivity extends AppCompatActivity
 
                   //  NewsFeedModelResponse serverResponse = new Gson().fromJson(response.body().toString(), NewsFeedModelResponse.class);
                    NewsFeedModelResponse serverResponse = response.body();
-                  //  jsonResponse = new Gson().toJson(response.body());
-                  /*  JSONObject obj = null;
-                    try {
-                        obj = new JSONObject(jsonResponse);
-                        jsonArray = obj.getJSONArray("news");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-*/
-                  //  Log.v("callNewsListAPI ", "response " + jsonResponse);
-                //    Log.v("callNewsListAPI ", "res " + res);
-                //    Log.v("callNewsListAPI ", "jsonArray " + jsonArray);
-                    //    newsList=serverResponse.toString();
+                    jsonResponse = new Gson().toJson(response.body());
+                    Log.v("callNewsListAPI ", "response " + jsonResponse);
                     if (serverResponse.getStatus() == 0) {
-                        //   Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
+
                         try {
                             newsFeedList = serverResponse.getNewsFeedList();
-                             Log.v("", "newsFeedList " + newsFeedList.toString());
+                         //    Log.v("", "newsFeedList " + newsFeedList.toString());
 
-                            //   loadDatatoList(newsFeedList);
                             NewsFeedList model = new NewsFeedList();
                             try {
                                 RegisterMember member = new RegisterMember();
@@ -345,21 +328,21 @@ public class HomeActivity extends AppCompatActivity
                                         model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
                                         model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
-                                        model.setMembersList(serverResponse.getNewsFeedList().get(i).getMembersList());
+                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
 
-                                        for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMembersList().size(); k++) {
-                                            if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMembersList().get(k).getId())) {
-                                                member.setMemberId(model.getMembersList().get(k).getId());
+                                       // for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMember(); k++) {
+                                            if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
+                                                member.setMemberId(model.getMember().getId());
                                                 //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
-                                                member.setFirstName(model.getMembersList().get(k).getFirstName().trim());
-                                                member.setLastName(model.getMembersList().get(k).getLastName().trim());
-                                                member.setEmailId(model.getMembersList().get(k).getEmailId().trim());
-                                                member.setMobile(model.getMembersList().get(k).getMobile());
+                                                member.setFirstName(model.getMember().getFirstName().trim());
+                                                member.setLastName(model.getMember().getLastName().trim());
+                                                member.setEmailId(model.getMember().getEmailId().trim());
+                                                member.setMobile(model.getMember().getMobile());
 
                                                 memberTable.insertMembers(member);
 
                                             }
-                                        }
+                                       // }
                                         //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
                                         if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
                                             for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getNews_images().size(); j++) {

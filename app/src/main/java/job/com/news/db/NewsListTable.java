@@ -32,21 +32,19 @@ public class NewsListTable {
     public static final String MEMBER_ID = "member_id";
     public static final String CREATED_AT = "created_at";
     public static final String IS_UPDATED = "is_updated";
-    public static final String STATUS= "status";
+    public static final String STATUS = "status";
 
 
     DBHelper dbHelper;
     SQLiteDatabase db;
     Context context;
 
-    public NewsListTable(Context context)
-    {
+    public NewsListTable(Context context) {
         this.context = context;
         dbHelper = DBHelper.getInstance(context);
     }
 
-    public void CRUD(ContentValues cv)
-    {
+    public void CRUD(ContentValues cv) {
         dbHelper = DBHelper.getInstance(context);
         db = dbHelper.getWritableDatabase();
 
@@ -66,16 +64,15 @@ public class NewsListTable {
         cv.put(NewsListTable.CITY, model.getCity());
         cv.put(NewsListTable.NEWS_TITLE, model.getNews_title());
         cv.put(NewsListTable.NEWS_DESCRIPTION, model.getNews_description());
-      //  cv.put(NewsListTable.NEWS_PIC, model.getNews_pic());
+        //  cv.put(NewsListTable.NEWS_PIC, model.getNews_pic());
         cv.put(NewsListTable.LIKE_COUNT, model.getLike_count());
         cv.put(NewsListTable.MEMBER_ID, model.getMember_id());
         cv.put(NewsListTable.CREATED_AT, model.getCreated_at());
         cv.put(NewsListTable.IS_UPDATED, "Y");
         cv.put(NewsListTable.STATUS, "A");
         db.insert(NewsListTable.NEWS_LIST_TABLE_NAME, null, cv);
-       // Toast.makeText(context, "Data inserted in NewsList Table", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(context, "Data inserted in NewsList Table", Toast.LENGTH_SHORT).show();
     }
-
 
 
     public boolean checkNewsPresent(int news_id) {
@@ -95,7 +92,6 @@ public class NewsListTable {
     }
 
 
-
     public List<NewsFeedList> getAllNewsRecords() {
         db = dbHelper.getWritableDatabase();
         // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
@@ -108,7 +104,8 @@ public class NewsListTable {
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToNext();
                 model = new NewsFeedList();
-                model.setId(cursor.getColumnIndex(NewsListTable.NEWS_ID));
+               // Log.v("db getAllNewsRecords ", "NewsID " + cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
+                model.setId(cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
                 model.setNews_uuid(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)));
                 model.setCategory(cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)));
                 model.setCountry(cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)));
@@ -116,7 +113,7 @@ public class NewsListTable {
                 model.setCity(cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)));
                 model.setNews_title(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)));
                 model.setNews_description(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)));
-              //  model.setNews_pic(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_PIC)));
+                //  model.setNews_pic(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_PIC)));
                 model.setLike_count(cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)));
                 model.setMember_id(cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)));
                 model.setCreated_at(cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
@@ -125,7 +122,7 @@ public class NewsListTable {
 
             }
         }
-      //  Log.v("DbHelper ", " list from db " + listAll.toString());
+        //  Log.v("DbHelper ", " list from db " + listAll.toString());
         cursor.close();
         db.close();
         return listAll;
@@ -136,14 +133,15 @@ public class NewsListTable {
         // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
         ArrayList<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
         NewsFeedList model;
-        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME+" where "+NewsListTable.CATEGORY+" = '"+category+"'";
-        Log.v("","query1 "+query1);
+        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY + " = '" + category + "'";
+        Log.v("", "query1 " + query1);
         Cursor cursor = db.rawQuery(query1, null);
         if (cursor.getCount() > 0) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToNext();
                 model = new NewsFeedList();
-                model.setId(cursor.getColumnIndex(NewsListTable.NEWS_ID));
+                Log.v("db ", "NewsID " + cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
+                model.setId(cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
                 model.setNews_uuid(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)));
                 model.setCategory(cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)));
                 model.setCountry(cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)));
@@ -161,22 +159,23 @@ public class NewsListTable {
         }
         return listAll;
     }
-public long getLastId(){//SELECT last_insert_rowid();
-    db = dbHelper.getWritableDatabase();
-    String query1 = "select seq from sqlite_sequence where name = '"+NewsListTable.NEWS_LIST_TABLE_NAME+"'";
-    Cursor cursor = db.rawQuery(query1, null);
-    long id = 0;
-    if (cursor.moveToFirst()) {
-        id = cursor.getLong(cursor.getColumnIndex("seq"));
-    }
+
+    public long getLastId() {//SELECT last_insert_rowid();
+        db = dbHelper.getWritableDatabase();
+        String query1 = "select seq from sqlite_sequence where name = '" + NewsListTable.NEWS_LIST_TABLE_NAME + "'";
+        Cursor cursor = db.rawQuery(query1, null);
+        long id = 0;
+        if (cursor.moveToFirst()) {
+            id = cursor.getLong(cursor.getColumnIndex("seq"));
+        }
   /*  if(cursor.moveToFirst()){
         id = cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_ID));
     }*/
-    Log.v("getLastId ","id "+id);
-    cursor.close();
-    db.close();
-    return id;
-}
+        Log.v("getLastId ", "id " + id);
+        cursor.close();
+        db.close();
+        return id;
+    }
 
     public List<String> getCategory() {
         db = dbHelper.getWritableDatabase();
@@ -188,11 +187,11 @@ public long getLastId(){//SELECT last_insert_rowid();
         if (cursor.getCount() > 0) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToNext();
-               // model = new NewsFeedList();
+                // model = new NewsFeedList();
                 cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY));
             }
         }
-      //  Log.v("DbHelper getCategory", " list from db " + listAll.toString());
+        //  Log.v("DbHelper getCategory", " list from db " + listAll.toString());
         cursor.close();
         db.close();
         return listAll;

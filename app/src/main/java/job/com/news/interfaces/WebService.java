@@ -92,6 +92,7 @@ public interface WebService {
     Call<NewsFeedModelResponse> post_news(@Part("member_token") RequestBody member_token,
                                           @Part("member_id") RequestBody member_id,
                                           @Part("category_id") RequestBody category_id,
+                                          @Part("sub_category_id") RequestBody sub_category_id,
                                           @Part("country_id") RequestBody country_id,
                                           @Part("state_id") RequestBody state_id,
                                           @Part("city_id") RequestBody city_id,
@@ -107,7 +108,5 @@ public interface WebService {
 
 //http://thanehousingfederation.com/newsapp/storage/app/public/upload/news
 
-    @GET("/")
-    Call<String> getImageFromURL(String file_name);
 
 }

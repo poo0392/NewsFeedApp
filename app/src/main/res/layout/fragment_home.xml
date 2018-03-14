@@ -35,7 +35,19 @@
                 app:stl_indicatorColor="@color/white"
                 app:stl_indicatorInterpolation="linear"
                 app:stl_indicatorThickness="3dp"
-                app:stl_underlineThickness="1dp" />
+                app:stl_underlineThickness="1dp"
+                />
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/toolbar_home"
+                android:background="?attr/colorPrimary"
+                android:minHeight="?attr/actionBarSize"
+                app:tabIndicatorColor="@color/white"
+                app:tabMode="fixed"
+                app:tabGravity="fill"
+                android:visibility="gone"/>
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.view.ViewPager

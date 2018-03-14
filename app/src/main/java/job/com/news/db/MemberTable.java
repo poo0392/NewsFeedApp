@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,7 @@ public class MemberTable {
 
     public void insertMembers(RegisterMember model) {
         db = dbHelper.getWritableDatabase();
-        Log.v("DB ", "MEMBER_ID " + model.getMemberId());
+     //   Log.v("DB ", "MEMBER_ID " + model.getMemberId());
         ContentValues cv = new ContentValues();
         cv.put(MemberTable.MEMBER_ID, model.getMemberId());
         cv.put(MemberTable.MEMBER_TOKEN, model.getMemberToken());

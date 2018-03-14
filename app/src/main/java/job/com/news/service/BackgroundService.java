@@ -135,7 +135,7 @@ public class BackgroundService extends Service {
                     NewsFeedModelResponse serverResponse = response.body();
                     //    newsList=serverResponse.toString();
                     if (serverResponse.getStatus() == 0) {
-                        Log.v("callNewsListAPI ", "response " + new Gson().toJson(response.body()));
+                        Log.v("BackService: callNewsListAPI ", "response " + new Gson().toJson(response.body()));
                         //   Log.v("", "Response " + serverResponse.getNewsFeedList().toString());
                       /*  Log.v("", "News Category " + serverResponse.getNewsFeedList().getCategory());
                         Log.v("", "News Desc " + serverResponse.getNewsFeedList().getNews_description());*/
@@ -168,21 +168,21 @@ public class BackgroundService extends Service {
                                         model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
                                         model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
-                                        model.setMembersList(serverResponse.getNewsFeedList().get(i).getMembersList());
+                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
 
-                                        for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getMembersList().size(); j++) {
-                                            if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMembersList().get(j).getId())) {
-                                                member.setMemberId(model.getMembersList().get(j).getId());
-                                                //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
-                                                member.setFirstName(model.getMembersList().get(j).getFirstName().trim());
-                                                member.setLastName(model.getMembersList().get(j).getLastName().trim());
-                                                member.setEmailId(model.getMembersList().get(j).getEmailId().trim());
-                                                member.setMobile(model.getMembersList().get(j).getMobile());
+                                      //  for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getMembersList().size(); j++) {
+                                            if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
+                                                member.setMemberId(model.getMember().getId());
+                                                //   member.setMemberToken(model.getMember().getMemberToken().trim());
+                                                member.setFirstName(model.getMember().getFirstName().trim());
+                                                member.setLastName(model.getMember().getLastName().trim());
+                                                member.setEmailId(model.getMember().getEmailId().trim());
+                                                member.setMobile(model.getMember().getMobile());
 
                                                 memberTable.insertMembers(member);
 
                                             }
-                                        }
+                                       // }
                                         newsListTable.insertNewsList(model);
 
                                     }
