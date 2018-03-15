@@ -63,6 +63,7 @@ import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedList;
+import job.com.news.models.NewsFeedListParcable;
 import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
@@ -111,6 +112,7 @@ public class HomeActivity extends AppCompatActivity
     CategoryMasterTable categoryMasterTable;
     SubCategoryTable subCategoryTable;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
+    private List<NewsFeedListParcable> newsFeedListParc = new ArrayList<>();
     private List<String> categoryList, catDupList;
     Gson gson;
     Fragment fragment;
@@ -284,7 +286,7 @@ public class HomeActivity extends AppCompatActivity
         Log.v("", " news_status " + news_status);
 
      //   Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,news_status, last_id);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, 0);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override

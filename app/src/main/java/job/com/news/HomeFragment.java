@@ -16,8 +16,6 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
-import com.ogaclejapan.smarttablayout.utils.v4.Bundler;
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
@@ -27,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import job.com.news.adapter.DynamicFragmentAdapter;
 import job.com.news.adapter.HomeDashboardAdapter;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.db.CategoryMasterTable;
@@ -76,7 +75,10 @@ public class HomeFragment extends Fragment {
     //private HashMap<String, ArrayList<String>> hashMap;
     private NewsFeedApplication newsFeedApplication;
     private SessionManager session, langSelection;
-    NewsFeedList model = new NewsFeedList();
+    private final List<Fragment> mFragmentList = new ArrayList<>();
+    //Title List
+    private final List<String> mFragmentTitleList = new ArrayList<>();
+    DynamicFragmentAdapter mDynAdapter;
 
     @Nullable
     @Override
@@ -90,10 +92,11 @@ public class HomeFragment extends Fragment {
         mContext = getActivity();
         getPrefData();
         initializeComponents();
+        loadCategoryList();
         attachViews(view);
         // setClickListeners();
         //  syncNewsList();
-        loadCategoryUI();
+
 
         return view;
     }
@@ -129,15 +132,50 @@ public class HomeFragment extends Fragment {
     private void attachViews(View view) {
         newsFeedList = newsListTable.getAllNewsRecords();
         viewPager = (ViewPager) view.findViewById(R.id.home_viewpager);
-        viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpagertab);
-       /* mTabLayout = (TabLayout)view.findViewById(R.id.tab_layout);
-        DynamicFragmentAdapter mAdapter = new DynamicFragmentAdapter(getFragmentManager(),newsFeedList);
+      //  viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpagertab);
+
+        mTabLayout = (TabLayout)view.findViewById(R.id.tab_layout);
         mTabLayout.setupWithViewPager(viewPager);
-        viewPager.setAdapter(mAdapter);*/
+        setupViewPager(viewPager);
     }
 
+    private void setupViewPager(ViewPager viewPager) {
+        Bundle b=new Bundle();
+        for (int i = 0; i < newsFeedListNew.size(); i++) {
+            b.putString("id", String.valueOf(newsFeedListNew.get(i).getId()));
+            b.putString("news_uuid", String.valueOf(newsFeedListNew.get(i).getNews_uuid()));
+            b.putString("category", String.valueOf(newsFeedListNew.get(i).getCategory()));
+           // b.putString("sub_category_id", String.valueOf(newsFeedListNew.get(i).getSub_category()));
+            b.putString("country", String.valueOf(newsFeedListNew.get(i).getCountry()));
+            b.putString("state", String.valueOf(newsFeedListNew.get(i).getState()));
+            b.putString("city", String.valueOf(newsFeedListNew.get(i).getCity()));
+            b.putString("news_title", String.valueOf(newsFeedListNew.get(i).getNews_title()));
+            b.putString("news_description", String.valueOf(newsFeedListNew.get(i).getNews_description()));
+            b.putString("news_images", String.valueOf(newsFeedListNew.get(i).getNews_images()));
+            b.putString("like_count", String.valueOf(newsFeedListNew.get(i).getLike_count()));
+            b.putString("member_id", String.valueOf(newsFeedListNew.get(i).getMember_id()));
+            b.putString("created_at", String.valueOf(newsFeedListNew.get(i).getCreated_at()));
+        }
 
-    private void loadCategoryUI() {
+        mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(),catListNew,newsFeedListNew,b);
+        viewPager.setAdapter(mDynAdapter);
+        for (int i = 0; i < catListNew.size(); i++) {
+      //  mAdapter.addFragment(new NewsFeedFragment(),catListNew.get(i)   );
+          //  mFragmentList.add(new NewsFeedFragment());
+            addTab(catListNew.get(i));
+
+        }
+    }
+    private void addTab(String title) {
+        mTabLayout.addTab(mTabLayout.newTab().setText(title));
+        addTabPage();
+    }
+
+    public void addTabPage() {
+        mDynAdapter.notifyDataSetChanged();
+    }
+
+    private void loadCategoryList() {
         pages = new FragmentPagerItems(mContext);
 
         // FragmentPagerItems pages = new FragmentPagerItems(mContext);
@@ -214,12 +252,12 @@ public class HomeFragment extends Fragment {
             }*/
         }
         //   Log.v("", "catListNewEn.size() " + catListNewEn.size());
-       /* for (int i = 0; i < catListNewEn.size(); i++) {
+        for (int i = 0; i < catListNewEn.size(); i++) {
 
             newsFeedListNew = newsListTable.getNewsRecordsByCategory(catListNewEn.get(i));
             Log.v("HomeFragment ", " newsFeedListNew " + newsFeedListNew);
             Log.v("", " newsFeedListNew.size " + newsFeedListNew.size());
-        }*/
+        }
 
          Bundle args = new Bundle();
       //    args.putParcelableArrayList("news", (ArrayList<? extends Parcelable>) newsFeedListNew);
@@ -254,12 +292,12 @@ public class HomeFragment extends Fragment {
 
 
 
-        for (int i = 0; i < catListNewEn.size(); i++) {
+      /*  for (int i = 0; i < catListNewEn.size(); i++) {
             newsFeedListNew = newsListTable.getNewsRecordsByCategory(catListNewEn.get(i));
 
             pages.add(FragmentPagerItem.of(catListNew.get(i), NewsFeedFragment.class, new Bundler().putString("News",newsFeedList.toString()).get()
-                    /*,new Bundler().putString("NewsDetails", obj.getString())*/));
-        }
+                    *//*,new Bundler().putString("NewsDetails", obj.getString())*//*));
+        }*/
         JSONObject obj = null;
        /* try {
           *//*  obj = new JSONObject(newsFeedList.toString());
@@ -284,8 +322,8 @@ public class HomeFragment extends Fragment {
                     .add(catListNew.get(i), NewsFeedFragment.class, new Bundler().putString("News", newsFeedListNew.get(i).toString()).get())
                     .create());//getSupportFragmentManager
         }*/
-        viewPager.setAdapter(fpAdapter);
-        viewPagerTab.setViewPager(viewPager);
+      /*  viewPager.setAdapter(fpAdapter);
+        viewPagerTab.setViewPager(viewPager);*/
 
     }
 

@@ -1,5 +1,8 @@
 package job.com.news.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -78,6 +81,7 @@ public class NewsFeedList {
     @Expose
     private RegisterMember member;
    // private  List<RegisterMember> membersList;
+
 
     public int getId() {
         return id;
@@ -229,6 +233,7 @@ public class NewsFeedList {
                 ", created_at='" + created_at + '\'' +
                 '}';
     }
+
 
         /* public RegisterMember getMember() {
             return member;

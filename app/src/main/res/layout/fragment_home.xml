@@ -36,7 +36,7 @@
                 app:stl_indicatorInterpolation="linear"
                 app:stl_indicatorThickness="3dp"
                 app:stl_underlineThickness="1dp"
-                />
+                android:visibility="gone" />
             <android.support.design.widget.TabLayout
                 android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
@@ -45,9 +45,8 @@
                 android:background="?attr/colorPrimary"
                 android:minHeight="?attr/actionBarSize"
                 app:tabIndicatorColor="@color/white"
-                app:tabMode="fixed"
-                app:tabGravity="fill"
-                android:visibility="gone"/>
+                app:tabMode="scrollable"
+                app:tabGravity="fill"/>
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.view.ViewPager
