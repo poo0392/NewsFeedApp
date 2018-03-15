@@ -18,6 +18,9 @@ public class SubCategoryTable {
     public static final String CATEGORY_ID = "category_id";
     //  public static final String CATEGORY_ID = "category_id"; // changes
 
+
+
+
     DBHelper dbHelper;
     SQLiteDatabase db;
     Context context;
@@ -43,7 +46,6 @@ public class SubCategoryTable {
         if (cursor.getCount() > 0) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToNext();
-                // model = new NewsFeedList();
                 id = cursor.getInt(cursor.getColumnIndex(SubCategoryTable.SUB_CATEGORY_ID));
             }
         }

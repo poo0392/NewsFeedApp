@@ -1,5 +1,7 @@
 package job.com.news.interfaces;
 
+import java.util.Map;
+
 import job.com.news.article.City;
 import job.com.news.article.State;
 import job.com.news.forgotpassword.ForgotPasswordResp;
@@ -7,6 +9,7 @@ import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.register.LoginRegisterResponse;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -103,6 +106,10 @@ public interface WebService {
                                           @Part("news_images[]") String[] news_pic);
                                          // @Part("news_pic") List<String> news_pic);
                                          // @Body String[] news_pic);
+
+
+    @POST("add_news")
+    Call<NewsFeedModelResponse> post_news(@Body Map<String, String> body);
 
 
 

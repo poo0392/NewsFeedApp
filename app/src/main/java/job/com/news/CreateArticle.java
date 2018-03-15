@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -65,12 +66,13 @@ import job.com.news.article.State;
 import job.com.news.article.State_Name;
 import job.com.news.db.DBHelper;
 import job.com.news.db.SubCategoryTable;
+import job.com.news.db.SubCategoryTableHi;
+import job.com.news.db.SubCategoryTableMr;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
-import job.com.news.payU.PayUActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -92,22 +94,23 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private String mProjectKey;
     private ProgressDialog mProgressDialog;
     private Context mContext;
-
+    private LinkedHashMap<String, String> mapValuesFinal;
     private HashMap<String, Integer> mapState, cityMap;//changes done
 
     private ArrayList<HashMap<String, String>> stateList;
     private TextView mTotalChargesView, mDateView;
     private RadioGroup radioGroupDays, radioGroupWords;
     private String mRsSymbol;
-    private String mArticleCode, categoryId,subCategoryId, stateId, cityId;
+    private String mArticleCode, categoryId, subCategoryId, stateId, cityId;
     private ImageView mArticleImage1, mArticleImage2, iv_info_desc, iv_info_title;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String mediaPath;
     private int currentImageView = 0, words, radioGroupDaysID, wordsCount = 0;
     private Button btn_submit;
     boolean valid = false;
-    private int charges;
-    String state_arr[], article_arr[], no_of_days_arr[], selectedState, selectedCity, selectedDays;
+    private int charges, sub_category_id;
+    String state_arr[], article_arr[], no_of_days_arr[], lang_arr[];
+    String getLangFromPref, selectedState, selectedCity, selectedDays;
     ArrayAdapter<String> state_adapter, article_adapter, sub_article_adapter, city_adapter, publish_days_adapter;
     RelativeLayout state_relative, city_relative, article_relative;
     BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsSubArticleSpinner, bsPublishDaysSpinner;
@@ -124,6 +127,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     int wordsLength = 0;
     List<String> newsPic;
     SubCategoryTable subCategoryTable;
+    SubCategoryTableHi subCategoryTableHi;
+    SubCategoryTableMr subCategoryTableMr;
 
     //Indonesia
 
@@ -137,17 +142,20 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mContext = this;
         langSelection = new SessionManager(getApplicationContext());
         db = new DBHelper(mContext);
-        subCategoryTable=new SubCategoryTable(mContext);
+        subCategoryTable = new SubCategoryTable(mContext);
+        subCategoryTableHi = new SubCategoryTableHi(mContext);
+        subCategoryTableMr = new SubCategoryTableMr(mContext);
 
         // updateViews("hi_IN");
 
         setAppToolbar();
         getPrefData();
+        getLang();
         initializeComponents();
         setListeners();
 
         setDateToText();
-        //    setLang();
+
 
 //        String languageToLoad  = "hi_IN"; // your language
 //        Locale locale = new Locale(languageToLoad);
@@ -162,14 +170,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void setLang() {
-        String getLang = langSelection.getLanguage();
-        String[] lang_arr = getResources().getStringArray(R.array.language_arr);
-        if (getLang.equalsIgnoreCase(lang_arr[1])) {
-            updateViews("hi");
-        } else if (getLang.equalsIgnoreCase(lang_arr[2])) {
-            updateViews("mr");
-        }
+    private void getLang() {
+        getLangFromPref = langSelection.getLanguage();
+        lang_arr = getResources().getStringArray(R.array.language_arr);
+
     }
 
     private void setDateToText() {
@@ -366,18 +370,24 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         bsSubArticleSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                subCategoryId = String.valueOf(position+1);
+                subCategoryId = String.valueOf(position + 1);
 //                parent.getItemAtPosition(position);
-                Log.v("","Value "+parent.getItemAtPosition(position).toString());
+                Log.v("", "Value " + parent.getItemAtPosition(position).toString());
 
-                String sub_cat_name= parent.getSelectedItem().toString();
+                String sub_cat_name = parent.getItemAtPosition(position).toString();
                 //getStringByLocal(mContext,);
-                int sub_category_id=subCategoryTable.getSubCategoryIdByName(sub_cat_name);
 
-              //  String value = String.valueOf(item.getString(0));
+                if (getLangFromPref.equalsIgnoreCase(lang_arr[1])) {
+                    sub_category_id = subCategoryTableHi.getSubCategoryIdByName(sub_cat_name);
+                } else if (getLangFromPref.equalsIgnoreCase(lang_arr[2])) {
+                    sub_category_id = subCategoryTableMr.getSubCategoryIdByName(sub_cat_name);
+                } else {
+                    sub_category_id = subCategoryTable.getSubCategoryIdByName(sub_cat_name);
+                }
+                //  String value = String.valueOf(item.getString(0));
 
-                Log.v("bsSubArticleSpinner ", "sub_category_id " + sub_category_id);
-                Log.v("bsSubArticleSpinner ", "subCategoryId " + subCategoryId);
+                Log.v("bsSubArticleSpinner ", "sub_category_id_db " + sub_category_id);
+                Log.v("bsSubArticleSpinner ", "subCategoryIdByPos " + subCategoryId);
             }
         });
 
@@ -451,11 +461,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
         });
     }
+
     public static String getStringByLocal(Activity context, int id, String locale) {
         Configuration configuration = new Configuration(context.getResources().getConfiguration());
         configuration.setLocale(new Locale(locale));
         return context.createConfigurationContext(configuration).getResources().getString(id);
     }
+
     private int setDescpWordsLength(int radioId) {
         // int radioId = radioGroupWords.getCheckedRadioButtonId();
         Log.v("", "radioId " + radioId);
@@ -797,17 +809,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.article_btn_submit:
                 if (validateFields()) {
-                    Intent intent = new Intent(this, PayUActivity.class);
+                  /*  Intent intent = new Intent(this, PayUActivity.class);
                     intent.putExtra("Price", 1);
                     startActivity(intent);
-                    finish();
+                    finish();*/
 //
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                  //  postNewsAPI();
+                     postNewsAPI();
                 }
 
                 break;
@@ -848,6 +860,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void postNewsAPI() {
+        mapValuesFinal=new LinkedHashMap<>();
         mProgressDialog = new ProgressDialog(CreateArticle.this);
         mProgressDialog.setMessage("Loading...");
         mProgressDialog.show();
@@ -876,7 +889,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), membertoken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberid);
         RequestBody paramCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + categoryId);
-        RequestBody paramSubCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + subCategoryId);
+        RequestBody paramSubCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + sub_category_id);
         RequestBody paramCountryId = RequestBody.create(MediaType.parse("text/plain"), "" + countryId);
         RequestBody paramStateId = RequestBody.create(MediaType.parse("text/plain"), "" + stateId);
         RequestBody paramCityId = RequestBody.create(MediaType.parse("text/plain"), "" + cityId);
@@ -884,24 +897,38 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         RequestBody paramNewsDesc = RequestBody.create(MediaType.parse("text/plain"), "" + newsDesc);
         RequestBody paramNewsPic = RequestBody.create(MediaType.parse("text/plain"), "" + newsPic);
 
+      /*  mapValuesFinal.put("member_token",membertoken);
+        mapValuesFinal.put("member_id", String.valueOf(memberid));
+        mapValuesFinal.put("category_id",categoryId);
+        mapValuesFinal.put("sub_category_id", String.valueOf(sub_category_id));
+        mapValuesFinal.put("country_id",countryId);
+        mapValuesFinal.put("state_id",stateId);
+        mapValuesFinal.put("city_id",cityId);
+        mapValuesFinal.put("news_title",newsTitle);
+        mapValuesFinal.put("news_desc",newsDesc);
+        mapValuesFinal.put("news_images", String.valueOf(newsPic));*/
+
         Log.v("postNewsAPI ", "membertoken " + membertoken);
         Log.v("postNewsAPI ", "memberid " + memberid);
         Log.v("postNewsAPI ", "countryId " + countryId);
         Log.v("postNewsAPI ", "categoryId " + categoryId);
+        Log.v("postNewsAPI ", "SubcategoryId " + sub_category_id);
         Log.v("postNewsAPI ", "stateId " + stateId);
         Log.v("postNewsAPI ", "cityId " + cityId);
         Log.v("postNewsAPI ", "newsTitle " + newsTitle);
         Log.v("postNewsAPI ", "newsDesc " + newsDesc);
-        String news_pic_str=Arrays.toString(newsList);
+        String news_pic_str = Arrays.toString(newsList);
         Log.v("postNewsAPI ", "newsPic " + news_pic_str);
 
 //changes 06_03
         Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
-                paramCategoryId,paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, newsList);
+                paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, newsList);
+    //    Call<NewsFeedModelResponse> serverResponse = webService.post_news(mapValuesFinal);
+
         String reqParam = bodyToString(serverResponse.request().body());
-        Log.v("postNewsAPI ", "reqParam : " + reqParam);
+     /*   Log.v("postNewsAPI ", "reqParam : " + reqParam);
         Log.v("postNewsAPI ", "LoginParameters : " + serverResponse.request().body().toString());
-        Log.v("postNewsAPI ", "postNewsAPI req : " + serverResponse.request().toString());
+        Log.v("postNewsAPI ", "postNewsAPI req : " + serverResponse.request().toString());*/
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
@@ -946,6 +973,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
         });
     }
+
     private void showSuccessAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)
@@ -963,6 +991,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 })
                 .show();
     }
+
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)
@@ -978,6 +1007,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 })
                 .show();
     }
+
     private String bodyToString(final RequestBody request) {
         try {
             final RequestBody copy = request;

@@ -152,7 +152,7 @@ public class HomeFragment extends Fragment {
         }
 
         categoryList.addAll(new HashSet<>(catDupList));
-        for (int i = 0; i < categoryList.size(); i++) {
+        for (int i = 1; i < categoryList.size(); i++) {
             if (categoryList.get(i).equals("National and International")) {
                 catListNew.add(mContext.getResources().getString(R.string.national_inter_menu));
                 catListNewEn.add("National and International");
