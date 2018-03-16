@@ -16,7 +16,7 @@ import job.com.news.models.NewsFeedList;
  */
 
 public class NewsListTable {
-    //chnages added on 3/9/2018.
+    //chnages added //changes 16_03
     public static final String NEWS_LIST_TABLE_NAME = "NewsList";
     public static final String COLUMN_ID = "column_id";
     public static final String NEWS_ID = "id";

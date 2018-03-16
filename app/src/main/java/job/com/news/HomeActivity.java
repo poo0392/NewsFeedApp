@@ -82,7 +82,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-//changes added on 3/9/2018.
+//changes added on //changes 16_03.
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     //changes reflect to be 05/03
