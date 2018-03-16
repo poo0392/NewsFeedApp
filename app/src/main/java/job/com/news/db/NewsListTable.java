@@ -21,7 +21,10 @@ public class NewsListTable {
     public static final String COLUMN_ID = "column_id";
     public static final String NEWS_ID = "id";
     public static final String NEWS_UUID = "news_uuid";
-    public static final String CATEGORY = "category";
+    public static final String CATEGORY = "category_name";
+    public static final String CATEGORY_ID = "category_id";
+    public static final String SUB_CATEGORY = "sub_category";
+    public static final String SUB_CATEGORY_ID = "sub_category_id";
     public static final String COUNTRY = "country";
     public static final String STATE = "state";
     public static final String CITY = "city";
@@ -103,9 +106,22 @@ public class NewsListTable {
         if (cursor.getCount() > 0) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToNext();
-                model = new NewsFeedList();
-               // Log.v("db getAllNewsRecords ", "NewsID " + cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
-                model.setId(cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
+                model = new NewsFeedList((cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID))),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.STATE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
+                // Log.v("db getAllNewsRecords ", "NewsID " + cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
+              /*  model.setId(cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
                 model.setNews_uuid(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)));
                 model.setCategory(cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)));
                 model.setCountry(cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)));
@@ -116,7 +132,7 @@ public class NewsListTable {
                 //  model.setNews_pic(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_PIC)));
                 model.setLike_count(cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)));
                 model.setMember_id(cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)));
-                model.setCreated_at(cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
+                model.setCreated_at(cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));*/
                 // model.setMember(c.getString(c.getColumnIndex(MemberTable.FIRST_NAME)));
                 listAll.add(model);
 
@@ -139,9 +155,22 @@ public class NewsListTable {
         if (cursor.getCount() > 0) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToNext();
-                model = new NewsFeedList();
+                model = new NewsFeedList((cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID))),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.STATE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
                 Log.v("db ", "NewsID " + cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
-                model.setId(cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
+              /*  model.setId(cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
                 model.setNews_uuid(cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)));
                 model.setCategory(cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)));
                 model.setCountry(cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)));
@@ -153,7 +182,7 @@ public class NewsListTable {
                 model.setLike_count(cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)));
                 model.setMember_id(cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)));
                 model.setCreated_at(cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
-                // model.setMember(c.getString(c.getColumnIndex(MemberTable.FIRST_NAME)));
+                // model.setMember(c.getString(c.getColumnIndex(MemberTable.FIRST_NAME)));*/
                 listAll.add(model);
             }
         }

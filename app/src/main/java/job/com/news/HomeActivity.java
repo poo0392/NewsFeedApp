@@ -13,7 +13,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -48,6 +47,7 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -67,7 +67,7 @@ import job.com.news.models.NewsFeedListParcable;
 import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
-import job.com.news.service.AlarmReceiver;
+import job.com.news.service.BackgroundService;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
@@ -249,13 +249,21 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void syncNewsList() {
-        Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
+        startService(new Intent(this, BackgroundService.class));
+        Calendar cal = Calendar.getInstance();
+        Intent intent = new Intent(this, BackgroundService.class);
+        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        // Start service every 15 min
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),900000, pintent);
+
+       /* Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
         boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
         if (alarmRunning == false) {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, 0);
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 500000, pendingIntent);
-        }
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 900000, pendingIntent);
+        }*/
     }
 
     private void callNewsListAPI(String memberToken, int memberId) {
@@ -286,7 +294,7 @@ public class HomeActivity extends AppCompatActivity
         Log.v("", " news_status " + news_status);
 
      //   Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,news_status, last_id);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, 0);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
@@ -310,14 +318,33 @@ public class HomeActivity extends AppCompatActivity
                             newsFeedList = serverResponse.getNewsFeedList();
                          //    Log.v("", "newsFeedList " + newsFeedList.toString());
 
-                            NewsFeedList model = new NewsFeedList();
+                            NewsFeedList model;
                             try {
                                 RegisterMember member = new RegisterMember();
                                 List<NewsImages> imagesList = new ArrayList<>();
                                 NewsImages imagesModel = new NewsImages();
                                 for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
                                     if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
-                                        model.setId(serverResponse.getNewsFeedList().get(i).getId());
+
+
+                                        model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
+                                                serverResponse.getNewsFeedList().get(i).getNews_uuid(),
+                                                serverResponse.getNewsFeedList().get(i).getCategory(),
+                                                serverResponse.getNewsFeedList().get(i).getCategory_id(),
+                                                serverResponse.getNewsFeedList().get(i).getSub_category(),
+                                                serverResponse.getNewsFeedList().get(i).getSub_category_id(),
+                                                serverResponse.getNewsFeedList().get(i).getCountry(),
+                                                serverResponse.getNewsFeedList().get(i).getState(),
+                                                serverResponse.getNewsFeedList().get(i).getCity(),
+                                                serverResponse.getNewsFeedList().get(i).getNews_title(),
+                                                serverResponse.getNewsFeedList().get(i).getNews_description(),
+                                                serverResponse.getNewsFeedList().get(i).getLike_count(),
+                                                serverResponse.getNewsFeedList().get(i).getMember_id(),
+                                                serverResponse.getNewsFeedList().get(i).getCreated_at(),
+                                                serverResponse.getNewsFeedList().get(i).getNews_images(),
+                                                serverResponse.getNewsFeedList().get(i).getMember()
+                                                );
+                                       /* model.setId(serverResponse.getNewsFeedList().get(i).getId());
                                         model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
                                         model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
                                         model.setCountry(serverResponse.getNewsFeedList().get(i).getCountry());
@@ -331,7 +358,7 @@ public class HomeActivity extends AppCompatActivity
                                         model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
                                         model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
-
+*/
                                        // for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMember(); k++) {
                                             if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
                                                 member.setMemberId(model.getMember().getId());

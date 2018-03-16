@@ -135,7 +135,7 @@ public class BackgroundService extends Service {
                     NewsFeedModelResponse serverResponse = response.body();
                     //    newsList=serverResponse.toString();
                     if (serverResponse.getStatus() == 0) {
-                        Log.v("BackService: callNewsListAPI ", "response " + new Gson().toJson(response.body()));
+                        Log.v("BackSercallNewsListAPI ", "response " + new Gson().toJson(response.body()));
                         //   Log.v("", "Response " + serverResponse.getNewsFeedList().toString());
                       /*  Log.v("", "News Category " + serverResponse.getNewsFeedList().getCategory());
                         Log.v("", "News Desc " + serverResponse.getNewsFeedList().getNews_description());*/
@@ -151,12 +151,29 @@ public class BackgroundService extends Service {
                             //   loadDatatoList(newsFeedList);
 
 
-                            NewsFeedList model = new NewsFeedList();
+                            NewsFeedList model;
                             try {
                                 RegisterMember member = new RegisterMember();
                                 for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
                                     if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
-                                        model.setId(serverResponse.getNewsFeedList().get(i).getId());
+                                        model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
+                                                serverResponse.getNewsFeedList().get(i).getNews_uuid(),
+                                                serverResponse.getNewsFeedList().get(i).getCategory(),
+                                                serverResponse.getNewsFeedList().get(i).getCategory_id(),
+                                                serverResponse.getNewsFeedList().get(i).getSub_category(),
+                                                serverResponse.getNewsFeedList().get(i).getSub_category_id(),
+                                                serverResponse.getNewsFeedList().get(i).getCountry(),
+                                                serverResponse.getNewsFeedList().get(i).getState(),
+                                                serverResponse.getNewsFeedList().get(i).getCity(),
+                                                serverResponse.getNewsFeedList().get(i).getNews_title(),
+                                                serverResponse.getNewsFeedList().get(i).getNews_description(),
+                                                serverResponse.getNewsFeedList().get(i).getLike_count(),
+                                                serverResponse.getNewsFeedList().get(i).getMember_id(),
+                                                serverResponse.getNewsFeedList().get(i).getCreated_at(),
+                                                serverResponse.getNewsFeedList().get(i).getNews_images(),
+                                                serverResponse.getNewsFeedList().get(i).getMember()
+                                        );
+                                      /*  model.setId(serverResponse.getNewsFeedList().get(i).getId());
                                         model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
                                         model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
                                         model.setCountry(serverResponse.getNewsFeedList().get(i).getCountry());
@@ -168,7 +185,7 @@ public class BackgroundService extends Service {
                                         model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
                                         model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
-                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
+                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());*/
 
                                       //  for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getMembersList().size(); j++) {
                                             if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {

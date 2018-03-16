@@ -48,7 +48,8 @@ public class HomeFragment extends Fragment {
     Toolbar toolbar;
     private ProgressDialog mProgressDialog;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
-    private List<NewsFeedList> newsFeedListNew = new ArrayList<>();
+    private List<NewsFeedList> newsFeedListNew;
+    private List<NewsFeedList> listItems;
     private List<String> catListNew, catDupList;
     ArrayList<String> categoryList;
     ArrayList<String> catListNewEn;
@@ -90,6 +91,7 @@ public class HomeFragment extends Fragment {
 
         //setHasOptionsMenu(false);
         mContext = getActivity();
+
         getPrefData();
         initializeComponents();
         loadCategoryList();
@@ -112,6 +114,8 @@ public class HomeFragment extends Fragment {
         catListNew = new ArrayList<>();
         catListNewEn = new ArrayList<>();
         catDupList = new ArrayList<>();
+        newsFeedListNew = new ArrayList<>();
+        listItems = new ArrayList<>();
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(mContext);
         langSelection = new SessionManager(mContext);
@@ -132,20 +136,20 @@ public class HomeFragment extends Fragment {
     private void attachViews(View view) {
         newsFeedList = newsListTable.getAllNewsRecords();
         viewPager = (ViewPager) view.findViewById(R.id.home_viewpager);
-      //  viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpagertab);
+        //  viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpagertab);
 
-        mTabLayout = (TabLayout)view.findViewById(R.id.tab_layout);
+        mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         mTabLayout.setupWithViewPager(viewPager);
         setupViewPager(viewPager);
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        Bundle b=new Bundle();
+        Bundle b = new Bundle();
         for (int i = 0; i < newsFeedListNew.size(); i++) {
             b.putString("id", String.valueOf(newsFeedListNew.get(i).getId()));
             b.putString("news_uuid", String.valueOf(newsFeedListNew.get(i).getNews_uuid()));
             b.putString("category", String.valueOf(newsFeedListNew.get(i).getCategory()));
-           // b.putString("sub_category_id", String.valueOf(newsFeedListNew.get(i).getSub_category()));
+            // b.putString("sub_category_id", String.valueOf(newsFeedListNew.get(i).getSub_category()));
             b.putString("country", String.valueOf(newsFeedListNew.get(i).getCountry()));
             b.putString("state", String.valueOf(newsFeedListNew.get(i).getState()));
             b.putString("city", String.valueOf(newsFeedListNew.get(i).getCity()));
@@ -157,15 +161,22 @@ public class HomeFragment extends Fragment {
             b.putString("created_at", String.valueOf(newsFeedListNew.get(i).getCreated_at()));
         }
 
-        mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(),catListNew,newsFeedListNew,b);
-        viewPager.setAdapter(mDynAdapter);
+
+
+        // for(int k=0;k<newsFeedListNew.size();k++) {
+        mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(), catListNew, newsFeedListNew);
+
+        // }
         for (int i = 0; i < catListNew.size(); i++) {
-      //  mAdapter.addFragment(new NewsFeedFragment(),catListNew.get(i)   );
-          //  mFragmentList.add(new NewsFeedFragment());
+            //  mAdapter.addFragment(new NewsFeedFragment(),catListNew.get(i)   );
+            //  mFragmentList.add(new NewsFeedFragment());
+
             addTab(catListNew.get(i));
 
         }
+        viewPager.setAdapter(mDynAdapter);
     }
+
     private void addTab(String title) {
         mTabLayout.addTab(mTabLayout.newTab().setText(title));
         addTabPage();
@@ -252,16 +263,22 @@ public class HomeFragment extends Fragment {
             }*/
         }
         //   Log.v("", "catListNewEn.size() " + catListNewEn.size());
+        String items = "";
         for (int i = 0; i < catListNewEn.size(); i++) {
 
-            newsFeedListNew = newsListTable.getNewsRecordsByCategory(catListNewEn.get(i));
-            Log.v("HomeFragment ", " newsFeedListNew " + newsFeedListNew);
-            Log.v("", " newsFeedListNew.size " + newsFeedListNew.size());
-        }
+              newsFeedListNew.addAll(newsListTable.getNewsRecordsByCategory(catListNewEn.get(i)));
+            //  Log.v("HomeFragment ", " newsFeedListNew " + newsFeedListNew);
+            // Log.v("", " newsFeedListNew.size " + newsFeedListNew.size());
+            //items += newsFeedListNew+",";
 
-         Bundle args = new Bundle();
-      //    args.putParcelableArrayList("news", (ArrayList<? extends Parcelable>) newsFeedListNew);
-       //  args.putSerializable("News", (Serializable) newsFeedListNew);
+
+
+
+        }
+        // listItems = new ArrayList<>(newsFeedListNew);
+        Bundle args = new Bundle();
+        //    args.putParcelableArrayList("news", (ArrayList<? extends Parcelable>) newsFeedListNew);
+        //  args.putSerializable("News", (Serializable) newsFeedListNew);
         // for (int i = 0; i < catListNewEn.size(); i++) {
         // args.putStringArrayList("category",categoryList);
         // }

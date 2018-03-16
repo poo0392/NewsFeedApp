@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -80,6 +79,7 @@ public class NewsFeedFragment extends Fragment {
     private List<RegisterMember> memberList = new ArrayList<>();
     private List<NewsImages> imagesList = new ArrayList<>();
     ArrayList<String> categoryResp = new ArrayList<>();
+    ArrayList<String> categoryL = new ArrayList<>();
     int memberId;
     int pos;
     ProgressDialog mProgressDialog;
@@ -114,34 +114,35 @@ public class NewsFeedFragment extends Fragment {
     }
 
     private void getBundleData() {
-
-       // = getArguments().getParcelableArrayList("News");
+        newsFeedList = (ArrayList) getArguments().getParcelableArrayList("News");
+        Log.v("getBundleData ", " newsFeedList" + newsFeedList);
+        pos = getArguments().getInt("position");
+        Log.v("", "Fragpos " + pos);
         loadDatatoList();
         //if(null!=getArguments().getSerializable("News")){
-            //newsFeedListNew = getArguments().getString("news");
-         // getArguments().getSerializable("News");
-          //  Log.v("getBundleData ","newsFeedListNew "+getArguments().getString("News"));
+        //newsFeedListNew = getArguments().getString("news");
+        // getArguments().getSerializable("News");
+        //  Log.v("getBundleData ","newsFeedListNew "+getArguments().getString("News"));
 
-      //  }
+        //  }
      /*  if(null!=getArguments().getString("category")){
            category=getArguments().getString("category");
            Log.v("getBundleData ","category "+category);
        }
        */
-      // if(null!=getArguments().getString("News")){
-          // category=getArguments().getString("news");
-           //Log.v("getBundleData ","news "+category);
-      //     String news=getArguments().getString("News");
-       //    Log.v(""," getArguments "+news);
-          // newsFeedListNew = new Gson().toJson(news);
+        // if(null!=getArguments().getString("News")){
+        // category=getArguments().getString("news");
+        //Log.v("getBundleData ","news "+category);
+        //     String news=getArguments().getString("News");
+        //    Log.v(""," getArguments "+news);
+        // newsFeedListNew = new Gson().toJson(news);
          /*  NewsFeedModelResponse model = new NewsFeedModelResponse();
            model  = new Gson().fromJson(news, NewsFeedModelResponse.class);
            newsFeedListNew= model.getNewsFeedList();
            Log.v("","newsFeedListNew "+newsFeedListNew);*/
 
 
-
-      // }
+        // }
      /* if(null!=getArguments().getStringArrayList("category")){
           categoryListBundle =getArguments().getStringArrayList("category");
 
@@ -152,9 +153,9 @@ public class NewsFeedFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        pos = FragmentPagerItem.getPosition(getArguments());
+        //pos = FragmentPagerItem.getPosition(getArguments());
         //getArguments();
-        Log.v("", "pos " + pos);
+        //Log.v("", "pos " + pos);
         //   attachViews(view);
         //   getPrefData();
         //
@@ -286,10 +287,13 @@ public class NewsFeedFragment extends Fragment {
     }
 
     private void loadDatatoList() {
+        for (int i = 0; i < newsFeedList.size(); i++) {
+            categoryL.add(newsFeedList.get(i).getCategory());
 
+        }
         //     newsFeedListAll = newsListTable.getAllNewsRecords();
 
-       // getCategory();
+        // getCategory();
 
        /* for (int titleResId : tabsValues()) {
             newsFeedList = newsListTable.getNewsRecordsByCategory(getString(titleResId));
@@ -301,6 +305,7 @@ public class NewsFeedFragment extends Fragment {
             //  newsFeedList = newsListTable.getNewsRecordsByCategory(category);
         }*/
         // newsFeedList = newsListTable.getAllNewsRecords();
+
         Log.v("", "getNewsFeedList " + newsFeedList.toString());
         adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "fromAPi");
 
@@ -545,12 +550,13 @@ public class NewsFeedFragment extends Fragment {
   /*  public static Fragment newInstance(int position, List<NewsFeedList> newsFeedListNew) {
     }*/
 
-    public static Fragment newInstance(int position, Bundle newsFeedList) {
+    public static Fragment newInstance(int position, List<NewsFeedList> newsFeedList) {
         NewsFeedFragment fragment = new NewsFeedFragment();
         Bundle args = new Bundle();
-       // args.putParcelableArrayList("News", (ArrayList<? extends Parcelable>) newsFeedList);
+        args.putInt("position", position);
+        args.putParcelableArrayList("News", (ArrayList<NewsFeedList>) newsFeedList);
         //args.putParcelableArrayList("News", (ArrayList<? extends Parcelable>) newsFeedList);
-        args.getBundle("News");
+        //args.getBundle("News");
         fragment.setArguments(args);
         return fragment;
     }

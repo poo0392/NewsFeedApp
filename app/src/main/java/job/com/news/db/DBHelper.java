@@ -49,16 +49,6 @@ public class DBHelper extends SQLiteOpenHelper {
             + MemberTable.FIRST_NAME + " TEXT," + MemberTable.LAST_NAME + " TEXT,"
             + MemberTable.EMAIL_ID + " TEXT," + MemberTable.MOBILE + " TEXT," + MemberTable.STATUS + " TEXT)";
 
-    String query_news_list = " CREATE TABLE IF NOT EXISTS " + NewsListTable.NEWS_LIST_TABLE_NAME +
-            "(" + NewsListTable.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            NewsListTable.NEWS_ID + " INTEGER," + NewsListTable.NEWS_UUID + " TEXT," + NewsListTable.CATEGORY + " TEXT," +
-            NewsListTable.COUNTRY + " TEXT," + NewsListTable.STATE + " TEXT," + NewsListTable.CITY + " TEXT," +
-            NewsListTable.NEWS_TITLE + " TEXT," + NewsListTable.NEWS_DESCRIPTION + " TEXT," /*+ NewsListTable.NEWS_PIC + " TEXT," */ +
-            NewsListTable.LIKE_COUNT + " TEXT," + NewsListTable.MEMBER_ID + " INTEGER," +
-            NewsListTable.CREATED_AT + " TEXT,"
-            + NewsListTable.IS_UPDATED + " TEXT," + NewsListTable.STATUS + " TEXT," +
-            " FOREIGN KEY(" + NewsListTable.MEMBER_ID + ") REFERENCES " +
-            MemberTable.MEMBER_TABLE_NAME + "(id)" + ")";
 
     String category_query = " CREATE TABLE IF NOT EXISTS " + CategoryMasterTable.CATEGORY_TABLE_NAME +
             "("/*+CategoryMasterTable.COLUMN_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT,"*/ +
@@ -83,6 +73,21 @@ public class DBHelper extends SQLiteOpenHelper {
             " FOREIGN KEY(" + SubCategoryTableHi.CATEGORY_ID + ") REFERENCES " +
             CategoryMasterTable.CATEGORY_TABLE_NAME + "(category_id)" + ")";
 
+    String query_news_list = " CREATE TABLE IF NOT EXISTS " + NewsListTable.NEWS_LIST_TABLE_NAME +
+            "(" + NewsListTable.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            NewsListTable.NEWS_ID + " INTEGER," + NewsListTable.NEWS_UUID + " TEXT," + NewsListTable.CATEGORY_ID + " TEXT,"
+            + NewsListTable.CATEGORY + " TEXT," + NewsListTable.SUB_CATEGORY_ID + " TEXT," + NewsListTable.SUB_CATEGORY + " TEXT," +
+            NewsListTable.COUNTRY + " TEXT," + NewsListTable.STATE + " TEXT," + NewsListTable.CITY + " TEXT," +
+            NewsListTable.NEWS_TITLE + " TEXT," + NewsListTable.NEWS_DESCRIPTION + " TEXT," /*+ NewsListTable.NEWS_PIC + " TEXT," */ +
+            NewsListTable.LIKE_COUNT + " TEXT," + NewsListTable.MEMBER_ID + " INTEGER," +
+            NewsListTable.CREATED_AT + " TEXT,"
+            + NewsListTable.IS_UPDATED + " TEXT," + NewsListTable.STATUS + " TEXT," +
+            " FOREIGN KEY(" + NewsListTable.MEMBER_ID + ") REFERENCES " +
+            MemberTable.MEMBER_TABLE_NAME + "(id)" + ")," +
+            " FOREIGN KEY(" + NewsListTable.CATEGORY_ID + ") REFERENCES " +
+            CategoryMasterTable.CATEGORY_TABLE_NAME + "(category_id)" + ")" /*+
+            " FOREIGN KEY(" + NewsListTable.CATEGORY + ") REFERENCES " +
+            CategoryMasterTable.CATEGORY_TABLE_NAME + "(category_name)" + ")"*/;
 
     String images_query = " CREATE TABLE IF NOT EXISTS " + NewsImagesTable.NEWS_IMAGES_TABLE_NAME +
             "(" + NewsImagesTable.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -257,6 +262,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.setTransactionSuccessful();
         db.endTransaction();
     }
+
     public void insertSubCategoryMR(SQLiteDatabase db) {
         //   db = this.getWritableDatabase();
         db.beginTransaction();
