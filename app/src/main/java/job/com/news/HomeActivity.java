@@ -133,13 +133,14 @@ public class HomeActivity extends AppCompatActivity
 
         getPrefData();
 
-        callNewsListAPI(memberToken, memberId);
+
         /*if (role.equals("1")) {
             callAdminHomeFragment();
         } else {
             callHomeFragment();
         }*/
-        callHomeFragment();
+
+
 
         if (!checkPermission()) {
             requestPermission();
@@ -149,7 +150,8 @@ public class HomeActivity extends AppCompatActivity
 
         setAppToolbar();
         initialializeComponents();
-
+        callHomeFragment();
+        callNewsListAPI(memberToken, memberId);
 
         LinearLayout mMenuLayout = (LinearLayout) findViewById(R.id.main_menu_layout);
 
@@ -281,20 +283,21 @@ public class HomeActivity extends AppCompatActivity
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        String news_status = "";
         WebService webService = retrofit.create(WebService.class);
-        long id= newsListTable.getLastId();
+        long last_id = newsListTable.getLastId();
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-      //  RequestBody last_id = RequestBody.create(MediaType.parse("text/plain"), "" + id);
-        String news_status = "";
+        RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
+
 
         Log.v("", " memberToken " + memberToken);
         Log.v("", " memberId " + memberId);
-        Log.v("", " last_id " + id);
+        Log.v("", " last_id " + last_id);
         Log.v("", " news_status " + news_status);
 
-     //   Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,news_status, last_id);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,status, last_id);
+     //   Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,id);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override

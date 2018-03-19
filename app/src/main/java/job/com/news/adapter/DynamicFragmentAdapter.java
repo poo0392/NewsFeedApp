@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,8 @@ public class DynamicFragmentAdapter extends FragmentStatePagerAdapter {
     List<NewsFeedList> newsFeedList = new ArrayList<>();
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
-    private List<String> catListNew, catListEn;
+    private List<String> catListNew;
+    ArrayList<String> catListNewEn;
     List<NewsFeedList> newsFeedListNew;
     Map<String,List<NewsFeedList>> mapItems;
     Fragment fragment = null;
@@ -32,15 +32,11 @@ public class DynamicFragmentAdapter extends FragmentStatePagerAdapter {
     Context mContext;
     Bundle b;
 
-    public DynamicFragmentAdapter(FragmentManager fm, List<String> catListNew, List<NewsFeedList> newsFeedListNew) {
+    public DynamicFragmentAdapter(FragmentManager fm, List<String> catListNew, ArrayList<String> catListNewEn) {
         super(fm);
         this.catListNew = catListNew;
-       // this.catListEn = catListEn;
-        this.newsFeedListNew = newsFeedListNew;
-    //    newsListTable = new NewsListTable(activity);
-       // NewsList=new ArrayList<>();
+        this.catListNewEn = catListNewEn;
 
-        Log.v("", "newsFeedListNew " + newsFeedListNew);
 
 
     }
@@ -57,9 +53,9 @@ public class DynamicFragmentAdapter extends FragmentStatePagerAdapter {
            // NewsList.addAll(newsListTable.getNewsRecordsByCategory(catListEn.get(i)));
         //    NewsList=newsListTable.getNewsRecordsByCategory(catListEn.get(i));
 
-            fragment = NewsFeedFragment.newInstance(position,newsFeedListNew);
+          //  fragment = NewsFeedFragment.newInstance(position,newsFeedListNew);
        // }
-        return fragment;
+        return NewsFeedFragment.newInstance(position,catListNewEn);
     }
 
     @Override

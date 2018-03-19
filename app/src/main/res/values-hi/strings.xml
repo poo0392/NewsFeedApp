@@ -106,7 +106,6 @@
         <item>सामाजिक और संबंधित समाचार</item>
         <item>खेल</item>
         <item>विज्ञान और तकनीक</item>
-        <item>आर्थिक समाचार</item>
         <item>स्वास्थ्य संबंधित</item>
         <item>व्यापार समाचार</item>
         <item>कृषि समाचार</item>
@@ -115,6 +114,7 @@
         <item>अन्य और अवर्गीकृत समाचार</item>
         <item>मनोरंजन समाचार</item>
         <item>कैरियर संबंधित</item>
+        <item>आर्थिक समाचार</item>
     </string-array>
     <string-array name="small_class_sub_category_items">
         <item>संपत्ति</item>

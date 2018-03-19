@@ -127,7 +127,6 @@
         <item>Social and Related News</item>
         <item>Sports</item>
         <item>Science and Technology</item>
-        <item>Economical News</item>
         <item>Health Related</item>
         <item>Business News</item>
         <item>Agricultural News</item>
@@ -136,6 +135,7 @@
         <item>Other and Uncategorized News</item>
         <item>Entertainment News</item>
         <item>Career Related</item>
+        <item>Economical News</item>
     </string-array>
 
     <string-array name="small_class_sub_category_items">

@@ -62,6 +62,9 @@ public class NewsListTable {
         cv.put(NewsListTable.NEWS_ID, model.getId());
         cv.put(NewsListTable.NEWS_UUID, model.getNews_uuid());
         cv.put(NewsListTable.CATEGORY, model.getCategory());
+        cv.put(NewsListTable.CATEGORY_ID, model.getCategory_id());
+        cv.put(NewsListTable.SUB_CATEGORY, model.getSub_category());
+        cv.put(NewsListTable.SUB_CATEGORY_ID, model.getSub_category_id());
         cv.put(NewsListTable.COUNTRY, model.getCountry());
         cv.put(NewsListTable.STATE, model.getState());
         cv.put(NewsListTable.CITY, model.getCity());
@@ -108,10 +111,10 @@ public class NewsListTable {
                 cursor.moveToNext();
                 model = new NewsFeedList((cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID))),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)),
-                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY_ID)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)),
-                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY_ID)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY_ID)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.STATE)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)),
@@ -144,7 +147,7 @@ public class NewsListTable {
         return listAll;
     }
 
-    public List<NewsFeedList> getNewsRecordsByCategory(String category) {
+    public ArrayList<NewsFeedList> getNewsRecordsByCategory(String category) {
         db = dbHelper.getWritableDatabase();
         // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
         ArrayList<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
@@ -157,10 +160,10 @@ public class NewsListTable {
                 cursor.moveToNext();
                 model = new NewsFeedList((cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID))),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)),
-                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY_ID)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)),
-                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY_ID)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY_ID)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.STATE)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)),

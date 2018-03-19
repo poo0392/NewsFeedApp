@@ -73,7 +73,7 @@ public class NewsFeedFragment extends Fragment {
     String emailId, fullName, memberToken;
     String category;
     private List<NewsFeedList> newsFeedListAll = new ArrayList<>();
-    private List<NewsFeedList> newsFeedList = new ArrayList<>();
+    private ArrayList<NewsFeedList> newsFeedList;
     private List<NewsFeedList> newsFeedListResp = new ArrayList<>();
     private ArrayList<? extends NewsFeedList> newsFeedListNew = new ArrayList<>();
     private List<RegisterMember> memberList = new ArrayList<>();
@@ -89,10 +89,20 @@ public class NewsFeedFragment extends Fragment {
     private boolean isLoading;
     private List<String> categoryList, catListNew, catDupList;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public static Fragment newInstance(int position, ArrayList<String> catListNewEn) {
+        NewsFeedFragment fragment = new NewsFeedFragment();
+        Bundle args = new Bundle();
+        args.putInt("position", position);
+        args.putStringArrayList("categories", (ArrayList<String>) catListNewEn);
+        //args.putParcelableArrayList("News", (ArrayList<NewsFeedList>) newsFeedList);
+        Log.v("newInstance ", " categories" + catListNewEn.toString());
+        //args.putParcelableArrayList("News", (ArrayList<? extends Parcelable>) newsFeedList);
+        //args.getBundle("News");
+        fragment.setArguments(args);
+        return fragment;
     }
+
+
 
     @Nullable
     @Override
@@ -100,25 +110,34 @@ public class NewsFeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         newsFeedApplication = NewsFeedApplication.getApp();
         mContext = getActivity();
-        newsListTable = new NewsListTable(mContext);
-        handler = new Handler();
-        categoryList = new ArrayList<>();
-        catListNew = new ArrayList<>();
-        catDupList = new ArrayList<>();
+        initializeComp();
         getPrefData();
-
         attachViews(view);
         getBundleData();
-        //loadDatatoList();
         return view;
     }
 
+    private void initializeComp() {
+        newsListTable = new NewsListTable(mContext);
+        handler = new Handler();
+        newsFeedList = new ArrayList<>();
+        categoryList = new ArrayList<>();
+        catListNew = new ArrayList<>();
+        catDupList = new ArrayList<>();
+    }
+
     private void getBundleData() {
-        newsFeedList = (ArrayList) getArguments().getParcelableArrayList("News");
-        Log.v("getBundleData ", " newsFeedList" + newsFeedList);
+        Bundle receivedData = new Bundle();
+        //     newsFeedList = receivedData.getParcelableArrayList("News");
+        //  Log.v("getBundleData ", " newsFeedList" + newsFeedList);
         pos = getArguments().getInt("position");
-        Log.v("", "Fragpos " + pos);
-        loadDatatoList();
+        Log.v("getBundleData ", "Fragpos " + pos);
+        Toast.makeText(getActivity(),"Position is: "+pos,Toast.LENGTH_SHORT).show();
+        categoryList = getArguments().getStringArrayList("categories");
+        Log.v("getBundleData ", " categoryList" + categoryList.toString());
+        //if (pos == 0) {
+            loadDatatoList(categoryList.get(pos).toString());
+      //  }
         //if(null!=getArguments().getSerializable("News")){
         //newsFeedListNew = getArguments().getString("news");
         // getArguments().getSerializable("News");
@@ -158,7 +177,7 @@ public class NewsFeedFragment extends Fragment {
         //Log.v("", "pos " + pos);
         //   attachViews(view);
         //   getPrefData();
-        //
+
         long lastId = 0;
         //callNewsListAPI(memberToken, memberId,lastId);
         // setData();
@@ -208,18 +227,19 @@ public class NewsFeedFragment extends Fragment {
                 .build();
 
         WebService webService = retrofit.create(WebService.class);
-
+        String news_status = "";
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-        // RequestBody paramLastId = RequestBody.create(MediaType.parse("text/plain"), "" + last_id);
-        String news_status = "";
+        RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
+
 
         Log.v("", " memberToken " + memberToken);
         Log.v("", " memberId " + memberId);
         Log.v("", " last_id " + "" + last_id);
+        Log.v("", " last_id " + "" + news_status);
 
-        //  Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,news_status, paramLastId);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, last_id);
+          Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,status, last_id);
+      //  Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, last_id);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
@@ -244,7 +264,7 @@ public class NewsFeedFragment extends Fragment {
 
                         // loadDatatoListFromAPI(newsFeedList, memberList, imagesList);
 
-                        loadDatatoList();
+                        //loadDatatoList(categoryResp);
 
                     }
                 }
@@ -264,11 +284,7 @@ public class NewsFeedFragment extends Fragment {
         });
     }
 
-    private void loadDatatoListFromAPI(List<NewsFeedList> newsFeedList, List<RegisterMember> memberList, List<NewsImages> imagesList) {
-        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, memberList, imagesList, "fromAPi");
-        mRecyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-    }
+
 
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
@@ -286,11 +302,11 @@ public class NewsFeedFragment extends Fragment {
                 .show();
     }
 
-    private void loadDatatoList() {
-        for (int i = 0; i < newsFeedList.size(); i++) {
+    private void loadDatatoList(String categoryList) {
+       /* for (int i = 0; i < newsFeedList.size(); i++) {
             categoryL.add(newsFeedList.get(i).getCategory());
 
-        }
+        }*/
         //     newsFeedListAll = newsListTable.getAllNewsRecords();
 
         // getCategory();
@@ -300,14 +316,13 @@ public class NewsFeedFragment extends Fragment {
         }*/
 
 
-     /*   for (int i = 0; i < categoryList.size(); i++) {//.get(pos).
-            newsFeedList = newsListTable.getNewsRecordsByCategory(categoryList.get(i));
-            //  newsFeedList = newsListTable.getNewsRecordsByCategory(category);
-        }*/
-        // newsFeedList = newsListTable.getAllNewsRecords();
-
+      //  for (int i = 0; i < categoryList.size(); i++) {//.get(pos).
+            newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList));
+            //   newsFeedList = newsListTable.getNewsRecordsByCategory(categoryList.get(i));
+            // newsFeedList = newsListTable.getAllNewsRecords();
+        //}
         Log.v("", "getNewsFeedList " + newsFeedList.toString());
-        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "fromAPi");
+        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment");
 
         mRecyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -550,16 +565,6 @@ public class NewsFeedFragment extends Fragment {
   /*  public static Fragment newInstance(int position, List<NewsFeedList> newsFeedListNew) {
     }*/
 
-    public static Fragment newInstance(int position, List<NewsFeedList> newsFeedList) {
-        NewsFeedFragment fragment = new NewsFeedFragment();
-        Bundle args = new Bundle();
-        args.putInt("position", position);
-        args.putParcelableArrayList("News", (ArrayList<NewsFeedList>) newsFeedList);
-        //args.putParcelableArrayList("News", (ArrayList<? extends Parcelable>) newsFeedList);
-        //args.getBundle("News");
-        fragment.setArguments(args);
-        return fragment;
-    }
 
    /* @Override
     public void setArguments(Bundle args) {

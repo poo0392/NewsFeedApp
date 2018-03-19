@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,15 +18,12 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import job.com.news.adapter.DynamicFragmentAdapter;
 import job.com.news.adapter.HomeDashboardAdapter;
-import job.com.news.adapter.ImageAdapter;
 import job.com.news.db.CategoryMasterTable;
 import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
@@ -71,8 +67,6 @@ public class HomeFragment extends Fragment {
     private MyPreferences myPreferences;
     String emailId, fullName, memberToken;
     int memberId;
-    private RecyclerView mRecyclerView;
-    private ImageAdapter adapter;
     //private HashMap<String, ArrayList<String>> hashMap;
     private NewsFeedApplication newsFeedApplication;
     private SessionManager session, langSelection;
@@ -91,10 +85,10 @@ public class HomeFragment extends Fragment {
 
         //setHasOptionsMenu(false);
         mContext = getActivity();
-
-        getPrefData();
         initializeComponents();
-        loadCategoryList();
+        getPrefData();
+
+
         attachViews(view);
         // setClickListeners();
         //  syncNewsList();
@@ -144,6 +138,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupViewPager(ViewPager viewPager) {
+        loadCategoryList();
+
         Bundle b = new Bundle();
         for (int i = 0; i < newsFeedListNew.size(); i++) {
             b.putString("id", String.valueOf(newsFeedListNew.get(i).getId()));
@@ -164,7 +160,7 @@ public class HomeFragment extends Fragment {
 
 
         // for(int k=0;k<newsFeedListNew.size();k++) {
-        mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(), catListNew, newsFeedListNew);
+        mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(), catListNew,catListNewEn);
 
         // }
         for (int i = 0; i < catListNew.size(); i++) {
@@ -187,6 +183,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadCategoryList() {
+
         pages = new FragmentPagerItems(mContext);
 
         // FragmentPagerItems pages = new FragmentPagerItems(mContext);
@@ -201,7 +198,7 @@ public class HomeFragment extends Fragment {
         }
 
         categoryList.addAll(new HashSet<>(catDupList));
-        for (int i = 1; i < categoryList.size(); i++) {
+        for (int i = 0; i < categoryList.size(); i++) {
             if (categoryList.get(i).equals("National and International")) {
                 catListNew.add(mContext.getResources().getString(R.string.national_inter_menu));
                 catListNewEn.add("National and International");
@@ -263,85 +260,9 @@ public class HomeFragment extends Fragment {
             }*/
         }
         //   Log.v("", "catListNewEn.size() " + catListNewEn.size());
-        String items = "";
-        for (int i = 0; i < catListNewEn.size(); i++) {
-
-              newsFeedListNew.addAll(newsListTable.getNewsRecordsByCategory(catListNewEn.get(i)));
-            //  Log.v("HomeFragment ", " newsFeedListNew " + newsFeedListNew);
-            // Log.v("", " newsFeedListNew.size " + newsFeedListNew.size());
-            //items += newsFeedListNew+",";
-
-
-
-
-        }
-        // listItems = new ArrayList<>(newsFeedListNew);
-        Bundle args = new Bundle();
-        //    args.putParcelableArrayList("news", (ArrayList<? extends Parcelable>) newsFeedListNew);
-        //  args.putSerializable("News", (Serializable) newsFeedListNew);
-        // for (int i = 0; i < catListNewEn.size(); i++) {
-        // args.putStringArrayList("category",categoryList);
-        // }
-        /* for (int i = 0; i < catListNewEn.size(); i++) {
-         args.putString("id", String.valueOf(newsFeedListNew.get(i).getId()));
-         args.putString("news_uuid", String.valueOf(newsFeedListNew.get(i).getNews_uuid()));
-         args.putString("category", String.valueOf(newsFeedListNew.get(i).getCategory()));
-         args.putString("country", String.valueOf(newsFeedListNew.get(i).getCity()));
-         args.putString("state", String.valueOf(newsFeedListNew.get(i).getState()));
-         args.putString("city", String.valueOf(newsFeedListNew.get(i).getCity()));
-         args.putString("news_title", String.valueOf(newsFeedListNew.get(i).getNews_title()));
-         args.putString("news_description", String.valueOf(newsFeedListNew.get(i).getNews_description()));
-         args.putString("like_count", String.valueOf(newsFeedListNew.get(i).getLike_count()));
-         args.putString("member_id", String.valueOf(newsFeedListNew.get(i).getMember_id()));
-         args.putString("created_at", String.valueOf(newsFeedListNew.get(i).getCreated_at()));
-       //  args.putString("news_images", String.valueOf(newsFeedListNew.get(i).getId()));
-        }*/
-
-        //bundle.putSerializable("lstContact", (Serializable) lstObject);
-        //lstObj = (List<Contacts>) bundle.getSerializable("lstContact");
-/**/
-/*Log.v("", " newsFeedListNew.size " + newsFeedListNew.size());
-
-            Log.v("HomeFragment ", " newsFeedListNew " + newsFeedListNew.toString());
-            for (int j = 0; j < newsFeedListNew.size(); j++) {
-                Log.v("HomeFragment ", "NewsId " + newsFeedListNew.get(j).getId());
-            }*/
-
-
-
       /*  for (int i = 0; i < catListNewEn.size(); i++) {
-            newsFeedListNew = newsListTable.getNewsRecordsByCategory(catListNewEn.get(i));
-
-            pages.add(FragmentPagerItem.of(catListNew.get(i), NewsFeedFragment.class, new Bundler().putString("News",newsFeedList.toString()).get()
-                    *//*,new Bundler().putString("NewsDetails", obj.getString())*//*));
+              newsFeedListNew.addAll(newsListTable.getNewsRecordsByCategory(catListNewEn.get(i)));
         }*/
-        JSONObject obj = null;
-       /* try {
-          *//*  obj = new JSONObject(newsFeedList.toString());
-            NewsFeedList newsListModel=new NewsFeedList();
-            JSONArray jsonArray = obj.getJSONArray("news");
-            for(int i=0;i<jsonArray.length();i++){
-                Bundler b=new Bundler();
-                b.putString("SubjectDetails", jsonArray.getString(i)).get();
-                newsListModel=new Gson().fromJson(jsonArray.getString(i), NewsFeedList.class);
-                pages.add(FragmentPagerItem.of(newsListModel.getCategory(),NewsFeedList.class,b));
-            }*//*
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-*/
-       /* for (int titleResId : tabsValues()) {
-            pages.add(FragmentPagerItem.of(getString(titleResId), NewsFeedFragment.class));
-        }*/
-      /*  for (int i = 0; i < catListNew.size(); i++) {
-            fpAdapter = new FragmentPagerItemAdapter(getFragmentManager(),
-                    FragmentPagerItems.with(mContext)
-                    .add(catListNew.get(i), NewsFeedFragment.class, new Bundler().putString("News", newsFeedListNew.get(i).toString()).get())
-                    .create());//getSupportFragmentManager
-        }*/
-      /*  viewPager.setAdapter(fpAdapter);
-        viewPagerTab.setViewPager(viewPager);*/
-
     }
 
     private int[] tabsValues() {

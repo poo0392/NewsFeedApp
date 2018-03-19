@@ -286,7 +286,27 @@ public class NewsFeedList implements Parcelable{
         dest.writeString(created_at);
     }
 
-   /* public List<RegisterMember> getMembersList() {
+    @Override
+    public String toString() {
+        return "NewsFeedList{" +
+                "id=" + id +
+                ", news_uuid='" + news_uuid + '\'' +
+                ", category='" + category + '\'' +
+                ", category_id='" + category_id + '\'' +
+                ", sub_category='" + sub_category + '\'' +
+                ", sub_category_id='" + sub_category_id + '\'' +
+                ", country='" + country + '\'' +
+                ", state='" + state + '\'' +
+                ", city='" + city + '\'' +
+                ", news_title='" + news_title + '\'' +
+                ", news_description='" + news_description + '\'' +
+                ", like_count='" + like_count + '\'' +
+                ", member_id='" + member_id + '\'' +
+                ", created_at='" + created_at + '\'' +
+                '}';
+    }
+
+    /* public List<RegisterMember> getMembersList() {
         return membersList;
     }
 

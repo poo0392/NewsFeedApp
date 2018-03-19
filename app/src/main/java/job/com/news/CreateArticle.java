@@ -348,12 +348,12 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 categoryId = String.valueOf(position + 1);
                 Log.v("bsArticleSpinner ", "categoryId " + categoryId);
                 // Toast.makeText(CreateArticle.this, mArticleCode, Toast.LENGTH_SHORT).show();
-                if (categoryId.equals("11")) {// position 10
+                if (categoryId.equals("10")) {// position 9
                     ll_sub_article.setVisibility(View.VISIBLE);
                     bsSubArticleSpinner.setText("");
                     sub_article_adapter = new ArrayAdapter<String>(CreateArticle.this, R.layout.spinner_item, getResources().getStringArray(R.array.small_class_sub_category_items));
                     bsSubArticleSpinner.setAdapter(sub_article_adapter);// changed mArticleSpinner to bsArticleSpinner
-                } else if (categoryId.equals("14")) {// position 13
+                } else if (categoryId.equals("13")) {// position 12
                     bsSubArticleSpinner.setText("");
 
                     ll_sub_article.setVisibility(View.VISIBLE);

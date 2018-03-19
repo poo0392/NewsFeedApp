@@ -107,7 +107,6 @@
         <item>सामाजिक आणि संबंधित बातम्या</item>
         <item>क्रीडा</item>
         <item>विज्ञान आणि तंत्रज्ञान</item>
-        <item>आर्थिक बातम्या</item>
         <item>आरोग्य संबंधित</item>
         <item>व्यवसाय बातम्या</item>
         <item>कृषी बातम्य</item>
@@ -116,6 +115,7 @@
         <item>इतर आणि अश्रेणीबद्ध बातम्या</item>
         <item>मनोरंजन बातम्या</item>
         <item>करियर संबंधित</item>
+        <item>आर्थिक बातम्या</item>
     </string-array>
     <string-array name="small_class_sub_category_items">
         <item>मालमत्ता</item>

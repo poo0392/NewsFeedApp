@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import job.com.news.models.NewsFeedList;
+
 /**
  * Created by POOJA on 3/9/2018.
  */
@@ -25,32 +27,36 @@ public class AdminHomeFragment extends Fragment {
     TabLayout mTabLayout;
     MyFragmentPageAdapter mPageAdapter;
     ArrayList<String> categories;
+    ArrayList<NewsFeedList> newsStatusList;
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_admin, container, false);
-        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        //setTootlbarTitle("Home");
-        //toolbar.setTitle(getResources().getString(R.string.home_toolbar_title));
-        toolbar.setTitle("Admin News Feed");
-        //setHasOptionsMenu(false);
+        setAdminHomeToolbar();
+
         mContext = getActivity();
-       // getPrefData();
-        categories=new ArrayList<>();
-        categories.add("Pending News");
-        categories.add("Approved News");
-        categories.add("Declined News");
+
         initializeComponents(view);
-       // attachViews(view);
-        // setClickListeners();
-        //  syncNewsList();
-      //  loadCategoryUI();
 
         return view;
     }
 
+    private void setAdminHomeToolbar() {
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        //toolbar.setTitle(getResources().getString(R.string.home_toolbar_title));
+        toolbar.setTitle("Admin News Feed");
+        //setHasOptionsMenu(false);
+    }
+
     private void initializeComponents(View view) {
+        categories=new ArrayList<>();
+        categories.add("Pending News");
+        categories.add("Approved News");
+        categories.add("Rejected News");
+
+
         List<Fragment> fragments = buildFragments();
         mViewPager = (ViewPager) view.findViewById(R.id.admin_home_viewpager);
 
@@ -71,15 +77,21 @@ public class AdminHomeFragment extends Fragment {
 
         mPageAdapter = new MyFragmentPageAdapter(mContext,getFragmentManager(), fragments, categories);
         mViewPager.setAdapter(mPageAdapter);
+        mPageAdapter.notifyDataSetChanged();
     }
     private List<Fragment> buildFragments() {
         List<android.support.v4.app.Fragment> fragments = new ArrayList<Fragment>();
         for(int i = 0; i<categories.size(); i++) {
             Bundle b = new Bundle();
             b.putInt("position", i);
-            fragments.add(Fragment.instantiate(mContext,NewsFeedFragment.class.getName(),b));//AdminNewsListFragment
+          // b.putParcelableArrayList("News",);
+
+            fragments.add(Fragment.instantiate(mContext,AdminRequestsListFragment.class.getName(),b));//AdminNewsListFragment
         }
 
         return fragments;
     }
+
+
+
 }

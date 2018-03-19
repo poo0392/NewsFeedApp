@@ -110,16 +110,17 @@ public class BackgroundService extends Service {
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
+        String news_status = "";
         WebService webService = retrofit.create(WebService.class);
-        long id = newsListTable.getLastId();
+        long last_id = newsListTable.getLastId();
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-       // RequestBody last_id = RequestBody.create(MediaType.parse("text/plain"), "" + id);
-        String news_status = "";
+        RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
+
         Log.v("", " memberToken " + memberToken);
-      //  Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, news_status, last_id);
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
+
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id);
+       // Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
@@ -211,7 +212,7 @@ public class BackgroundService extends Service {
 
                             newsFeedListTable = newsListTable.getAllNewsRecords();
                             Log.v("db ", "getNewsFeedList " + newsFeedList.toString());
-                            ImageAdapter adapter = new ImageAdapter(context, newsFeedList, frag.mRecyclerView, "fromAPi");
+                            ImageAdapter adapter = new ImageAdapter(context, newsFeedList, frag.mRecyclerView, "background_service");
                             /*frag.mRecyclerView.setAdapter(adapter);*/
                             //recyclerView.setAdapter(new RecyclerViewAdapter(newList));
                             adapter.notifyDataSetChanged();

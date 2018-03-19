@@ -21,6 +21,7 @@
 
     <color name="text_enabled">#FFFFFFFF</color>
     <color name="text_disabled">#4DFFFFFF</color>
+    <color name="grey_light">#e0e0e0</color>
 
     <color name="inactiveIconColor">#CCFFFAF0</color>
 

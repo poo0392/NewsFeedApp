@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import job.com.news.NewsDetailScreen;
@@ -29,6 +31,7 @@ import job.com.news.db.MemberTable;
 import job.com.news.db.NewsImagesTable;
 import job.com.news.interfaces.ItemClickListener;
 import job.com.news.interfaces.OnLoadMoreListener;
+import job.com.news.interfaces.onButtonClick;
 import job.com.news.models.NewsFeedList;
 import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
@@ -38,7 +41,7 @@ import job.com.news.register.RegisterMember;
  */
 //changes added on 3/9/2018.
 public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private String IMAGE_URL="http://thanehousingfederation.com/newsapp/storage/app/public/uploads/news";
+    private String IMAGE_URL = "http://thanehousingfederation.com/newsapp/storage/app/public/uploads/news";
     private final int VIEW_ITEM = 0;
     private final int VIEW_PROG = 1;
     //private OnLoadMoreListener mOnLoadMoreListener;
@@ -53,7 +56,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     NewsImagesTable newsImagesTable;
     Bitmap decodedByte;
     ProgressDialog mProgressDialog;
-    String from;
+    String value_status, from[];
+    int pos;
+    onButtonClick callback;
+
 
     // The minimum amount of items to have below your current scroll position
 // before loading more.
@@ -63,15 +69,17 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private OnLoadMoreListener onLoadMoreListener;
 
 
-    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView,String from) {
+    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView, String value_status) {
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;
         this.newsFeedList = newsFeedList;
-        this.from = from;
+        this.value_status = value_status;
         memberTable = new MemberTable(mContext);
         newsImagesTable = new NewsImagesTable(mContext);
         this.memberList = new ArrayList<>();
         this.imagesList = new ArrayList<>();
+        from = value_status.split(":");
+        Log.v("", "" + Arrays.toString(from));
             /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -90,18 +98,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             });*/
     }
 
-    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView, List<RegisterMember> memberList, List<NewsImages> imagesList,String from) {
-        newsFeedApplication = NewsFeedApplication.getApp();
-        this.mContext = mContext;
-        this.newsFeedList = newsFeedList;
-        this.memberList = memberList;
-        this.imagesList = imagesList;
-        this.from = from;
-        memberTable = new MemberTable(mContext);
-        newsImagesTable = new NewsImagesTable(mContext);
 
-
-    }
 
         /*public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
             this.mOnLoadMoreListener = mOnLoadMoreListener;
@@ -112,6 +109,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return app.mImageDetails.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
         }*/
 
+    public void setOnButtonClick(onButtonClick callback) {
+        this.callback = callback;
+    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -119,16 +119,42 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             View view = LayoutInflater.from(mContext).inflate(R.layout.news_feed_item, parent, false);
             return new ImageViewHolder(view);
         } else if (viewType == VIEW_PROG) {
-               // View view = LayoutInflater.from(mContext).inflate(R.layout.layout_loading_item, parent, false);
-                View view = LayoutInflater.from(mContext).inflate(R.layout.load_more_progressbar, parent, false);
-                return new ProgressViewHolder(view);
-            }
+            // View view = LayoutInflater.from(mContext).inflate(R.layout.layout_loading_item, parent, false);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.load_more_progressbar, parent, false);
+            return new ProgressViewHolder(view);
+        }
         return null;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ImageViewHolder) {
+            ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
+            pos = position;
+
+
+            if (from[0].equals("admin_news_list") && !from[1].equals("")) {
+                if (from[1].equals("pending")) {
+                    imageViewHolder.ll_approve_or_dec.setVisibility(View.VISIBLE);
+                } else {
+                    imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
+                }
+               /* switch (from[1]) {
+                    case "pending":
+                        imageViewHolder.ll_approve_or_dec.setVisibility(View.VISIBLE);
+                        break;
+                    case "approved":
+                        imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
+                        break;
+                    case "rejected":
+                        imageViewHolder.ll_approve_or_dec.setVisibility(View.VISIBLE);
+                        break;
+
+                }*/
+
+            } else {
+                imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
+            }
                 /*ImageDetails user = app.mImageDetails.get(position);
                 ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
                 String imageUrl = user.getImg_url();
@@ -140,21 +166,21 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 imageViewHolder.textViewDistance.setText(user.getDistance());
                 imageViewHolder.textViewUnit.setText(user.getUnit());*/
 
-            ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
+
 /*
             ArrayList<String> list = newsFeedApplication.hashMap.get("" + position);
             imageViewHolder.textViewSummary.setText(list.get(0));
             imageViewHolder.textViewDate.setText(list.get(2));*/
-           // Log.v("", "clickedPosMemberID " + Integer.parseInt(newsFeedList.get(position).getMember_id()));
+            // Log.v("", "clickedPosMemberID " + Integer.parseInt(newsFeedList.get(position).getMember_id()));
             String member_name;
-          //  if(!from.equals("fromApi")) {
-                memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
-                 member_name = memberList.get(0).getFirstName();
+            //  if(!from.equals("fromApi")) {
+            memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
+            member_name = memberList.get(0).getFirstName();
             //}else {
 
-                //  String member_name=newsFeedList.get(position).getMember().getFirstName();
-                 member_name = memberList.get(0).getFirstName();
-          //  }
+            //  String member_name=newsFeedList.get(position).getMember().getFirstName();
+            member_name = memberList.get(0).getFirstName();
+            //  }
 
 
 //get Member from member_id in news List i.e select member from member_table where member_id = NewsListTable.Member_id;
@@ -178,7 +204,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 //2018-02-03 14:37:06
             CharSequence ago = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
             imageViewHolder.txt_post_time.setText(ago);
-         //   imagesList=newsImagesTable.getNewsImagesList(newsFeedList.get(position).getId());
+            //   imagesList=newsImagesTable.getNewsImagesList(newsFeedList.get(position).getId());
            /* if(from.equals("fromApi")) {
                 String pic_name = imagesList.get(45).getNews_pic().toString();
             }*/
@@ -188,12 +214,12 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             Picasso.with(mContext)
                     .load(load_image)
                     .placeholder(R.drawable.default_no_image) //this is optional the image to display while the url image is downloading
-                   // .error(Your Drawable Resource)         //this is also optional if some error has occurred in downloading the image this image would be displayed
+                    // .error(Your Drawable Resource)         //this is also optional if some error has occurred in downloading the image this image would be displayed
                     .into(imageViewHolder.imageView);
 
             //downloadImageFromURL(load_image);
 
-          //  new DownloadImageFromInternet().execute(load_image);
+            //  new DownloadImageFromInternet().execute(load_image);
 
             /*if(!pic_name.equals("") || (pic_name.substring(0,pic_name.length()-4).equals(".png"))) {
                 try {
@@ -236,11 +262,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }*//*
             }else{*/
 
-         //   }
+            //   }
 
 
-
-            imageViewHolder.setClickListener(new ItemClickListener() {
+            /*imageViewHolder.setClickListener(new ItemClickListener() {
                 @Override
                 public void onClick(View view, int position, boolean isLongClick) {
                     if (isLongClick) {
@@ -253,14 +278,48 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         mContext.startActivity(intent);
                     }
                 }
+            });*/
+
+            imageViewHolder.ll_content_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                  /*  int newsId = newsFeedList.get(pos).getId();
+                    Log.v("Adapter ","newsId "+newsId);
+                    Toast.makeText(mContext,"newsId "+newsId,Toast.LENGTH_SHORT).show();*/
+                    loadNewsDetails(pos);
+                }
             });
 
-        } else  {
+            imageViewHolder.txt_read_more.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loadNewsDetails(pos);
+
+                }
+            });
+
+           /* imageViewHolder.ll_aprove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });*/
+
+            //callback.onItemClicked(pos,imageViewHolder.ll_decline);
+
+
+        } else {
             ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
         }
 
     }
 
+    private void loadNewsDetails(int pos) {
+        Log.v("Adapter ", "itemPosition " + pos);
+        Intent intent = new Intent(mContext, NewsDetailScreen.class);
+        intent.putExtra("itemPosition", pos + "");
+        mContext.startActivity(intent);
+    }
 
 
     @Override
@@ -292,12 +351,12 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    public class ImageViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
-        TextView textViewSummary, txt_news_category;
-        TextView textViewDate;
+    public class ImageViewHolder extends RecyclerView.ViewHolder/*
+            implements View.OnClickListener, View.OnLongClickListener */ {
+        TextView textViewDate, textViewSummary, txt_news_category, txt_approve_news, txt_decline_news, txt_read_more;
         ImageView imageView;
         TextView txt_post_person_name, txt_post_time, txt_desc, txt_city, txt_state;
+        LinearLayout ll_approve_or_dec, ll_content_view, ll_decline, ll_aprove;
         private ItemClickListener clickListener;
 
         public ImageViewHolder(View itemView) {
@@ -306,24 +365,33 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             textViewDate = (TextView) itemView.findViewById(R.id.row_date);
             imageView = (ImageView) itemView.findViewById(R.id.row_image);
 
+            txt_read_more = (TextView) itemView.findViewById(R.id.txt_read_more);
             txt_post_person_name = (TextView) itemView.findViewById(R.id.txt_post_person_name);
             txt_news_category = (TextView) itemView.findViewById(R.id.txt_news_category);
             txt_post_time = (TextView) itemView.findViewById(R.id.txt_post_time);
             txt_desc = (TextView) itemView.findViewById(R.id.txt_desc);
             txt_city = (TextView) itemView.findViewById(R.id.txt_city);
             txt_state = (TextView) itemView.findViewById(R.id.txt_state);
+            txt_approve_news = (TextView) itemView.findViewById(R.id.txt_approve_news);
+            txt_decline_news = (TextView) itemView.findViewById(R.id.txt_decline_news);
+            ll_approve_or_dec = (LinearLayout) itemView.findViewById(R.id.ll_approve_or_dec);
+            ll_content_view = (LinearLayout) itemView.findViewById(R.id.ll_content_view);
+            ll_aprove = (LinearLayout) itemView.findViewById(R.id.ll_aprove);
+            ll_decline = (LinearLayout) itemView.findViewById(R.id.ll_decline);
 
-
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
+            if (from[0].equals("admin_news_list")) {
+                callback.onItemClicked(pos, itemView);
+              //  int newsId = newsFeedList.get(pos).getId();
+              //  Log.v(" Adapter ","newsId "+newsId);
+            }
+            // itemView.setOnClickListener(this);
+            // itemView.setOnLongClickListener(this);
         }
 
-        public void setClickListener(ItemClickListener itemClickListener) {
-            this.clickListener = itemClickListener;
-        }
 
 
-        @Override
+
+       /* @Override
         public void onClick(View view) {
             clickListener.onClick(view, getAdapterPosition(), false);
         }
@@ -332,7 +400,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public boolean onLongClick(View view) {
             clickListener.onClick(view, getAdapterPosition(), true);
             return true;
-        }
+        }*/
     }
 
 

@@ -82,9 +82,17 @@ public interface WebService {
     @POST("news_list")
     Call<NewsFeedModelResponse> getNewsListRequest(@Part("member_token") RequestBody member_token,
                                                    @Part("member_id") RequestBody member_id,
-                                                   //@Part("news_status") String news_status,
+                                                   @Part("news_status") RequestBody news_status,
                                                    @Part("last_id") long last_id);
 
+
+
+    @Multipart
+    @POST("manage_news_status")
+    Call<NewsFeedModelResponse> addAdminNewsStatus(@Part("member_token") RequestBody member_token,
+                                                   @Part("member_id") RequestBody member_id,
+                                                   @Part("last_id") RequestBody news_id,
+                                                   @Part("news_status") RequestBody news_status);
 
     //add_news
     //http://thanehousingfederation.com/newsapp/api/member/add_news
