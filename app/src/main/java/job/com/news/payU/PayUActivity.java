@@ -106,7 +106,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
                 android.R.layout.simple_spinner_item, environmentArray);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         environmentSpinner.setAdapter(dataAdapter);
-        environmentSpinner.setSelection(0);
+        environmentSpinner.setSelection(1);
 
         environmentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -122,7 +122,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
                 }
                 else{
                     //set the test key in test environment
-                    ((EditText) findViewById(R.id.editTextMerchantKey)).setText("gtKFFx");
+                    ((EditText) findViewById(R.id.editTextMerchantKey)).setText("gtKFFx");//
 
                 }
             }
@@ -172,9 +172,11 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
     public void navigateToBaseActivity(View view) {
 
         merchantKey = ((EditText) findViewById(R.id.editTextMerchantKey)).getText().toString();
+        merchantKey="WiCZgZAf";
         String amount = ((EditText) findViewById(R.id.editTextAmount)).getText().toString();
         String email = ((EditText) findViewById(R.id.editTextEmail)).getText().toString();
-
+        email="siddheshwarbhise@yahoo.com";
+        String salt = "fkv0nUwlRI";
 
         String value = environmentSpinner.getSelectedItem().toString();
         int environment;
@@ -244,17 +246,19 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
         payuConfig.setEnvironment(environment);
 
         //TODO It is recommended to generate hash from server only. Keep your key and salt in server side hash generation code.
-        generateHashFromServer(mPaymentParams);
+        //if(null == salt) {
+            generateHashFromServer(mPaymentParams);
+       //}else {
 
-        /**
-         * Below approach for generating hash is not recommended. However, this approach can be used to test in PRODUCTION_ENV
-         * if your server side hash generation code is not completely setup. While going live this approach for hash generation
-         * should not be used.
-         * */
-        String salt = "fkv0nUwlRI";
-      //  generateHashFromSDK(mPaymentParams, salt);
+            /**
+             * Below approach for generating hash is not recommended. However, this approach can be used to test in PRODUCTION_ENV
+             * if your server side hash generation code is not completely setup. While going live this approach for hash generation
+             * should not be used.
+             * */
 
+       //  generateHashFromSDK(mPaymentParams, salt);
 
+     // }
     }
 
     /******************************
@@ -404,8 +408,8 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
             try {
 
                 //TODO Below url is just for testing purpose, merchant needs to replace this with their server side hash generation url
-              //  URL url = new URL("https://payu.herokuapp.com/get_hash");
-                URL url = new URL("http://thanehousingfederation.com/newsapp/payuhash.php");
+                URL url = new URL("https://payu.herokuapp.com/get_hash");
+               // URL url = new URL("http://thanehousingfederation.com/newsapp/payuhash.php");
 
 
                 // get the payuConfig first

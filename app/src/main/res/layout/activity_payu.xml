@@ -16,7 +16,6 @@
 
 
     <LinearLayout
-
         android:visibility="gone"
        android:layout_marginRight="25dp"
         android:layout_marginLeft="25dp"

@@ -91,7 +91,7 @@ public interface WebService {
     @POST("manage_news_status")
     Call<NewsFeedModelResponse> addAdminNewsStatus(@Part("member_token") RequestBody member_token,
                                                    @Part("member_id") RequestBody member_id,
-                                                   @Part("last_id") RequestBody news_id,
+                                                   @Part("news_id") RequestBody news_id,
                                                    @Part("news_status") RequestBody news_status);
 
     //add_news

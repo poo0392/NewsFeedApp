@@ -92,6 +92,13 @@
     <!-- Rupee symbol-->
     <string name="Rs">\u20B9</string>
 
+    <!--admin request status string-->
+    <string name="pending_news">Pending News</string>
+    <string name="approved_news">Approved News</string>
+    <string name="rejected_news">Rejected News</string>
+
+    <string name="request_status_toolbar_name">Request Status</string>
+
     <!-- navigation text-->
     <string name="recent_news">Latest News</string>
     <string name="national_inter_menu">National and International</string>

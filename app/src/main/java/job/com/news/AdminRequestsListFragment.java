@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.helper.ConnectivityInterceptor;
@@ -59,12 +61,22 @@ public class AdminRequestsListFragment extends Fragment {
     ProgressDialog mProgressDialog;
     ItemClickListener clickListener;
     int pos,newsId;
+    SendMessage SM;
+
+    public static Fragment newInstance(int position) {
+        AdminRequestsListFragment fragment = new AdminRequestsListFragment();
+        Bundle args = new Bundle();
+        args.putInt("position", position);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
 
         mContext = getActivity();
+    //    SM = (SendMessage) mContext;
         attachViews(view);
         getPrefData();
         getBundleData();
@@ -73,6 +85,7 @@ public class AdminRequestsListFragment extends Fragment {
     }
 
     private void attachViews(View view) {
+
         newsFeedList = new ArrayList<>();
         mRecyclerView = (RecyclerView) view.findViewById(R.id.news_feed_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
@@ -91,7 +104,7 @@ public class AdminRequestsListFragment extends Fragment {
     private void getBundleData() {
         int position = getArguments().getInt("position");
         Log.v("AdminReqLstFragment ", "position " + position);
-
+        Toast.makeText(getActivity(),"Position is: "+position,Toast.LENGTH_SHORT).show();
         if (position == 0) {
             news_status = "pending";
             callNewsListAPI(memberToken, memberId, news_status);
@@ -111,6 +124,8 @@ public class AdminRequestsListFragment extends Fragment {
         mProgressDialog.show();
 
         OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(600000, TimeUnit.MILLISECONDS)
+                .readTimeout(600000, TimeUnit.MILLISECONDS)
                 .addInterceptor(new ConnectivityInterceptor(mContext))
                 .build();
 
@@ -189,9 +204,14 @@ public class AdminRequestsListFragment extends Fragment {
 
                 LinearLayout ll_approve_news = (LinearLayout) view.findViewById(R.id.ll_aprove);
                 LinearLayout ll_decline_news = (LinearLayout) view.findViewById(R.id.ll_decline);
+
                 ll_decline_news.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Log.v("ll_decline_news ","position 22 "+pos);
+                        newsId = newsFeedList.get(pos).getId();
+                        Log.v("ll_decline_news ","newsId "+newsId);
+
                         new MaterialStyledDialog.Builder(mContext)
                                 .setDescription("Do you want to reject this news?")
                                 .setStyle(Style.HEADER_WITH_ICON)
@@ -250,7 +270,8 @@ public class AdminRequestsListFragment extends Fragment {
         });
     }
 
-    private void callUpdateNewsStatus(String memberToken, int memberId, int newsId, String news_status) {
+    private void callUpdateNewsStatus(final String memberToken, final int memberId, int newsId, final String news_status) {
+        Log.v("callUpdateNewsStatus","news_status "+news_status);
         mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setMessage("Loading...");
         mProgressDialog.show();
@@ -286,6 +307,26 @@ public class AdminRequestsListFragment extends Fragment {
 
                         try {
                             Toast.makeText(mContext,"Success",Toast.LENGTH_SHORT).show();
+                           // callNewsListAPI(memberToken,memberId,news_status);
+                           /* AdminRequestsListFragment frg = new AdminRequestsListFragment();
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            Bundle b = new Bundle();
+                            b.putInt("position", 0);
+                            frg.sendData();
+                            ft.detach(frg);
+                           // ft.add(0,frg);
+                           ft.attach(frg);
+                            ft.commit();
+                            adapter.notifyDataSetChanged();*/
+                            AdminHomeFragment af=new  AdminHomeFragment();
+                            FragmentTransaction tx = getFragmentManager().beginTransaction();
+
+                            tx.replace(R.id.content_frame, af);
+                            af.sendData(news_status);
+                            // tx.addToBackStack(null);
+                            tx.commit();
+
+                           // SM.sendData(news_status);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -307,6 +348,21 @@ public class AdminRequestsListFragment extends Fragment {
         });
 
 
+    }
+
+
+   /* @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            SM = (SendMessage) mContext;
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Error in retrieving data. Please try again");
+        }
+    }*/
+
+    interface SendMessage {
+        void sendData(String message);
     }
 
     private void setFailedAlertDialog(Context context, String title, String desc) {
