@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -378,6 +379,8 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
 
         String postParams = postParamsBuffer.charAt(postParamsBuffer.length() - 1) == '&' ? postParamsBuffer.substring(0, postParamsBuffer.length() - 1).toString() : postParamsBuffer.toString();
 
+        Log.v("generateHashFromServer "," postParams "+postParams);
+
         // lets make an api call
         GetHashesFromServerTask getHashesFromServerTask = new GetHashesFromServerTask();
         getHashesFromServerTask.execute(postParams);
@@ -408,8 +411,8 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
             try {
 
                 //TODO Below url is just for testing purpose, merchant needs to replace this with their server side hash generation url
-                URL url = new URL("https://payu.herokuapp.com/get_hash");
-               // URL url = new URL("http://thanehousingfederation.com/newsapp/payuhash.php");
+                //URL url = new URL("https://payu.herokuapp.com/get_hash");
+                URL url = new URL("http://thanehousingfederation.com/newsapp/payuhash.php");
 
 
                 // get the payuConfig first

@@ -1,5 +1,6 @@
 package job.com.news.interfaces;
 
+import java.util.List;
 import java.util.Map;
 
 import job.com.news.article.City;
@@ -7,6 +8,7 @@ import job.com.news.article.State;
 import job.com.news.forgotpassword.ForgotPasswordResp;
 import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.register.LoginRegisterResponse;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -111,7 +113,8 @@ public interface WebService {
                                           @Part("news_desc") RequestBody news_desc,
                                          // @Part("news_pic") RequestBody news_pic,
                                          // @Part("user_ids[]") String[] ids,
-                                          @Part("news_images[]") String[] news_pic);
+                                          @Part List<MultipartBody.Part> news_pic);
+                                         // @Part("news_images[]") MultipartBody.Part news_pic);
                                          // @Part("news_pic") List<String> news_pic);
                                          // @Body String[] news_pic);
 

@@ -48,10 +48,10 @@ import com.weiwangcn.betterspinner.library.BetterSpinner;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,6 +78,7 @@ import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okio.Buffer;
@@ -127,9 +128,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private MyPreferences myPreferences;
     int wordsLength = 0;
     List<String> newsPic;
+    Uri realUri;
     SubCategoryTable subCategoryTable;
     SubCategoryTableHi subCategoryTableHi;
     SubCategoryTableMr subCategoryTableMr;
+    ArrayList<String> filePaths = new ArrayList<>();
+    String responseGson;
+    List<MultipartBody.Part> photosToUploadList;
 
     //Indonesia
 
@@ -259,6 +264,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         Log.v("CreateArticle ", "current Lang " + Locale.getDefault().getDisplayLanguage().toString());
         memberList = new ArrayList<>();
         newsPic = new ArrayList<>();
+        photosToUploadList = new ArrayList<>();
         mRsSymbol = getResources().getString(R.string.Rs);
         btn_submit = (Button) findViewById(R.id.article_btn_submit);
 
@@ -820,8 +826,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                    // postNewsAPI();
-              //  }
+                    //postNewsAPI();
+                //}
 
                 break;
             case R.id.article_image1:
@@ -861,10 +867,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void postNewsAPI() {
-        mapValuesFinal=new LinkedHashMap<>();
+        mapValuesFinal = new LinkedHashMap<>();
         mProgressDialog = new ProgressDialog(CreateArticle.this);
         mProgressDialog.setMessage("Loading...");
         mProgressDialog.show();
+        File file = null;
 
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -882,8 +889,25 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         WebService webService = retrofit.create(WebService.class);
         String newsTitle = mTitleEdit.getText().toString();
         String newsDesc = mDescEdit.getText().toString();
-        String newsList[] = {base64Image1, base64Image2};
+        //String newsList[] = {base64Image1, base64Image2};
+       /* for (int i = 0; i < filePaths.size(); i++) {
+            file = new File(filePaths.get(i));
+        }*/
+        realUri = Uri.parse(mediaPath);
+        file = new File(String.valueOf(realUri));
 
+
+        //request body is used to attach file.
+        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+        //and request body and file name using multipart.
+        MultipartBody.Part image = MultipartBody.Part.createFormData("news_images", file.getName(), requestBody); //"image" is parameter for photo in API.
+        for (int i = 0; i < filePaths.size(); i++) {
+            File files = new File(filePaths.get(i));
+            RequestBody requestBodyy = RequestBody.create(MediaType.parse("image/*"), files);
+            MultipartBody.Part filePart = MultipartBody.Part.createFormData("news_images[]", file.getName(), requestBodyy);
+            photosToUploadList.add(filePart);
+        }
 
         String countryId = "1";
 
@@ -896,7 +920,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         RequestBody paramCityId = RequestBody.create(MediaType.parse("text/plain"), "" + cityId);
         RequestBody paramNewsTitle = RequestBody.create(MediaType.parse("text/plain"), "" + newsTitle);
         RequestBody paramNewsDesc = RequestBody.create(MediaType.parse("text/plain"), "" + newsDesc);
-        RequestBody paramNewsPic = RequestBody.create(MediaType.parse("text/plain"), "" + newsPic);
+        //  RequestBody paramNewsPic = RequestBody.create(MediaType.parse("text/plain"), "" + newsPic);
 
       /*  mapValuesFinal.put("member_token",membertoken);
         mapValuesFinal.put("member_id", String.valueOf(memberid));
@@ -918,23 +942,32 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         Log.v("postNewsAPI ", "cityId " + cityId);
         Log.v("postNewsAPI ", "newsTitle " + newsTitle);
         Log.v("postNewsAPI ", "newsDesc " + newsDesc);
-        String news_pic_str = Arrays.toString(newsList);
-        Log.v("postNewsAPI ", "newsPic " + news_pic_str);
+        Log.v("postNewsAPI ", "image " + image);
+        Log.v("postNewsAPI ", "imageName " + image.toString());
+        Log.v("postNewsAPI ", "imageName11 " + new Gson().toJson(image));
+        Log.v("postNewsAPI ", "photosToUploadList " + new Gson().toJson(photosToUploadList));
+        Log.v("postNewsAPI ", "photosToUploadListSize " + photosToUploadList.size());
 
-//changes 06_03
+
+        // String news_pic_str = Arrays.toString(newsList);
+        // Log.v("postNewsAPI ", "newsPic " + news_pic_str);
+
+        /*Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
+                paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, image);
+        */
         Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
-                paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, newsList);
-    //    Call<NewsFeedModelResponse> serverResponse = webService.post_news(mapValuesFinal);
+                paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, photosToUploadList);
+        //    Call<NewsFeedModelResponse> serverResponse = webService.post_news(mapValuesFinal);
 
         String reqParam = bodyToString(serverResponse.request().body());
-     /*   Log.v("postNewsAPI ", "reqParam : " + reqParam);
+        Log.v("postNewsAPI ", "reqParam : " + reqParam);
         Log.v("postNewsAPI ", "LoginParameters : " + serverResponse.request().body().toString());
-        Log.v("postNewsAPI ", "postNewsAPI req : " + serverResponse.request().toString());*/
+        Log.v("postNewsAPI ", "postNewsAPI req : " + serverResponse.request().toString());
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
                 mProgressDialog.dismiss();
-                Log.v("PostNewsAPI ", " onResponse " + response);
+
                 if (response.isSuccessful()) {
 
                   /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
@@ -943,7 +976,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                             .fromJson(String.valueOf(response.body()), collectionType);*/
 
                     NewsFeedModelResponse serverResponse = response.body();
-                    String responseGson = new Gson().toJson(response.body());
+                    responseGson = new Gson().toJson(response.body());
                     Log.v("PostNewsAPI ", "response " + responseGson);
                     //    newsList=serverResponse.toString();
                     if (serverResponse.getStatus() == 0) {
@@ -1131,18 +1164,25 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void onSelectFromGalleryResult(Intent data) {
+        //   image.setImageURI(data.getData()); // set image to image view
+       /* try{
+            // Get real path to make File
+            realUri = Uri.parse(getRealPathFromURI(data.getData()));
+            Log.d("","Image path :- "+realUri);
+        }
+        catch (Exception e){
+            Log.e("",e.getMessage());
+        }*/
 
         try {
+
             Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-            assert cursor != null;
-            cursor.moveToFirst();
-
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            mediaPath = cursor.getString(columnIndex);
+            mediaPath = getPathFromURI(selectedImage);
             Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
+
+            // filePaths.add(mediaPath);
+
+
             String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
 
             Bitmap original = BitmapFactory.decodeFile(mediaPath);
@@ -1150,24 +1190,27 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             Bitmap bmp = BitmapFactory.decodeFile(mediaPath);
 
+            //create file which we want to send to server.
+            File imageFIle = new File(String.valueOf(realUri));
+
             // Set the Image in ImageView for Previewing the Media
             if (currentImageView == 1) {
                 mArticleImage1.setBackgroundResource(0);
                 mArticleImage1.setImageBitmap(original);
                 // mArticleImage1.setImageBitmap(decoded);
 
-                base64Image1 = getStringImage(bmp);
-                newsPic.add(base64Image1);
-
+                //   base64Image1 = getStringImage(bmp);
+                //  newsPic.add(base64Image1);
+                filePaths.add(mediaPath);
 
             } else if (currentImageView == 2) {
                 mArticleImage2.setBackgroundResource(0);
                 mArticleImage2.setImageBitmap(original);
                 // mArticleImage2.setImageBitmap(decoded);
-                base64Image2 = getStringImage(bmp);
-                newsPic.add(base64Image2);
+                // base64Image2 = getStringImage(bmp);
+                // newsPic.add(base64Image2);
+                filePaths.add(mediaPath);
             }
-            cursor.close();
 
 
             //  System.out.println("ProfileBitmapSize :"+bmp.getByteCount() +" width : " + bmp.getWidth() + " height : " + bmp.getHeight());
@@ -1180,6 +1223,33 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String getPathFromURI(Uri selectedImage) {
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+        Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+        assert cursor != null;
+        cursor.moveToFirst();
+
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String path = cursor.getString(columnIndex);
+        cursor.close();
+        return path;
+    }
+
+    private String getRealPathFromURI(Uri data) {
+        String res = null;
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(data, proj, null, null, null);
+        assert cursor != null;
+        if (cursor.moveToFirst()) {
+            ;
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            res = cursor.getString(column_index);
+        }
+        cursor.close();
+        return res;
     }
 
     public static int calculateInSampleSize(

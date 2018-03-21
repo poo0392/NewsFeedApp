@@ -44,8 +44,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private String IMAGE_URL = "http://thanehousingfederation.com/newsapp/storage/app/public/uploads/news";
     private final int VIEW_ITEM = 0;
     private final int VIEW_PROG = 1;
-    //private OnLoadMoreListener mOnLoadMoreListener;
-    private boolean isLoading;
     Context mContext;
     private NewsFeedApplication newsFeedApplication;
     List<NewsFeedList> newsFeedList;
@@ -59,14 +57,16 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     String value_status, from[];
     int pos;
     onButtonClick callback;
+    int num = 1;
 
 
     // The minimum amount of items to have below your current scroll position
 // before loading more.
     private int visibleThreshold = 10;
     private int lastVisibleItem, totalItemCount;
-    private boolean loading;
-    private OnLoadMoreListener onLoadMoreListener;
+    OnLoadMoreListener loadMoreListener;
+    boolean isLoading = false, isMoreDataAvailable = true;
+    private boolean isLoadingAdded = false;
 
 
     public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView, String value_status) {
@@ -80,29 +80,32 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.imagesList = new ArrayList<>();
         from = value_status.split(":");
         Log.v("", "" + Arrays.toString(from));
-            /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                    if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                        if (onLoadMoreListener != null) {
-                            onLoadMoreListener.onLoadMore();
-                        }
-                        isLoading = true;
 
+        /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                totalItemCount = linearLayoutManager.getItemCount();
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                    if (mOnLoadMoreListener != null) {
+                        mOnLoadMoreListener.onLoadMore();
                     }
+                    isLoading = true;
+
                 }
-            });*/
+            }
+        });*/
     }
 
+    public void setMoreDataAvailable(boolean moreDataAvailable) {
+        isMoreDataAvailable = moreDataAvailable;
+    }
 
-
-        /*public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
-            this.mOnLoadMoreListener = mOnLoadMoreListener;
-        }*/
+    public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
+        this.loadMoreListener = loadMoreListener;
+    }
 
        /* @Override
         public int getItemViewType(int position) {
@@ -128,6 +131,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if(position>=getItemCount()-1 && isMoreDataAvailable && !isLoading && loadMoreListener!=null){
+            isLoading = true;
+            loadMoreListener.onLoadMore();
+        }
         if (holder instanceof ImageViewHolder) {
             ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
             pos = position;
@@ -283,9 +290,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             imageViewHolder.ll_content_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                  /*  int newsId = newsFeedList.get(pos).getId();
-                    Log.v("Adapter ","newsId "+newsId);
-                    Toast.makeText(mContext,"newsId "+newsId,Toast.LENGTH_SHORT).show();*/
+
                     loadNewsDetails(pos);
                 }
             });
@@ -298,12 +303,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
             });
 
-           /* imageViewHolder.ll_aprove.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });*/
 
             //callback.onItemClicked(pos,imageViewHolder.ll_decline);
 
@@ -329,9 +328,11 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return newsFeedList.size();
     }
 
-   /* public void setLoaded() {
+    public void setLoaded() {
         isLoading = false;
-    }*//*
+    }
+
+    /*
         public void clearList(){
             app.mImageDetails.clear();
             notifyDataSetChanged();
@@ -341,6 +342,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             //addData
             notifyDataSetChanged();
         }*/
+
 
     public static class ProgressViewHolder extends RecyclerView.ViewHolder {
         public ProgressBar progressBar;
@@ -381,8 +383,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             if (from[0].equals("admin_news_list")) {
                 callback.onItemClicked(pos, itemView);
-              //  int newsId = newsFeedList.get(pos).getId();
-              //  Log.v(" Adapter ","newsId "+newsId);
+                //  int newsId = newsFeedList.get(pos).getId();
+                //  Log.v(" Adapter ","newsId "+newsId);
             }
             // itemView.setOnClickListener(this);
             // itemView.setOnLongClickListener(this);
