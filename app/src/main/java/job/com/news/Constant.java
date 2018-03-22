@@ -7,6 +7,7 @@ public class Constant {
     //public static final String BASE_URL_S = "https://www.whizapi.com/api/v2/util/ui/in/";
      public static final String BASE_URL = "http://thanehousingfederation.com/newsapp/api/member/";
     //public static final String BASE_URL = BASE_URL_S;
+    public static final String IMAGE_URL = "http://thanehousingfederation.com/newsapp/storage/app/public/uploads/news";
 
 
     public static final int SUCCESS_RESPONSE_CODE = 0;

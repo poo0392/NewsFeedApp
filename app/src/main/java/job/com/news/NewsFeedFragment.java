@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import java.util.List;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.db.NewsListTable;
 import job.com.news.helper.ConnectivityInterceptor;
+import job.com.news.helper.EndlessRecyclerOnScrollListener;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.OnLoadMoreListener;
 import job.com.news.interfaces.WebService;
@@ -59,6 +61,7 @@ public class NewsFeedFragment extends Fragment {
     private ImageAdapter adapter;
     private NewsFeedApplication newsFeedApplication;
     LinearLayoutManager layoutManager;
+    private int mLoadedItems = 0;
 
     //For Recyclerview scroll
     private boolean userScrolled = true;
@@ -70,7 +73,6 @@ public class NewsFeedFragment extends Fragment {
     Context mContext;
     private MyPreferences myPreferences;
     String emailId, fullName, memberToken;
-    String category;
     private List<NewsFeedList> newsFeedListAll = new ArrayList<>();
     private ArrayList<NewsFeedList> newsFeedList;
     private List<NewsFeedList> newsFeedListResp = new ArrayList<>();
@@ -81,11 +83,13 @@ public class NewsFeedFragment extends Fragment {
     ArrayList<String> categoryL = new ArrayList<>();
     int memberId;
     int pos;
+    String category;
     ProgressDialog mProgressDialog;
     NewsListTable newsListTable;
     protected Handler handler;
     private OnLoadMoreListener onLoadMoreListener;
     private List<String> categoryList, catListNew, catDupList;
+    ProgressBar itemProgressBar;
 
     // Index from which pagination should start (0 is 1st page in our case)
     private static final int PAGE_START = 0;
@@ -122,6 +126,7 @@ public class NewsFeedFragment extends Fragment {
         getPrefData();
         attachViews(view);
         getBundleData();
+       // setListeners();
         return view;
     }
 
@@ -144,19 +149,20 @@ public class NewsFeedFragment extends Fragment {
         categoryList = getArguments().getStringArrayList("categories");
         Log.v("getBundleData ", " categoryList" + categoryList.toString());
         loadDatatoList(categoryList.get(pos).toString());
+      //  loadData(categoryList.get(pos).toString());
 
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        long lastId = 0;
-        setListeners();
-
-    }
 
     private void setListeners() {
+        mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+                // loadDatatoList(categoryList.get(pos).toString());
+                loadData(categoryList.get(pos).toString());
+            }
+        });
+
 
         // implementScrollListener();
       /*  adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
@@ -184,6 +190,32 @@ public class NewsFeedFragment extends Fragment {
         });*/
     }
 
+    private void loadData(String s) {
+        category = s;
+        itemProgressBar.setVisibility(View.VISIBLE);
+       /* new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {*/
+
+
+        //mStringList.add("SampleText : " + mLoadedItems);
+        newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(category));
+        //Log.v("", "getNewsFeedList " + newsFeedList.toString());
+        if (newsFeedList.size() > 5) {
+            for (int i = 0; i < 5; i++) {
+                adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", i);
+                mRecyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                //  mLoadedItems++;
+            }
+        }
+        // adapter.notifyDataSetChanged();
+        itemProgressBar.setVisibility(View.GONE);
+        //}
+        // },3000);
+
+    }
+
     private void getPrefData() {
         myPreferences = MyPreferences.getMyAppPref(mContext);
         memberId = myPreferences.getMemberId();
@@ -196,6 +228,7 @@ public class NewsFeedFragment extends Fragment {
         int position = FragmentPagerItem.getPosition(getArguments());
         bottomLayout = (RelativeLayout) view.findViewById(R.id.loadItemsLayout_recyclerView);
         tvEmptyView = (TextView) view.findViewById(R.id.empty_view);
+        itemProgressBar = (ProgressBar) view.findViewById(R.id.item_progress_bar);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.news_feed_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
@@ -298,12 +331,15 @@ public class NewsFeedFragment extends Fragment {
     }
 
     private void loadDatatoList(String categoryList) {
-
+        //  for (int i = 0; i <= 10; i++) {
         newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList));
         Log.v("", "getNewsFeedList " + newsFeedList.toString());
-        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment");
+        //  for (int i = 0; i <= 5; i++) {
+        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
         mRecyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        //  mLoadedItems++;
+        // }
 
      /*   if (newsFeedList.isEmpty()) {
             mRecyclerView.setVisibility(View.GONE);

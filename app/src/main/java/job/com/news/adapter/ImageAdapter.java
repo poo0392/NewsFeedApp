@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -17,12 +19,14 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import job.com.news.Constant;
 import job.com.news.NewsDetailScreen;
 import job.com.news.NewsFeedApplication;
 import job.com.news.R;
@@ -41,7 +45,7 @@ import job.com.news.register.RegisterMember;
  */
 //changes added on 3/9/2018.
 public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private String IMAGE_URL = "http://thanehousingfederation.com/newsapp/storage/app/public/uploads/news";
+
     private final int VIEW_ITEM = 0;
     private final int VIEW_PROG = 1;
     Context mContext;
@@ -58,22 +62,25 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     int pos;
     onButtonClick callback;
     int num = 1;
+    String image;
+    String load_image;
 
 
     // The minimum amount of items to have below your current scroll position
 // before loading more.
     private int visibleThreshold = 10;
-    private int lastVisibleItem, totalItemCount;
+    private int lastVisibleItem, totalItemCount, mLoadedItems;
     OnLoadMoreListener loadMoreListener;
     boolean isLoading = false, isMoreDataAvailable = true;
     private boolean isLoadingAdded = false;
 
 
-    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView, String value_status) {
+    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView, String value_status,int mLoadedItems ) {
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;
         this.newsFeedList = newsFeedList;
         this.value_status = value_status;
+        this.mLoadedItems = mLoadedItems;
         memberTable = new MemberTable(mContext);
         newsImagesTable = new NewsImagesTable(mContext);
         this.memberList = new ArrayList<>();
@@ -97,6 +104,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
             }
         });*/
+        //  StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        // StrictMode.setThreadPolicy(policy);
     }
 
     public void setMoreDataAvailable(boolean moreDataAvailable) {
@@ -131,7 +140,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(position>=getItemCount()-1 && isMoreDataAvailable && !isLoading && loadMoreListener!=null){
+        if (position >= getItemCount() - 1 && isMoreDataAvailable && !isLoading && loadMoreListener != null) {
             isLoading = true;
             loadMoreListener.onLoadMore();
         }
@@ -179,6 +188,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             imageViewHolder.textViewSummary.setText(list.get(0));
             imageViewHolder.textViewDate.setText(list.get(2));*/
             // Log.v("", "clickedPosMemberID " + Integer.parseInt(newsFeedList.get(position).getMember_id()));
+
             String member_name;
             //  if(!from.equals("fromApi")) {
             memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
@@ -193,6 +203,13 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 //get Member from member_id in news List i.e select member from member_table where member_id = NewsListTable.Member_id;
             // RegisterMember
             imageViewHolder.txt_post_person_name.setText(member_name);
+            Log.v("Adapter ", "mLoadedItems " + mLoadedItems);
+            if (from[0].equals("newsfeed_fragment") && mLoadedItems > 5) {
+                position = mLoadedItems;
+            } /*else {
+                position = position;
+            }*/
+
             imageViewHolder.textViewSummary.setText(newsFeedList.get(position).getNews_title());
             imageViewHolder.txt_city.setText(newsFeedList.get(position).getCity());
             imageViewHolder.txt_news_category.setText(newsFeedList.get(position).getCategory());
@@ -211,19 +228,44 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 //2018-02-03 14:37:06
             CharSequence ago = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
             imageViewHolder.txt_post_time.setText(ago);
-            //   imagesList=newsImagesTable.getNewsImagesList(newsFeedList.get(position).getId());
+
+            imagesList = newsImagesTable.getNewsImagesList(newsFeedList.get(position).getId());
            /* if(from.equals("fromApi")) {
                 String pic_name = imagesList.get(45).getNews_pic().toString();
             }*/
+            //  for (int k = 0; k < imagesList.size(); k++)
+            if (!imagesList.isEmpty() && imagesList.size() > 0) {
+                image = imagesList.get(0).getNews_pic();
+                load_image = Constant.IMAGE_URL + "/" + image;
+                Log.v("Adapter ", "load_image" + load_image);
+                //new DownloadImageTask(imageViewHolder.imageView).execute(load_image);
 
-            String load_image = IMAGE_URL + "/" + "42IEt1OACW9x.png";
+             //   progressBar.setVisibility(View.VISIBLE);
+                // Hide progress bar on successful load
+                Picasso.with(mContext).load(load_image)
+                        .placeholder(R.drawable.default_no_image)
+                        .into( imageViewHolder.imageView/*, new com.squareup.picasso.Callback() {
+                            @Override
+                            public void onSuccess() {
+                                if (progressBar != null) {
+                                    progressBar.setVisibility(View.GONE);
+                                }
+                            }
 
-            Picasso.with(mContext)
+                            @Override
+                            public void onError() {
+
+                            }
+                        }*/);
+            }else{
+                imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
+            }
+
+           /* Picasso.with(mContext)
                     .load(load_image)
                     .placeholder(R.drawable.default_no_image) //this is optional the image to display while the url image is downloading
                     // .error(Your Drawable Resource)         //this is also optional if some error has occurred in downloading the image this image would be displayed
-                    .into(imageViewHolder.imageView);
-
+                    .into(imageViewHolder.imageView);*/
             //downloadImageFromURL(load_image);
 
             //  new DownloadImageFromInternet().execute(load_image);
@@ -286,7 +328,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     }
                 }
             });*/
-
             imageViewHolder.ll_content_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -317,6 +358,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Log.v("Adapter ", "itemPosition " + pos);
         Intent intent = new Intent(mContext, NewsDetailScreen.class);
         intent.putExtra("itemPosition", pos + "");
+        intent.putExtra("category", newsFeedList.get(pos).getCategory());
+        intent.putExtra("newsId", newsFeedList.get(pos).getId() + "");
         mContext.startActivity(intent);
     }
 
@@ -405,6 +448,42 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }*/
     }
 
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+       /* @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = new ProgressDialog(mContext);
+            mProgressDialog.show();
+        }
+*/
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            Log.v("","result "+result);
+          //  mProgressDialog.dismiss();
+            if(result!=null) {
+                bmImage.setImageBitmap(result);
+            }else{
+                bmImage.setImageResource(R.drawable.default_no_image);
+            }
+        }
+    }
 
 }
 

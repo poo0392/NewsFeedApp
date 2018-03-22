@@ -97,6 +97,39 @@ public class NewsListTable {
         return false;
     }
 
+    public List<NewsFeedList> getRecordById(int news_id) {
+        db = dbHelper.getWritableDatabase();
+        // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
+        ArrayList<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
+        NewsFeedList model;
+        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.NEWS_ID + "=" + news_id;
+        Cursor cursor = db.rawQuery(query1, null);
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                model = new NewsFeedList((cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID))),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.STATE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
+                listAll.add(model);
+
+            }
+        }
+        //  Log.v("DbHelper ", " list from db " + listAll.toString());
+        cursor.close();
+        db.close();
+        return listAll;
+    }
 
     public List<NewsFeedList> getAllNewsRecords() {
         db = dbHelper.getWritableDatabase();

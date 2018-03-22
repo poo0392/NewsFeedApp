@@ -77,9 +77,9 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payu);
 
-        btnPayNow=(Button)findViewById(R.id.btnPayNow);
+        btnPayNow = (Button) findViewById(R.id.btnPayNow);
 
-        view=btnPayNow;
+        view = btnPayNow;
         //TODO Must write this code if integrating One Tap payments
         OnetapCallback.setOneTapCallback(this);
 
@@ -107,7 +107,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
                 android.R.layout.simple_spinner_item, environmentArray);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         environmentSpinner.setAdapter(dataAdapter);
-        environmentSpinner.setSelection(1);
+        environmentSpinner.setSelection(0);
 
         environmentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -118,10 +118,9 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
                     /* 0MQaQP is test key in PRODUCTION_ENv just for testing purpose in this app. Merchant should use their
                     * own key in PRODUCTION_ENV
                     */
-                   // ((EditText) findViewById(R.id.editTextMerchantKey)).setText("0MQaQP");
+                    // ((EditText) findViewById(R.id.editTextMerchantKey)).setText("0MQaQP");
                     ((EditText) findViewById(R.id.editTextMerchantKey)).setText("WiCZgZAf");
-                }
-                else{
+                } else {
                     //set the test key in test environment
                     ((EditText) findViewById(R.id.editTextMerchantKey)).setText("gtKFFx");//
 
@@ -161,7 +160,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
 
             } else {
                 Toast.makeText(this, getString(R.string.could_not_receive_data), Toast.LENGTH_LONG).show();
-               // onBackPressed();
+                // onBackPressed();
 
             }
         }
@@ -173,10 +172,10 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
     public void navigateToBaseActivity(View view) {
 
         merchantKey = ((EditText) findViewById(R.id.editTextMerchantKey)).getText().toString();
-        merchantKey="WiCZgZAf";
+        merchantKey = "WiCZgZAf";
         String amount = ((EditText) findViewById(R.id.editTextAmount)).getText().toString();
         String email = ((EditText) findViewById(R.id.editTextEmail)).getText().toString();
-        email="siddheshwarbhise@yahoo.com";
+        email = "siddheshwarbhise@yahoo.com";
         String salt = "fkv0nUwlRI";
 
         String value = environmentSpinner.getSelectedItem().toString();
@@ -197,7 +196,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
          * For Production Environment, merchantKey should be your live key or for testing in live you can use "0MQaQP"
          */
         mPaymentParams.setKey("WiCZgZAf"); //0MQaQP
-        mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price",0)));
+        mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price", 0)));
         mPaymentParams.setProductInfo("product_info");
         mPaymentParams.setFirstName("Siddheshwar");
         mPaymentParams.setEmail("siddheshwarbhise@yahoo.com");
@@ -248,18 +247,18 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
 
         //TODO It is recommended to generate hash from server only. Keep your key and salt in server side hash generation code.
         //if(null == salt) {
-            generateHashFromServer(mPaymentParams);
-       //}else {
+        generateHashFromServer(mPaymentParams);
+        //}else {
 
-            /**
-             * Below approach for generating hash is not recommended. However, this approach can be used to test in PRODUCTION_ENV
-             * if your server side hash generation code is not completely setup. While going live this approach for hash generation
-             * should not be used.
-             * */
+        /**
+         * Below approach for generating hash is not recommended. However, this approach can be used to test in PRODUCTION_ENV
+         * if your server side hash generation code is not completely setup. While going live this approach for hash generation
+         * should not be used.
+         * */
 
-       //  generateHashFromSDK(mPaymentParams, salt);
+        //  generateHashFromSDK(mPaymentParams, salt);
 
-     // }
+        // }
     }
 
     /******************************
@@ -379,7 +378,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
 
         String postParams = postParamsBuffer.charAt(postParamsBuffer.length() - 1) == '&' ? postParamsBuffer.substring(0, postParamsBuffer.length() - 1).toString() : postParamsBuffer.toString();
 
-        Log.v("generateHashFromServer "," postParams "+postParams);
+        Log.v("generateHashFromServer ", " postParams " + postParams);
 
         // lets make an api call
         GetHashesFromServerTask getHashesFromServerTask = new GetHashesFromServerTask();
@@ -433,8 +432,9 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
                 for (int i; (i = responseInputStream.read(byteContainer)) != -1; ) {
                     responseStringBuffer.append(new String(byteContainer, 0, i));
                 }
-
+                Log.v("PayU ", "response " + responseStringBuffer.toString());
                 JSONObject response = new JSONObject(responseStringBuffer.toString());
+
 
                 Iterator<String> payuHashIterator = response.keys();
                 while (payuHashIterator.hasNext()) {
@@ -576,7 +576,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
         intent.putExtra(PayuConstants.PAYU_CONFIG, payuConfig);
         intent.putExtra(PayuConstants.PAYMENT_PARAMS, mPaymentParams);
         intent.putExtra(PayuConstants.PAYU_HASHES, payuHashes);
-
+      //  startActivityForResult(intent, PayuConstants.PAYU_REQUEST_CODE);
         //Lets fetch all the one click card tokens first
         fetchMerchantHashes(intent);
 

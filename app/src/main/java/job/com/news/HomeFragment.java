@@ -232,6 +232,12 @@ public class HomeFragment extends Fragment {
             } else if (categoryList.get(i).equals("Small Classifieds")) {
                 catListNew.add(mContext.getResources().getString(R.string.small_class_menu));
                 catListNewEn.add("Small Classifieds");
+            }else if (categoryList.get(i).equals("Other and Uncategorized News")) {
+                catListNew.add(mContext.getResources().getString(R.string.other_uncat_menu));
+                catListNewEn.add("Other and Uncategorized News");
+            }else if (categoryList.get(i).equals("Entertainment News")) {
+                catListNew.add(mContext.getResources().getString(R.string.ent_news_menu));
+                catListNewEn.add("Entertainment News");
             }/*else if (categoryList.get(i).equals("Property")) {
                 catListNew.add(mContext.getResources().getString(R.string.cinema_menu));
             }else if (categoryList.get(i).equals("Birthday ads")) {

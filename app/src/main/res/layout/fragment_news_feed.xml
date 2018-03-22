@@ -54,4 +54,14 @@
         android:layout_alignParentBottom="true"
         layout="@layout/progress_layout"
         android:visibility="gone" />
+    <ProgressBar
+        android:id="@+id/item_progress_bar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:elevation="5dp"
+        android:padding="5dp"
+        android:visibility="gone" />
+
 </LinearLayout>

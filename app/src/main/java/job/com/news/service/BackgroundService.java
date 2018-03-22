@@ -212,7 +212,7 @@ public class BackgroundService extends Service {
 
                             newsFeedListTable = newsListTable.getAllNewsRecords();
                             Log.v("db ", "getNewsFeedList " + newsFeedList.toString());
-                            ImageAdapter adapter = new ImageAdapter(context, newsFeedList, frag.mRecyclerView, "background_service");
+                            ImageAdapter adapter = new ImageAdapter(context, newsFeedList, frag.mRecyclerView, "background_service",0);
                             /*frag.mRecyclerView.setAdapter(adapter);*/
                             //recyclerView.setAdapter(new RecyclerViewAdapter(newList));
                             adapter.notifyDataSetChanged();

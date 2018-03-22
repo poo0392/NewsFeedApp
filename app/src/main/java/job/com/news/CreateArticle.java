@@ -815,7 +815,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-              //  if (validateFields()) {
+               // if (validateFields()) {
                     Intent intent = new Intent(this, PayUActivity.class);
                     intent.putExtra("Price", 1);
                     startActivity(intent);
@@ -827,7 +827,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
                     //postNewsAPI();
-                //}
+               // }
 
                 break;
             case R.id.article_image1:

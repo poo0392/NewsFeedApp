@@ -61,7 +61,7 @@ public class NewsImagesTable {
         // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
         ArrayList<NewsImages> listAll = new ArrayList<NewsImages>();
         NewsImages model;
-        String query1 = "SELECT * FROM " + NEWS_IMAGES_TABLE_NAME; /*+ " where " + NEWS_ID + " = " + news_id;*/
+        String query1 = "SELECT * FROM " + NEWS_IMAGES_TABLE_NAME + " where " + NEWS_ID + " = " + news_id;
         Cursor cursor = db.rawQuery(query1, null);
 
         if (cursor.getCount() > 0) {

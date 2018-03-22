@@ -191,7 +191,7 @@ public class AdminRequestsListFragment extends Fragment {
     }
 
     private void loadDatatoList() {
-        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "admin_news_list" + ":" + news_status);
+        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "admin_news_list" + ":" + news_status,0);
         mRecyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 

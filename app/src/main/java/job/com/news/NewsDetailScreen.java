@@ -3,19 +3,23 @@ package job.com.news;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,30 +36,33 @@ public class NewsDetailScreen extends AppCompatActivity {
     //changes added on 08/03
     CollapsingToolbarLayout collapsingToolbar;
     Toolbar mToolbar;
-    List<NewsFeedList> mNewsFeedList;
+    List<NewsFeedList> mNewsFeedList,newsListByNewsId;
     List<RegisterMember> memberList;
     List<NewsImages> imagesList;
     NewsFeedApplication newsFeedApplication;
-    TextView txtTitle, txtNewsdesc, date,txt_post_time,txt_post_person_name;
+    TextView txtTitle, txtNewsdesc, date, txt_post_time, txt_post_person_name;
     ImageView ivBackground;
-    int clickedPosition;
+    int clickedPosition,newsId;
+    String category;
     NewsListTable newsListTable;
     MemberTable memberTable;
     NewsImagesTable newsImagesTable;
-    Bitmap decodedByte;
+    String image, load_image;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail_screen_new);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-       // db = new DBHelper(this);
+        // db = new DBHelper(this);
 
         newsFeedApplication = NewsFeedApplication.getApp();
         mNewsFeedList = new ArrayList<>();
+        newsListByNewsId = new ArrayList<>();
         imagesList = new ArrayList<>();
-        newsListTable=new NewsListTable(this);
-        memberTable=new MemberTable(this);
+        newsListTable = new NewsListTable(this);
+        memberTable = new MemberTable(this);
         newsImagesTable = new NewsImagesTable(this);
         setAppToolbar();
         getIntentData();
@@ -69,41 +76,60 @@ public class NewsDetailScreen extends AppCompatActivity {
     }
 
 
-
     private void setData() {
-        mNewsFeedList = newsListTable.getAllNewsRecords();
-        Log.v("db ", "getNewsFeedList " + mNewsFeedList.toString());
-        memberList = memberTable.getMemberListByMemberId(Integer.parseInt(mNewsFeedList.get(clickedPosition).getMember_id()));
+       // mNewsFeedList = newsListTable.getAllNewsRecords();
+       // mNewsFeedList = newsListTable.getNewsRecordsByCategory(category);
+
+        newsListByNewsId = newsListTable.getRecordById(newsId);
+        Log.v("db ", "getNewsFeedList " + newsListByNewsId.toString());
+      //  for(int k=0;k<newsListByNewsId.size();k++)
+        memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsListByNewsId.get(0).getMember_id()));
 
 
         //  String member_name=newsFeedList.get(position).getMember().getFirstName();
         String member_name = memberList.get(0).getFirstName();
 
-        txtTitle.setText(mNewsFeedList.get(clickedPosition).getNews_title());
-        txtNewsdesc.setText(mNewsFeedList.get(clickedPosition).getNews_description());
+        txtTitle.setText(newsListByNewsId.get(0).getNews_title());
+        txtNewsdesc.setText(newsListByNewsId.get(0).getNews_description());
         txt_post_person_name.setText(member_name);
-        collapsingToolbar.setTitle(mNewsFeedList.get(clickedPosition).getCategory());
+        collapsingToolbar.setTitle(newsListByNewsId.get(0).getCategory());
         collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         collapsingToolbar.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 
-        imagesList=newsImagesTable.getNewsImagesList(mNewsFeedList.get(clickedPosition).getId());
+        imagesList = newsImagesTable.getNewsImagesList(newsListByNewsId.get(0).getId());
 
-        String pic = imagesList.get(7).getNews_pic().toString();
-//        pic = pic.substring(0, pic.length() - 4);
-       // Log.v("", "pic " + pic);
-        byte[] decodedString = Base64.decode(pic, Base64.DEFAULT);
-        decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        Log.v("", "bitmap get image:=>" + decodedByte);
-        try {
-            if (decodedByte == null || decodedByte.equals("")) {
-                ivBackground.setImageResource(R.drawable.default_no_image);
-            } else {
-                ivBackground.setImageBitmap(decodedByte);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!imagesList.isEmpty() && imagesList.size() > 0) {
+            image = imagesList.get(0).getNews_pic();
+            load_image = Constant.IMAGE_URL + "/" + image;
+            Log.v("Adapter ", "load_image" + load_image);
+         //   new DownloadImageTask(ivBackground).execute(load_image);
+
+        // Hide progress bar on successful load
+        Picasso.with(this).load(load_image)
+                .placeholder(R.drawable.default_no_image)
+                .into(ivBackground/*, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        if (progressBar != null) {
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                }*/);
+        }else{
+            ivBackground.setImageResource(R.drawable.default_no_image);
         }
-        String dateTime = mNewsFeedList.get(clickedPosition).getCreated_at();
+       /* Picasso.with(this)
+                .load(load_image)
+                .placeholder(R.drawable.default_no_image) //this is optional the image to display while the url image is downloading
+                // .error(Your Drawable Resource)         //this is also optional if some error has occurred in downloading the image this image would be displayed
+                .into(ivBackground);*/
+
+        String dateTime = newsListByNewsId.get(0).getCreated_at();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long time = 0;
         try {
@@ -139,7 +165,10 @@ public class NewsDetailScreen extends AppCompatActivity {
     private void getIntentData() {
         Intent intent = getIntent();
         clickedPosition = Integer.parseInt(intent.getStringExtra("itemPosition"));
-        Log.v("","clickedPosition "+clickedPosition);
+        newsId=Integer.parseInt(intent.getStringExtra("newsId"));
+        category=intent.getStringExtra("category");
+
+        Log.v("NewsDetailScreen ", "clickedPosition=" + clickedPosition+", newsId="+newsId+", category="+category);
     }
 
     private void setAppToolbar() {
@@ -157,9 +186,9 @@ public class NewsDetailScreen extends AppCompatActivity {
 
 
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsingToolbarLayout);
-       // collapsingToolbar.setTitle("Sports");
+        // collapsingToolbar.setTitle("Sports");
 
-
+        progressBar=(ProgressBar)findViewById(R.id.progressBar);
         txtTitle = (TextView) findViewById(R.id.details_title);
         txtNewsdesc = (TextView) findViewById(R.id.details_desc);
         txt_post_time = (TextView) findViewById(R.id.txt_post_time);
@@ -184,5 +213,41 @@ public class NewsDetailScreen extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
+    }
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+        /* @Override
+         protected void onPreExecute() {
+             super.onPreExecute();
+             mProgressDialog = new ProgressDialog(mContext);
+             mProgressDialog.show();
+         }
+ */
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            Log.v("","result "+result);
+            //  mProgressDialog.dismiss();
+            if(result!=null) {
+                bmImage.setImageBitmap(result);
+            }else{
+                bmImage.setImageResource(R.drawable.default_no_image);
+            }
+        }
     }
 }
