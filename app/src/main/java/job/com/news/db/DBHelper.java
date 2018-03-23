@@ -79,7 +79,8 @@ public class DBHelper extends SQLiteOpenHelper {
             NewsListTable.CATEGORY + " TEXT," + NewsListTable.CATEGORY_ID + " TEXT," +
             NewsListTable.SUB_CATEGORY + " TEXT," + NewsListTable.SUB_CATEGORY_ID + " TEXT," +
             NewsListTable.COUNTRY + " TEXT," + NewsListTable.STATE + " TEXT," + NewsListTable.CITY + " TEXT," +
-            NewsListTable.NEWS_TITLE + " TEXT," + NewsListTable.NEWS_DESCRIPTION + " TEXT," /*+ NewsListTable.NEWS_PIC + " TEXT," */ +
+            NewsListTable.NEWS_TITLE + " TEXT," + NewsListTable.NEWS_DESCRIPTION + " TEXT,"
+            + NewsListTable.LANGUAGE + " TEXT,"  +NewsListTable.COMMENT + " TEXT,"  +
             NewsListTable.LIKE_COUNT + " TEXT," + NewsListTable.MEMBER_ID + " INTEGER," +
             NewsListTable.CREATED_AT + " TEXT,"
             + NewsListTable.IS_UPDATED + " TEXT," + NewsListTable.STATUS + " TEXT," +

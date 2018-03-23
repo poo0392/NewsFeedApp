@@ -168,6 +168,8 @@ public class BackgroundService extends Service {
                                                 serverResponse.getNewsFeedList().get(i).getCity(),
                                                 serverResponse.getNewsFeedList().get(i).getNews_title(),
                                                 serverResponse.getNewsFeedList().get(i).getNews_description(),
+                                                serverResponse.getNewsFeedList().get(i).getLanguage(),
+                                                serverResponse.getNewsFeedList().get(i).getComment(),
                                                 serverResponse.getNewsFeedList().get(i).getLike_count(),
                                                 serverResponse.getNewsFeedList().get(i).getMember_id(),
                                                 serverResponse.getNewsFeedList().get(i).getCreated_at(),

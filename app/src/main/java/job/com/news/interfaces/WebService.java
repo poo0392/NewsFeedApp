@@ -94,7 +94,8 @@ public interface WebService {
     Call<NewsFeedModelResponse> addAdminNewsStatus(@Part("member_token") RequestBody member_token,
                                                    @Part("member_id") RequestBody member_id,
                                                    @Part("news_id") RequestBody news_id,
-                                                   @Part("news_status") RequestBody news_status);
+                                                   @Part("news_status") RequestBody news_status,
+                                                   @Part("comment") String comment);
 
     //add_news
     //http://thanehousingfederation.com/newsapp/api/member/add_news
@@ -111,6 +112,7 @@ public interface WebService {
                                           @Part("city_id") RequestBody city_id,
                                           @Part("news_title") RequestBody news_title,
                                           @Part("news_desc") RequestBody news_desc,
+                                          @Part("language") String language,
                                          // @Part("news_pic") RequestBody news_pic,
                                          // @Part("user_ids[]") String[] ids,
                                           @Part List<MultipartBody.Part> news_pic);

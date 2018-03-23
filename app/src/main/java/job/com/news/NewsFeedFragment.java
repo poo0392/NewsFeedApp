@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -33,7 +32,6 @@ import java.util.List;
 import job.com.news.adapter.ImageAdapter;
 import job.com.news.db.NewsListTable;
 import job.com.news.helper.ConnectivityInterceptor;
-import job.com.news.helper.EndlessRecyclerOnScrollListener;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.OnLoadMoreListener;
 import job.com.news.interfaces.WebService;
@@ -42,6 +40,7 @@ import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
+import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -64,17 +63,17 @@ public class NewsFeedFragment extends Fragment {
     private int mLoadedItems = 0;
 
     //For Recyclerview scroll
-    private boolean userScrolled = true;
+    private boolean isLoading = true;
     int pastVisiblesItems, visibleItemCount;
     private int visibleThreshold = 5;
-    private int lastVisibleItem, totalItemCount;
+    private int lastVisibleItem, totalItemCount, firstVisibleItem;
     RelativeLayout bottomLayout;
     TextView tvEmptyView;
     Context mContext;
     private MyPreferences myPreferences;
-    String emailId, fullName, memberToken;
+    String emailId, fullName, memberToken,getLangFromPref,lang_arr[],language;
     private List<NewsFeedList> newsFeedListAll = new ArrayList<>();
-    private ArrayList<NewsFeedList> newsFeedList;
+    private ArrayList<NewsFeedList> newsFeedList,listTwo;
     private List<NewsFeedList> newsFeedListResp = new ArrayList<>();
     private ArrayList<? extends NewsFeedList> newsFeedListNew = new ArrayList<>();
     private List<RegisterMember> memberList = new ArrayList<>();
@@ -87,30 +86,19 @@ public class NewsFeedFragment extends Fragment {
     ProgressDialog mProgressDialog;
     NewsListTable newsListTable;
     protected Handler handler;
+
     private OnLoadMoreListener onLoadMoreListener;
     private List<String> categoryList, catListNew, catDupList;
     ProgressBar itemProgressBar;
+    SessionManager langSelection;
 
-    // Index from which pagination should start (0 is 1st page in our case)
-    private static final int PAGE_START = 0;
-    // Indicates if footer ProgressBar is shown (i.e. next page is loading)
-    private boolean isLoading = false;
-    // If current page is the last page (Pagination will stop after this page load)
-    private boolean isLastPage = false;
-    // total no. of pages to load. Initial load is page 0, after which 2 more pages will load.
-    private int TOTAL_PAGES = 3;
-    // indicates the current page which Pagination is fetching.
-    private int currentPage = PAGE_START;
 
     public static Fragment newInstance(int position, ArrayList<String> catListNewEn) {
         NewsFeedFragment fragment = new NewsFeedFragment();
         Bundle args = new Bundle();
         args.putInt("position", position);
         args.putStringArrayList("categories", (ArrayList<String>) catListNewEn);
-        //args.putParcelableArrayList("News", (ArrayList<NewsFeedList>) newsFeedList);
         Log.v("newInstance ", " categories" + catListNewEn.toString());
-        //args.putParcelableArrayList("News", (ArrayList<? extends Parcelable>) newsFeedList);
-        //args.getBundle("News");
         fragment.setArguments(args);
         return fragment;
     }
@@ -121,12 +109,15 @@ public class NewsFeedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         newsFeedApplication = NewsFeedApplication.getApp();
+
         mContext = getActivity();
+        langSelection = new SessionManager(mContext);
+
         initializeComp();
         getPrefData();
         attachViews(view);
         getBundleData();
-       // setListeners();
+        //setListeners();
         return view;
     }
 
@@ -134,34 +125,81 @@ public class NewsFeedFragment extends Fragment {
         newsListTable = new NewsListTable(mContext);
         handler = new Handler();
         newsFeedList = new ArrayList<>();
+        listTwo = new ArrayList<>();
         categoryList = new ArrayList<>();
         catListNew = new ArrayList<>();
         catDupList = new ArrayList<>();
     }
 
     private void getBundleData() {
-        Bundle receivedData = new Bundle();
-        //     newsFeedList = receivedData.getParcelableArrayList("News");
-        //  Log.v("getBundleData ", " newsFeedList" + newsFeedList);
         pos = getArguments().getInt("position");
         Log.v("getBundleData ", "Fragpos " + pos);
         Toast.makeText(getActivity(), "Position is: " + pos, Toast.LENGTH_SHORT).show();
         categoryList = getArguments().getStringArrayList("categories");
         Log.v("getBundleData ", " categoryList" + categoryList.toString());
+
         loadDatatoList(categoryList.get(pos).toString());
-      //  loadData(categoryList.get(pos).toString());
+        //  loadData(categoryList.get(pos).toString());
 
     }
 
 
     private void setListeners() {
-        mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+
+        adapter.setLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                Log.v("Listener ","newsFeedList.size "+newsFeedList.size()+" listTwo.size"+listTwo.size());
+                if (newsFeedList.size() > 5) {
+                    //                  newsFeedList.add(null);
+//                    adapter.notifyItemInserted(newsFeedList.size()-1);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // newsFeedList.remove(newsFeedList.size()-1);
+
+                            int index = listTwo.size();//5
+                            int end = index + 5;
+
+                            for (int i = index; i < end; i++) {
+                                // loadDatatoList(categoryList.get(pos).toString());
+                                adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", i);
+                                adapter.notifyDataSetChanged();
+                            }
+
+                            adapter.setLoaded();
+                        }
+                    }, 6000);
+                } else {
+                    Toast.makeText(mContext, "Loading data completed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+      /*  mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
             @Override
             public void onLoadMore() {
                 // loadDatatoList(categoryList.get(pos).toString());
                 loadData(categoryList.get(pos).toString());
             }
-        });
+        });*/
+
+     /* mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+          @Override
+          public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+              super.onScrollStateChanged(recyclerView, newState);
+          }
+
+          @Override
+          public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+              super.onScrolled(recyclerView, dx, dy);
+              totalItemCount = layoutManager.getItemCount();
+              lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+              if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                  isLoading = true;
+
+              }
+          }
+      });*/
 
 
         // implementScrollListener();
@@ -199,7 +237,7 @@ public class NewsFeedFragment extends Fragment {
 
 
         //mStringList.add("SampleText : " + mLoadedItems);
-        newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(category));
+        //newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(category));
         //Log.v("", "getNewsFeedList " + newsFeedList.toString());
         if (newsFeedList.size() > 5) {
             for (int i = 0; i < 5; i++) {
@@ -222,6 +260,15 @@ public class NewsFeedFragment extends Fragment {
         memberToken = myPreferences.getMemberToken().trim();
         emailId = myPreferences.getEmailId().trim();
         fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
+
+        getLangFromPref = langSelection.getLanguage();
+
+        lang_arr = getResources().getStringArray(R.array.language_arr);
+        if (getLangFromPref.equalsIgnoreCase(lang_arr[1])) {
+            language="Hindi";
+        } else if (getLangFromPref.equalsIgnoreCase(lang_arr[2])) {
+            language="Marathi";
+        }
     }
 
     private void attachViews(View view) {
@@ -331,15 +378,29 @@ public class NewsFeedFragment extends Fragment {
     }
 
     private void loadDatatoList(String categoryList) {
-        //  for (int i = 0; i <= 10; i++) {
-        newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList));
+
+        newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList,language));
         Log.v("", "getNewsFeedList " + newsFeedList.toString());
-        //  for (int i = 0; i <= 5; i++) {
-        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
-        mRecyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        //  mLoadedItems++;
-        // }
+        Log.v("", "getNewsFeedListSIZE " + newsFeedList.size());
+
+        // if (newsFeedList.size() < 5) {
+            // for (int i = 0; i < 5; i++) {
+
+                 adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
+                 mRecyclerView.setAdapter(adapter);
+                 adapter.notifyDataSetChanged();
+             //}
+        // }else{
+            // for (int i = 0; i <= 5; i++) {
+                /* listTwo.add(newsFeedList.get(i));
+                 adapter = new ImageAdapter(getActivity(), listTwo, mRecyclerView, "newsfeed_fragment", i);
+                 mRecyclerView.setAdapter(adapter);
+                // adapter.notifyItemInserted(i);
+
+                 adapter.notifyDataSetChanged();*/
+           //  }
+       //  }
+
 
      /*   if (newsFeedList.isEmpty()) {
             mRecyclerView.setVisibility(View.GONE);
@@ -407,10 +468,10 @@ public class NewsFeedFragment extends Fragment {
 
                 // If scroll state is touch scroll then set userScrolled
                 // true
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                /*if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                     userScrolled = true;
 
-                }
+                }*/
 
             }
 

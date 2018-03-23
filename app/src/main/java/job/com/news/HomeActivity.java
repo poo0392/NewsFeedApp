@@ -341,6 +341,8 @@ public class HomeActivity extends AppCompatActivity
                                                 serverResponse.getNewsFeedList().get(i).getCity(),
                                                 serverResponse.getNewsFeedList().get(i).getNews_title(),
                                                 serverResponse.getNewsFeedList().get(i).getNews_description(),
+                                                serverResponse.getNewsFeedList().get(i).getLanguage(),
+                                                serverResponse.getNewsFeedList().get(i).getComment(),
                                                 serverResponse.getNewsFeedList().get(i).getLike_count(),
                                                 serverResponse.getNewsFeedList().get(i).getMember_id(),
                                                 serverResponse.getNewsFeedList().get(i).getCreated_at(),
@@ -737,6 +739,7 @@ public class HomeActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
+                startActivity(new Intent(this,HomeActivity.class));
                 if (grantResults.length > 0) {
 
                     boolean readStorageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
@@ -750,6 +753,7 @@ public class HomeActivity extends AppCompatActivity
                             cameraIntent();
                         else if (userChoosenTask.equals("Choose from Library"))
                             pickImageFromGallery();*/
+
                     } else {
 
                         Toast.makeText(mContext, "Permission Denied, You cannot access Gallery",

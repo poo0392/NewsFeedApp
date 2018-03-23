@@ -63,7 +63,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     onButtonClick callback;
     int num = 1;
     String image;
-    String load_image;
+    String load_image, comment;
 
 
     // The minimum amount of items to have below your current scroll position
@@ -75,7 +75,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private boolean isLoadingAdded = false;
 
 
-    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView, String value_status,int mLoadedItems ) {
+    public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView, String value_status, int mLoadedItems) {
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;
         this.newsFeedList = newsFeedList;
@@ -88,7 +88,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         from = value_status.split(":");
         Log.v("", "" + Arrays.toString(from));
 
-        /*final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+      /*  final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -96,8 +96,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 totalItemCount = linearLayoutManager.getItemCount();
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
                 if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                    if (mOnLoadMoreListener != null) {
-                        mOnLoadMoreListener.onLoadMore();
+                    if (loadMoreListener != null) {
+                        loadMoreListener.onLoadMore();
                     }
                     isLoading = true;
 
@@ -116,10 +116,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.loadMoreListener = loadMoreListener;
     }
 
-       /* @Override
-        public int getItemViewType(int position) {
-            return app.mImageDetails.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
-        }*/
+    @Override
+    public int getItemViewType(int position) {
+        return newsFeedList.get(position) == null ? VIEW_PROG : VIEW_ITEM;
+    }
 
     public void setOnButtonClick(onButtonClick callback) {
         this.callback = callback;
@@ -152,7 +152,21 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             if (from[0].equals("admin_news_list") && !from[1].equals("")) {
                 if (from[1].equals("pending")) {
                     imageViewHolder.ll_approve_or_dec.setVisibility(View.VISIBLE);
+                    imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
+                } else if (from[1].equals("rejected")) {
+
+                    comment = newsFeedList.get(position).getComment();
+                    Log.v("Adapter ","comment "+comment);
+                    if (!comment.equals("")) {
+                        imageViewHolder.ll_reject_cmt.setVisibility(View.VISIBLE);
+                        imageViewHolder.txt_reject_cmt.setText(comment);
+                    } else {
+                        imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
+                    }
+
+                    imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
                 } else {
+                    imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
                     imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
                 }
                /* switch (from[1]) {
@@ -169,6 +183,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }*/
 
             } else {
+                imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
                 imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
             }
                 /*ImageDetails user = app.mImageDetails.get(position);
@@ -204,7 +219,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             // RegisterMember
             imageViewHolder.txt_post_person_name.setText(member_name);
             Log.v("Adapter ", "mLoadedItems " + mLoadedItems);
-            if (from[0].equals("newsfeed_fragment") && mLoadedItems > 5) {
+            if (from[0].equals("newsfeed_fragment")) {
                 position = mLoadedItems;
             } /*else {
                 position = position;
@@ -240,11 +255,11 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 Log.v("Adapter ", "load_image" + load_image);
                 //new DownloadImageTask(imageViewHolder.imageView).execute(load_image);
 
-             //   progressBar.setVisibility(View.VISIBLE);
+                //   progressBar.setVisibility(View.VISIBLE);
                 // Hide progress bar on successful load
                 Picasso.with(mContext).load(load_image)
                         .placeholder(R.drawable.default_no_image)
-                        .into( imageViewHolder.imageView/*, new com.squareup.picasso.Callback() {
+                        .into(imageViewHolder.imageView/*, new com.squareup.picasso.Callback() {
                             @Override
                             public void onSuccess() {
                                 if (progressBar != null) {
@@ -257,7 +272,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
                             }
                         }*/);
-            }else{
+            } else {
                 imageViewHolder.imageView.setImageResource(R.drawable.default_no_image);
             }
 
@@ -366,9 +381,13 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        //return app.mImageDetails == null ? 0 : app.mImageDetails.size();
-        //return newsFeedApplication.hashMap.size();
-        return newsFeedList.size();
+        if (mLoadedItems == 0) {
+            return newsFeedList.size();
+        } else {
+            //return newsFeedList == null ? 0 : newsFeedList.size();
+            //return newsFeedApplication.hashMap.size();
+            return mLoadedItems;
+        }
     }
 
     public void setLoaded() {
@@ -398,10 +417,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public class ImageViewHolder extends RecyclerView.ViewHolder/*
             implements View.OnClickListener, View.OnLongClickListener */ {
-        TextView textViewDate, textViewSummary, txt_news_category, txt_approve_news, txt_decline_news, txt_read_more;
+        TextView textViewDate, textViewSummary, txt_news_category, txt_approve_news, txt_decline_news, txt_read_more, txt_reject_cmt;
         ImageView imageView;
         TextView txt_post_person_name, txt_post_time, txt_desc, txt_city, txt_state;
-        LinearLayout ll_approve_or_dec, ll_content_view, ll_decline, ll_aprove;
+        LinearLayout ll_approve_or_dec, ll_content_view, ll_decline, ll_aprove, ll_reject_cmt;
         private ItemClickListener clickListener;
 
         public ImageViewHolder(View itemView) {
@@ -411,6 +430,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             imageView = (ImageView) itemView.findViewById(R.id.row_image);
 
             txt_read_more = (TextView) itemView.findViewById(R.id.txt_read_more);
+            txt_reject_cmt = (TextView) itemView.findViewById(R.id.txt_reject_cmt);
             txt_post_person_name = (TextView) itemView.findViewById(R.id.txt_post_person_name);
             txt_news_category = (TextView) itemView.findViewById(R.id.txt_news_category);
             txt_post_time = (TextView) itemView.findViewById(R.id.txt_post_time);
@@ -423,6 +443,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ll_content_view = (LinearLayout) itemView.findViewById(R.id.ll_content_view);
             ll_aprove = (LinearLayout) itemView.findViewById(R.id.ll_aprove);
             ll_decline = (LinearLayout) itemView.findViewById(R.id.ll_decline);
+            ll_reject_cmt = (LinearLayout) itemView.findViewById(R.id.ll_reject_cmt);
 
             if (from[0].equals("admin_news_list")) {
                 callback.onItemClicked(pos, itemView);
@@ -454,13 +475,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
-       /* @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog = new ProgressDialog(mContext);
-            mProgressDialog.show();
-        }
-*/
+
+        /* @Override
+         protected void onPreExecute() {
+             super.onPreExecute();
+             mProgressDialog = new ProgressDialog(mContext);
+             mProgressDialog.show();
+         }
+ */
         protected Bitmap doInBackground(String... urls) {
             String urldisplay = urls[0];
             Bitmap mIcon11 = null;
@@ -475,11 +497,11 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         protected void onPostExecute(Bitmap result) {
-            Log.v("","result "+result);
-          //  mProgressDialog.dismiss();
-            if(result!=null) {
+            Log.v("", "result " + result);
+            //  mProgressDialog.dismiss();
+            if (result != null) {
                 bmImage.setImageBitmap(result);
-            }else{
+            } else {
                 bmImage.setImageResource(R.drawable.default_no_image);
             }
         }

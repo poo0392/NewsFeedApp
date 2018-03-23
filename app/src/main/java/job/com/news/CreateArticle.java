@@ -73,7 +73,6 @@ import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
-import job.com.news.payU.PayUActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -112,7 +111,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     boolean valid = false;
     private int charges, sub_category_id;
     String state_arr[], article_arr[], no_of_days_arr[], lang_arr[];
-    String getLangFromPref, selectedState, selectedCity, selectedDays;
+    String getLangFromPref,language, selectedState, selectedCity, selectedDays;
     ArrayAdapter<String> state_adapter, article_adapter, sub_article_adapter, city_adapter, publish_days_adapter;
     RelativeLayout state_relative, city_relative, article_relative;
     BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsSubArticleSpinner, bsPublishDaysSpinner;
@@ -179,7 +178,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private void getLang() {
         getLangFromPref = langSelection.getLanguage();
         lang_arr = getResources().getStringArray(R.array.language_arr);
-
+        if (getLangFromPref.equalsIgnoreCase(lang_arr[1])) {
+            language="Hindi";
+        } else if (getLangFromPref.equalsIgnoreCase(lang_arr[2])) {
+            language="Marathi";
+        }
     }
 
     private void setDateToText() {
@@ -816,17 +819,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.article_btn_submit:
                // if (validateFields()) {
-                    Intent intent = new Intent(this, PayUActivity.class);
+                   /* Intent intent = new Intent(this, PayUActivity.class);
                     intent.putExtra("Price", 1);
                     startActivity(intent);
-                    finish();
+                    finish();*/
 //
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                    //postNewsAPI();
+                    postNewsAPI();
            //    }
 
                 break;
@@ -956,7 +959,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, image);
         */
         Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
-                paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, photosToUploadList);
+                paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc,language,photosToUploadList);
         //    Call<NewsFeedModelResponse> serverResponse = webService.post_news(mapValuesFinal);
 
         String reqParam = bodyToString(serverResponse.request().body());

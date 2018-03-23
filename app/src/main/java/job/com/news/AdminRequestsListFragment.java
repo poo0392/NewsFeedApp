@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -54,14 +56,16 @@ public class AdminRequestsListFragment extends Fragment {
     private NewsFeedApplication newsFeedApplication;
     LinearLayoutManager layoutManager;
     private MyPreferences myPreferences;
-    String emailId, fullName, memberToken, news_status = "";
+    String emailId, fullName, memberToken, news_status = "", comment;
     int memberId;
     String role;
     List<NewsFeedList> newsFeedList;
     ProgressDialog mProgressDialog;
     ItemClickListener clickListener;
-    int pos,newsId;
+    int pos, newsId;
     SendMessage SM;
+    boolean wrapInScrollView = true;
+
 
     public static Fragment newInstance(int position) {
         AdminRequestsListFragment fragment = new AdminRequestsListFragment();
@@ -76,7 +80,7 @@ public class AdminRequestsListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
 
         mContext = getActivity();
-    //    SM = (SendMessage) mContext;
+        //    SM = (SendMessage) mContext;
         attachViews(view);
         getPrefData();
         getBundleData();
@@ -104,7 +108,7 @@ public class AdminRequestsListFragment extends Fragment {
     private void getBundleData() {
         int position = getArguments().getInt("position");
         Log.v("AdminReqLstFragment ", "position " + position);
-        Toast.makeText(getActivity(),"Position is: "+position,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Position is: " + position, Toast.LENGTH_SHORT).show();
         if (position == 0) {
             news_status = "pending";
             callNewsListAPI(memberToken, memberId, news_status);
@@ -191,7 +195,7 @@ public class AdminRequestsListFragment extends Fragment {
     }
 
     private void loadDatatoList() {
-        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "admin_news_list" + ":" + news_status,0);
+        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "admin_news_list" + ":" + news_status, 0);
         mRecyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -199,8 +203,8 @@ public class AdminRequestsListFragment extends Fragment {
         adapter.setOnButtonClick(new onButtonClick() {
             @Override
             public void onItemClicked(int position, View view) {
-                pos=position;
-                Log.v(" ","position 11 "+pos);
+                pos = position;
+                Log.v(" ", "position 11 " + pos);
 
                 LinearLayout ll_approve_news = (LinearLayout) view.findViewById(R.id.ll_aprove);
                 LinearLayout ll_decline_news = (LinearLayout) view.findViewById(R.id.ll_decline);
@@ -208,20 +212,30 @@ public class AdminRequestsListFragment extends Fragment {
                 ll_decline_news.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.v("ll_decline_news ","position 22 "+pos);
+                        Log.v("ll_decline_news ", "position 22 " + pos);
                         newsId = newsFeedList.get(pos).getId();
-                        Log.v("ll_decline_news ","newsId "+newsId);
+                        Log.v("ll_decline_news ", "newsId " + newsId);
+
+                        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View customView = inflater.inflate(R.layout.custom_reject_view, null);
+                        TextView txt_news_title = (TextView) customView.findViewById(R.id.txt_news_title);
+                        final EditText edt_comment = (EditText) customView.findViewById(R.id.edt_comment);
+
+                        txt_news_title.setText(newsFeedList.get(pos).getNews_title());
+                        comment = edt_comment.getText().toString();
 
                         new MaterialStyledDialog.Builder(mContext)
-                                .setDescription("Do you want to reject this news?")
+                                //.setDescription()
                                 .setStyle(Style.HEADER_WITH_ICON)
+                                .setCustomView(customView)
                                 .setIcon(R.mipmap.ic_failed)
                                 .setPositiveText(R.string.button_ok)
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        news_status="rejected";
-                                        callUpdateNewsStatus(memberToken,memberId,newsId,news_status);
+                                        news_status = "rejected";
+
+                                        callUpdateNewsStatus(memberToken, memberId, newsId, news_status, comment);
                                     }
                                 })
                                 .setNegative("Cancel", new MaterialDialog.SingleButtonCallback() {
@@ -237,9 +251,9 @@ public class AdminRequestsListFragment extends Fragment {
                 ll_approve_news.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.v("ll_approve_news ","position 22 "+pos);
+                        Log.v("ll_approve_news ", "position 22 " + pos);
                         newsId = newsFeedList.get(pos).getId();
-                        Log.v("ll_approve_news ","newsId "+newsId);
+                        Log.v("ll_approve_news ", "newsId " + newsId);
 
                         new MaterialStyledDialog.Builder(mContext)
                                 .setDescription("Do you want to approve this news?")
@@ -249,10 +263,10 @@ public class AdminRequestsListFragment extends Fragment {
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        news_status="approved";
-                                     //   callNewsListAPI(memberToken, memberId, news_status);
-                                       callUpdateNewsStatus(memberToken,memberId,newsId,news_status);
-                                        Log.v("ll_approve_news ","position 33 "+pos);
+                                        news_status = "approved";
+                                        //   callNewsListAPI(memberToken, memberId, news_status);
+                                        callUpdateNewsStatus(memberToken, memberId, newsId, news_status, "");
+                                        Log.v("ll_approve_news ", "position 33 " + pos);
 
                                     }
                                 })
@@ -270,8 +284,8 @@ public class AdminRequestsListFragment extends Fragment {
         });
     }
 
-    private void callUpdateNewsStatus(final String memberToken, final int memberId, int newsId, final String news_status) {
-        Log.v("callUpdateNewsStatus","news_status "+news_status);
+    private void callUpdateNewsStatus(final String memberToken, final int memberId, int newsId, final String news_status, String comment) {
+        Log.v("callUpdateNewsStatus", "news_status " + news_status);
         mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setMessage("Loading...");
         mProgressDialog.show();
@@ -293,7 +307,7 @@ public class AdminRequestsListFragment extends Fragment {
         RequestBody paramNewsId = RequestBody.create(MediaType.parse("text/plain"), "" + newsId);
         RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
 
-        Call<NewsFeedModelResponse> serverResponse = webService.addAdminNewsStatus(paramMemberToken, paramMemberId,paramNewsId, status);
+        Call<NewsFeedModelResponse> serverResponse = webService.addAdminNewsStatus(paramMemberToken, paramMemberId, paramNewsId, status,comment);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
@@ -306,8 +320,8 @@ public class AdminRequestsListFragment extends Fragment {
                     if (serverResponse.getStatus() == 0) {
 
                         try {
-                            Toast.makeText(mContext,"Success",Toast.LENGTH_SHORT).show();
-                           // callNewsListAPI(memberToken,memberId,news_status);
+                            Toast.makeText(mContext, "Success", Toast.LENGTH_SHORT).show();
+                            // callNewsListAPI(memberToken,memberId,news_status);
                            /* AdminRequestsListFragment frg = new AdminRequestsListFragment();
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
                             Bundle b = new Bundle();
@@ -318,7 +332,7 @@ public class AdminRequestsListFragment extends Fragment {
                            ft.attach(frg);
                             ft.commit();
                             adapter.notifyDataSetChanged();*/
-                            AdminHomeFragment af=new  AdminHomeFragment();
+                            AdminHomeFragment af = new AdminHomeFragment();
                             FragmentTransaction tx = getFragmentManager().beginTransaction();
 
                             tx.replace(R.id.content_frame, af);
@@ -326,7 +340,7 @@ public class AdminRequestsListFragment extends Fragment {
                             // tx.addToBackStack(null);
                             tx.commit();
 
-                           // SM.sendData(news_status);
+                            // SM.sendData(news_status);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

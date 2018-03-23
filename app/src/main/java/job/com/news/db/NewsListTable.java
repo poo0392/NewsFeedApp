@@ -30,7 +30,8 @@ public class NewsListTable {
     public static final String CITY = "city";
     public static final String NEWS_TITLE = "news_title";
     public static final String NEWS_DESCRIPTION = "news_description";
-    public static final String NEWS_PIC = "news_pic";
+    public static final String LANGUAGE = "language";
+    public static final String COMMENT = "comment";
     public static final String LIKE_COUNT = "like_count";
     public static final String MEMBER_ID = "member_id";
     public static final String CREATED_AT = "created_at";
@@ -70,7 +71,8 @@ public class NewsListTable {
         cv.put(NewsListTable.CITY, model.getCity());
         cv.put(NewsListTable.NEWS_TITLE, model.getNews_title());
         cv.put(NewsListTable.NEWS_DESCRIPTION, model.getNews_description());
-        //  cv.put(NewsListTable.NEWS_PIC, model.getNews_pic());
+        cv.put(NewsListTable.LANGUAGE, model.getLanguage());
+        cv.put(NewsListTable.COMMENT, model.getComment());
         cv.put(NewsListTable.LIKE_COUNT, model.getLike_count());
         cv.put(NewsListTable.MEMBER_ID, model.getMember_id());
         cv.put(NewsListTable.CREATED_AT, model.getCreated_at());
@@ -118,6 +120,8 @@ public class NewsListTable {
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.LANGUAGE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.COMMENT)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
@@ -153,6 +157,8 @@ public class NewsListTable {
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.LANGUAGE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.COMMENT)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
@@ -180,12 +186,12 @@ public class NewsListTable {
         return listAll;
     }
 
-    public ArrayList<NewsFeedList> getNewsRecordsByCategory(String category) {
+    public ArrayList<NewsFeedList> getNewsRecordsByCategory(String category,String lang) {
         db = dbHelper.getWritableDatabase();
         // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
         ArrayList<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
         NewsFeedList model;
-        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY + " = '" + category + "'";
+        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY + " = '" + category + "' AND "+NewsListTable.LANGUAGE+" ='"+lang+"'";
         Log.v("", "query1 " + query1);
         Cursor cursor = db.rawQuery(query1, null);
         if (cursor.getCount() > 0) {
@@ -202,6 +208,8 @@ public class NewsListTable {
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.LANGUAGE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.COMMENT)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)),
                         cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));

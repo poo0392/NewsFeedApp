@@ -50,7 +50,15 @@ public class NewsFeedList implements Parcelable{
     @SerializedName("news_description")
     @Expose
     private String news_description;
+    @SerializedName("language")
+    @Expose
+    private String language;
 
+
+
+    @SerializedName("comment")
+    @Expose
+    private String comment;
     @SerializedName("like_count")
     @Expose
     private String like_count;
@@ -71,7 +79,7 @@ public class NewsFeedList implements Parcelable{
    // private  List<RegisterMember> membersList;
 
 
-    public NewsFeedList(int id, String news_uuid, String category,String category_id, String sub_category, String sub_category_id,String country, String state, String city, String news_title, String news_description, String like_count, String member_id, String created_at,List<NewsImages> news_images,RegisterMember member) {
+    public NewsFeedList(int id, String news_uuid, String category,String category_id, String sub_category, String sub_category_id,String country, String state, String city, String news_title, String news_description,String language,String comment, String like_count, String member_id, String created_at,List<NewsImages> news_images,RegisterMember member) {
         this.id = id;
         this.news_uuid = news_uuid;
         this.category = category;
@@ -83,13 +91,15 @@ public class NewsFeedList implements Parcelable{
         this.city = city;
         this.news_title = news_title;
         this.news_description = news_description;
+        this.language = language;
+        this.comment = comment;
         this.like_count = like_count;
         this.member_id = member_id;
         this.created_at = created_at;
         this.news_images = news_images;
         this.member = member;
     }
-    public NewsFeedList(int id, String news_uuid, String category ,String category_id, String sub_category, String sub_category_id, String country, String state, String city, String news_title, String news_description, String like_count, String member_id, String created_at) {
+    public NewsFeedList(int id, String news_uuid, String category ,String category_id, String sub_category, String sub_category_id, String country, String state, String city, String news_title, String news_description,String language,String comment, String like_count, String member_id, String created_at) {
         this.id = id;
         this.news_uuid = news_uuid;
         this.category = category;
@@ -101,6 +111,8 @@ public class NewsFeedList implements Parcelable{
         this.city = city;
         this.news_title = news_title;
         this.news_description = news_description;
+        this.language = language;
+        this.comment = comment;
         this.like_count = like_count;
         this.member_id = member_id;
         this.created_at = created_at;
@@ -116,7 +128,13 @@ public class NewsFeedList implements Parcelable{
     public String getNews_uuid() {
         return news_uuid;
     }
+    public String getComment() {
+        return comment;
+    }
 
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
     public void setNews_uuid(String news_uuid) {
         this.news_uuid = news_uuid;
     }
@@ -143,6 +161,13 @@ public class NewsFeedList implements Parcelable{
 
     public void setSub_category_id(String sub_category_id) {
         this.sub_category_id = sub_category_id;
+    }
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public String getCountry() {
