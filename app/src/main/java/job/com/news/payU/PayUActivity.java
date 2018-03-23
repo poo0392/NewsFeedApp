@@ -118,8 +118,8 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
                     /* 0MQaQP is test key in PRODUCTION_ENv just for testing purpose in this app. Merchant should use their
                     * own key in PRODUCTION_ENV
                     */
-                    // ((EditText) findViewById(R.id.editTextMerchantKey)).setText("0MQaQP");
-                    ((EditText) findViewById(R.id.editTextMerchantKey)).setText("WiCZgZAf");
+                     ((EditText) findViewById(R.id.editTextMerchantKey)).setText("0MQaQP");
+                  //  ((EditText) findViewById(R.id.editTextMerchantKey)).setText("WiCZgZAf");
                 } else {
                     //set the test key in test environment
                     ((EditText) findViewById(R.id.editTextMerchantKey)).setText("gtKFFx");//
@@ -172,11 +172,12 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
     public void navigateToBaseActivity(View view) {
 
         merchantKey = ((EditText) findViewById(R.id.editTextMerchantKey)).getText().toString();
-        merchantKey = "WiCZgZAf";
+       // merchantKey = "WiCZgZAf";
         String amount = ((EditText) findViewById(R.id.editTextAmount)).getText().toString();
         String email = ((EditText) findViewById(R.id.editTextEmail)).getText().toString();
-        email = "siddheshwarbhise@yahoo.com";
-        String salt = "fkv0nUwlRI";
+        //email = "siddheshwarbhise@yahoo.com";
+       // String salt = "fkv0nUwlRI";
+        String salt = "13p0PXZk";
 
         String value = environmentSpinner.getSelectedItem().toString();
         int environment;
@@ -195,17 +196,17 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
          * For Test Environment, merchantKey = "gtKFFx"
          * For Production Environment, merchantKey should be your live key or for testing in live you can use "0MQaQP"
          */
-        mPaymentParams.setKey("WiCZgZAf"); //0MQaQP
+        /*mPaymentParams.setKey("WiCZgZAf"); //0MQaQP
         mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price", 0)));
         mPaymentParams.setProductInfo("product_info");
         mPaymentParams.setFirstName("Siddheshwar");
-        mPaymentParams.setEmail("siddheshwarbhise@yahoo.com");
+        mPaymentParams.setEmail("siddheshwarbhise@yahoo.com");*/
 
-       /* mPaymentParams.setKey("0MQaQP"); //
+        mPaymentParams.setKey("0MQaQP"); //
         mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price",0)));
         mPaymentParams.setProductInfo("product_info");
         mPaymentParams.setFirstName("firstname");
-        mPaymentParams.setEmail("@gmail.com");*/
+        mPaymentParams.setEmail("@gmail.com");
 
 
         /*
@@ -247,7 +248,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
 
         //TODO It is recommended to generate hash from server only. Keep your key and salt in server side hash generation code.
         //if(null == salt) {
-        generateHashFromServer(mPaymentParams);
+       // generateHashFromServer(mPaymentParams);
         //}else {
 
         /**
@@ -256,7 +257,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
          * should not be used.
          * */
 
-        //  generateHashFromSDK(mPaymentParams, salt);
+          generateHashFromSDK(mPaymentParams, salt);
 
         // }
     }

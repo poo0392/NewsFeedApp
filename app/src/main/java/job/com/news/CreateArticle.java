@@ -647,7 +647,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     t.printStackTrace();
                     if (t instanceof NoConnectivityException) {
                         // No internet connection
-                        Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "Please connect to Internet", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -827,7 +827,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
                     //postNewsAPI();
-               // }
+           //    }
 
                 break;
             case R.id.article_image1:
@@ -1001,7 +1001,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(mContext, "Failure", Toast.LENGTH_SHORT).show();
                 if (t instanceof NoConnectivityException) {
                     // No internet connection
-                    // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                     Toast.makeText(mContext, "Please connect to Internet", Toast.LENGTH_SHORT).show();
                     // setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
                 }
             }
@@ -1164,15 +1164,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void onSelectFromGalleryResult(Intent data) {
-        //   image.setImageURI(data.getData()); // set image to image view
-       /* try{
-            // Get real path to make File
-            realUri = Uri.parse(getRealPathFromURI(data.getData()));
-            Log.d("","Image path :- "+realUri);
-        }
-        catch (Exception e){
-            Log.e("",e.getMessage());
-        }*/
+
 
         try {
 
@@ -1180,7 +1172,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             mediaPath = getPathFromURI(selectedImage);
             Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
 
-            // filePaths.add(mediaPath);
 
 
             String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
@@ -1212,14 +1203,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 filePaths.add(mediaPath);
             }
 
-
-            //  System.out.println("ProfileBitmapSize :"+bmp.getByteCount() +" width : " + bmp.getWidth() + " height : " + bmp.getHeight());
-
-            //   base64Image = getStringImage(decoded);
-
-            //imgfriend.setImageBitmap(thumbnail);
-            // System.out.println("profile image : " + base64Image);
-            //sendProfileImage(base64Image);
         } catch (Exception e) {
             e.printStackTrace();
         }
