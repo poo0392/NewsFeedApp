@@ -40,6 +40,7 @@ import job.com.news.sharedpref.SessionManager;
  */
 //changes added on 3/9/2018.
 public class HomeFragment extends Fragment {
+    private static final String TAG="HomeFragment";
     Context mContext;
     Toolbar toolbar;
     private ProgressDialog mProgressDialog;
@@ -80,6 +81,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        Log.v(TAG, " onCreateView called");
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         //setTootlbarTitle("Home");
         toolbar.setTitle(getResources().getString(R.string.home_toolbar_title));
@@ -171,7 +173,7 @@ public class HomeFragment extends Fragment {
         newsFeedList = newsListTable.getAllNewsRecords();
         // categoryList = newsListTable.getCategory();
 
-        Log.v("", "newsFeedList.size() " + newsFeedList.size());
+        Log.v(TAG+" loadCategoryList ", "newsFeedList.size() " + newsFeedList.size());
         for (int k = 0; k < newsFeedList.size(); k++) {
             catDupList.add(newsFeedList.get(k).getCategory());
 

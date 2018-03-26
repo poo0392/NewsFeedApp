@@ -1,10 +1,10 @@
 package job.com.news;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,12 +21,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -84,8 +82,9 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 //changes added on //changes 16_03.
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements View.OnClickListener {
     //changes reflect to be 05/03
+    private static final String TAG = "HomeActivity";
     private Context mContext;
     private LinearLayout mSmallClassiLayout, mCareerLayout;
     private TextView menuSmallClassi;
@@ -94,7 +93,7 @@ public class HomeActivity extends AppCompatActivity
     private SessionManager session, langSelection;
     Toolbar toolbar;
     private MyPreferences myPreferences;
-    String emailId, fullName, memberToken;
+    String emailId, fullName, memberToken, cityFilter, stateFilter, categoryFilter;
     int memberId;
     String role;
     String jsonResponse;
@@ -112,6 +111,8 @@ public class HomeActivity extends AppCompatActivity
     CategoryMasterTable categoryMasterTable;
     SubCategoryTable subCategoryTable;
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
+    private List<NewsFeedList> newsFeedListNew;
+    private List<NewsFeedList> ListNew, catList;
     private List<NewsFeedListParcable> newsFeedListParc = new ArrayList<>();
     private List<String> categoryList, catDupList;
     Gson gson;
@@ -135,11 +136,10 @@ public class HomeActivity extends AppCompatActivity
 
 
         /*if (role.equals("1")) {
-            callAdminHomeFragment();
+            callRequestStatusHomeFragment();
         } else {
             callHomeFragment();
         }*/
-
 
 
         if (!checkPermission()) {
@@ -236,9 +236,9 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-    private void callAdminHomeFragment() {
+    private void callRequestStatusHomeFragment() {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        tx.replace(R.id.content_frame, new AdminHomeFragment());
+        tx.replace(R.id.content_frame, new RequestStatusHomeFragment());
         // tx.addToBackStack(null);
         tx.commit();
     }
@@ -257,7 +257,7 @@ public class HomeActivity extends AppCompatActivity
         PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         // Start service every 15 min
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),900000, pintent);
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 900000, pintent);
 
        /* Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
         boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
@@ -296,10 +296,11 @@ public class HomeActivity extends AppCompatActivity
         Log.v("", " last_id " + last_id);
         Log.v("", " news_status " + news_status);
 
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,status, last_id);
-     //   Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,id);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id);
+        //   Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,id);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
+            @SuppressLint("LongLogTag")
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
                 mProgressDialog.dismiss();
@@ -311,15 +312,15 @@ public class HomeActivity extends AppCompatActivity
                     List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
                             .fromJson(String.valueOf(response.body()), collectionType);*/
 
-                  //  NewsFeedModelResponse serverResponse = new Gson().fromJson(response.body().toString(), NewsFeedModelResponse.class);
-                   NewsFeedModelResponse serverResponse = response.body();
+                    //  NewsFeedModelResponse serverResponse = new Gson().fromJson(response.body().toString(), NewsFeedModelResponse.class);
+                    NewsFeedModelResponse serverResponse = response.body();
                     jsonResponse = new Gson().toJson(response.body());
-                    Log.v("callNewsListAPI ", "response " + jsonResponse);
+                    Log.v(TAG + " callNewsListAPI ", "response " + jsonResponse);
                     if (serverResponse.getStatus() == 0) {
 
                         try {
                             newsFeedList = serverResponse.getNewsFeedList();
-                         //    Log.v("", "newsFeedList " + newsFeedList.toString());
+                            //    Log.v("", "newsFeedList " + newsFeedList.toString());
 
                             NewsFeedList model;
                             try {
@@ -348,7 +349,7 @@ public class HomeActivity extends AppCompatActivity
                                                 serverResponse.getNewsFeedList().get(i).getCreated_at(),
                                                 serverResponse.getNewsFeedList().get(i).getNews_images(),
                                                 serverResponse.getNewsFeedList().get(i).getMember()
-                                                );
+                                        );
                                        /* model.setId(serverResponse.getNewsFeedList().get(i).getId());
                                         model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
                                         model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
@@ -364,19 +365,19 @@ public class HomeActivity extends AppCompatActivity
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
                                         model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
 */
-                                       // for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMember(); k++) {
-                                            if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
-                                                member.setMemberId(model.getMember().getId());
-                                                //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
-                                                member.setFirstName(model.getMember().getFirstName().trim());
-                                                member.setLastName(model.getMember().getLastName().trim());
-                                                member.setEmailId(model.getMember().getEmailId().trim());
-                                                member.setMobile(model.getMember().getMobile());
+                                        // for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMember(); k++) {
+                                        if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
+                                            member.setMemberId(model.getMember().getId());
+                                            //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
+                                            member.setFirstName(model.getMember().getFirstName().trim());
+                                            member.setLastName(model.getMember().getLastName().trim());
+                                            member.setEmailId(model.getMember().getEmailId().trim());
+                                            member.setMobile(model.getMember().getMobile());
 
-                                                memberTable.insertMembers(member);
+                                            memberTable.insertMembers(member);
 
-                                            }
-                                       // }
+                                        }
+                                        // }
                                         //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
                                         if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
                                             for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getNews_images().size(); j++) {
@@ -552,12 +553,12 @@ public class HomeActivity extends AppCompatActivity
         expListView = (ExpandableListView) findViewById(R.id.left_drawer);
         expListView.setIndicatorBounds(expListView.getRight() - 40, expListView.getWidth());
         prepareListData(listDataHeader, listDataChild, listThirdLevelChild);
-
+        Log.v("enableExpandableList ", "" + listThirdLevelChild);
         //   ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, listDataHeader, listDataChild, data);
         // set adapter
         // expListView.setAdapter( threeLevelListAdapterAdapter );
 
-        listAdapter = new ExpandListAdapter(mContext, listDataHeader, listDataChild);
+        listAdapter = new ExpandListAdapter(mContext, listDataHeader, listDataChild, listThirdLevelChild);
         expListView.setAdapter(listAdapter);
 
         setGroupIndicatorToRight();
@@ -572,12 +573,10 @@ public class HomeActivity extends AppCompatActivity
                 //Log.v(""," group "+group);
                 if (group.equals("Home")) {
                     fragment = new HomeFragment();
+                } else if (group.equals("Requests")) {
+                    callRequestStatusHomeFragment();
                 }
-                if (role.equals("1")) {
-                    if (group.equals("Requests")) {
-                        callAdminHomeFragment();
-                    }
-                }
+
                 //else if()
 
                 //replacing the fragment
@@ -587,8 +586,8 @@ public class HomeActivity extends AppCompatActivity
                     ft.addToBackStack(null);
                     ft.commit();
                 }
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
+               /* DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);*/
                 return false;
             }
         });
@@ -629,16 +628,19 @@ public class HomeActivity extends AppCompatActivity
                 // TODO Auto-generated method stub
                 // Temporary code:
                 String group_name = listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
+                Log.v("", "group_name " + group_name);
+
+
                 /*if(group_name.equals("Pending Requests")){
 
                 }else if(group_name.equals("Requests Status")){
 
                 }*/
                 // till here
-                Toast.makeText(
+               /* Toast.makeText(
                         mContext,
                         listDataHeader.get(groupPosition) + " : " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
-                        .show();
+                        .show();*/
                 return false;
             }
         });
@@ -662,22 +664,27 @@ public class HomeActivity extends AppCompatActivity
         newsChild.add("Social and Related News");
         newsChild.add("Sports");
         newsChild.add("Science and Technology");
-        newsChild.add("Economical News");
         newsChild.add("Health Related");
         newsChild.add("Business News");
         newsChild.add("Agricultural News");
         newsChild.add("Cinema Related");
+        newsChild.add("Small Classified");
         newsChild.add("Other and Uncategorized News");
+        newsChild.add("Entertainment");
         newsChild.add("Career Related");
+        newsChild.add("Economical News");
 
-        List<String> newsThirdChild = new ArrayList<String>();
-        newsThirdChild.add("Job");
-        newsThirdChild.add("Business");
-        newsThirdChild.add("Educational");
+        List<String> newsCareerChild = new ArrayList<String>();
+        newsCareerChild.add("Job");
+        newsCareerChild.add("Business");
+        newsCareerChild.add("Educational");
+
+        List<String> newsSmallChild = new ArrayList<String>();
 
         listDataChild.put(listDataHeader.get(2), requestsChild); // Header, Child data
         listDataChild.put(listDataHeader.get(3), newsChild);
-        listThirdLevelChild.put(newsChild.get(11), newsThirdChild);
+        // listThirdLevelChild.put(newsChild.get(10), newsThirdChild);
+        listThirdLevelChild.put(newsChild.get(12), newsCareerChild);
 
         data.add(listThirdLevelChild);
     }
@@ -739,7 +746,7 @@ public class HomeActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
-                startActivity(new Intent(this,HomeActivity.class));
+                startActivity(new Intent(this, HomeActivity.class));
                 if (grantResults.length > 0) {
 
                     boolean readStorageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
@@ -898,60 +905,9 @@ public class HomeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
-        setSearchViewMenu(menu);
         return true;
     }
 
-    public void setSearchViewMenu(final Menu menu) {
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint("Search by state and city");
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        if (searchItem != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        }
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean newViewFocus) {
-                if (!newViewFocus) {
-                    //Collapse the action item.
-                    searchItem.collapseActionView();
-                    //Clear the filter/search query.
-                    menu.findItem(R.id.action_search).setVisible(true);
-                    menu.findItem(R.id.action_create_article).setVisible(true);
-                    menu.findItem(R.id.action_change_pwd).setVisible(true);
-                    menu.findItem(R.id.action_logout).setVisible(true);
-                } else {
-                    menu.findItem(R.id.action_logout).setVisible(false);
-                    menu.findItem(R.id.action_change_pwd).setVisible(false);
-                    menu.findItem(R.id.action_create_article).setVisible(false);
-                }
-            }
-        });
-
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setItemsVisibility(menu, searchItem, false);
-            }
-        });
-        // Detect SearchView close
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                setItemsVisibility(menu, searchItem, true);
-                return false;
-            }
-        });
-    }
-
-
-    private void setItemsVisibility(Menu menu, MenuItem exception, boolean visible) {
-        for (int i = 0; i < menu.size(); ++i) {
-            MenuItem item = menu.getItem(i);
-            if (item != exception) item.setVisible(visible);
-        }
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -980,26 +936,6 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        int order = item.getOrder();
-        //selectItem(order);
-        /*switch (id){
-            case R.id.create_article:
-                Intent intent = new Intent(this, CreateArticle.class);
-                startActivity(intent);
-                break;
-
-        }*/
-
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     private void selectItem(String order) {
 

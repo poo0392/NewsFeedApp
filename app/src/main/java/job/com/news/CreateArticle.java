@@ -73,7 +73,6 @@ import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
-import job.com.news.payU.PayUActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -820,17 +819,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.article_btn_submit:
                // if (validateFields()) {
-                    Intent intent = new Intent(this, PayUActivity.class);
+                    /*Intent intent = new Intent(this, PayUActivity.class);
                     intent.putExtra("Price", 1);
                     startActivity(intent);
-                    finish();
+                    finish();*/
 //
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                    //postNewsAPI();
+                    postNewsAPI();
            //    }
 
                 break;

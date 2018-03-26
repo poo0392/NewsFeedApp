@@ -1,5 +1,6 @@
 package job.com.news;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,21 +21,23 @@ import java.util.List;
  * Created by POOJA on 3/9/2018.
  */
 
-public class AdminHomeFragment extends Fragment {
+public class RequestStatusHomeFragment extends Fragment {
+    private static final String TAG="RequestStatusHomeFragment";
     Toolbar toolbar;
     Context mContext;
     ViewPager mViewPager;
     TabLayout mTabLayout;
     MyFragmentPageAdapter mPageAdapter;
     ArrayList<String> categories;
-    String fromStatus;
+    String fromStatus = "";
 
 
+    @SuppressLint("LongLogTag")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_admin, container, false);
-        Log.v("AdminHomeFragment ", " onCreateView called");
+        Log.v(TAG," onCreateView called");
         setAdminHomeToolbar();
 
         mContext = getActivity();
@@ -45,19 +48,22 @@ public class AdminHomeFragment extends Fragment {
     }
 
     private void getIntentData() {
-        try {
-            if (fromStatus.equals("approved")) {
-                mViewPager.setCurrentItem(1);
-            } else if (fromStatus.equals("rejected")) {
-                mViewPager.setCurrentItem(2);
-            } else {
-                mViewPager.setCurrentItem(0);
+        if (fromStatus.equals("")) {
+            Log.v("", "fromStatus is null");
+        } else {
+            try {
+                if (fromStatus.equals("approved")) {
+                    mViewPager.setCurrentItem(1);
+                } else if (fromStatus.equals("rejected")) {
+                    mViewPager.setCurrentItem(2);
+                } else {
+                    mViewPager.setCurrentItem(0);
+                }
+                Toast.makeText(mContext, "if not null", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            Toast.makeText(mContext, "if not null", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
     }
 
     private void setAdminHomeToolbar() {
@@ -113,8 +119,9 @@ public class AdminHomeFragment extends Fragment {
     }
 
 
+    @SuppressLint("LongLogTag")
     public void sendData(String message) {
-        Log.v("AdminHomeFragment ", " sendData called");
+        Log.v(TAG, " sendData called");
         Log.v("sendData ", "NewsStatus: " + message);
         try {
             // fromStatus = getIntent().getExtras().getString("addFrom");

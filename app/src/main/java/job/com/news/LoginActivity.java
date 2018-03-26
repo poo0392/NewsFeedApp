@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         session = new SessionManager(getApplicationContext());
         langSelection = new SessionManager(getApplicationContext());
         memberTable = new MemberTable(LoginActivity.this);
-        pd =new PersonalDetails(LoginActivity.this);
+        pd = new PersonalDetails(LoginActivity.this);
 
         checkForLoginSession();
         //setLocaleLang();
@@ -236,21 +236,20 @@ public class LoginActivity extends AppCompatActivity {
             RequestBody bodyPlat = RequestBody.create(MediaType.parse("text/plain"), 1 + "");
 
 
-
             Call<LoginRegisterResponse> serverResponse = webService.loginRequest(bodyUsername, bodyPwd, bodyNoti, bodyPlat);
 //            Log.v("sendlogin ","LoginParameters url : "+serverResponse.request().url());
 //            Log.v("sendlogin ","LoginParameters : "+serverResponse.request().body().toString());
 //            Log.v("sendlogin ","LoginParameters req : "+serverResponse.request().toString());
-           String reqParam = bodyToString(serverResponse.request().body());
-          //  Log.v("sendlogin ","reqParam : "+reqParam);
+            String reqParam = bodyToString(serverResponse.request().body());
+            //  Log.v("sendlogin ","reqParam : "+reqParam);
             serverResponse.enqueue(new Callback<LoginRegisterResponse>() {
                 @Override
                 public void onResponse(Call<LoginRegisterResponse> call, Response<LoginRegisterResponse> response) {
                     progressDialog.dismiss();
-                  //  Log.v("LoginAPI ", "response " + new Gson().toJson(response.body()));
+                    //  Log.v("LoginAPI ", "response " + new Gson().toJson(response.body()));
                     if (response.isSuccessful()) {
                         LoginRegisterResponse serverResponse = response.body();
-                        String serverrespose2=new Gson().toJson(response.body());
+                        String serverrespose2 = new Gson().toJson(response.body());
                         Log.v("LoginAPI ", "response " + serverrespose2);
                         if (serverResponse.getStatus() == 0) {
 
@@ -266,7 +265,8 @@ public class LoginActivity extends AppCompatActivity {
                                     " email : " + myPreferences.getEmailId().trim() + " mob : " + myPreferences.getMobile() + " memberId : "
                                             + "firstName: " + myPreferences.getFirstName().trim() +
                                             "lastName: " + myPreferences.getLastName().trim() +
-                                            +myPreferences.getMemberId() + " Member : " + myPreferences.getMemberToken());
+                                            +myPreferences.getMemberId() + " Member : " + myPreferences.getMemberToken() +
+                                            "Role: " + myPreferences.getRole());
 
 
                             //addMemmberToDb();
@@ -294,9 +294,9 @@ public class LoginActivity extends AppCompatActivity {
 
                         } else {
                             //login failed
-                          //  String desc = serverResponse.getDescription().trim();
+                            //  String desc = serverResponse.getDescription().trim();
                             // Toast.makeText(LoginActivity.this, "Login failed." + desc, Toast.LENGTH_SHORT).show();
-                           // Log.v(" sendlogin "," desc "+serverResponse.getDescription());
+                            // Log.v(" sendlogin "," desc "+serverResponse.getDescription());
                             setFailedAlertDialog(LoginActivity.this, "Failed", "Invalid Credentials.");
                         }
                     }
@@ -306,7 +306,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onFailure(Call<LoginRegisterResponse> call, Throwable t) {
                     progressDialog.dismiss();
                     t.printStackTrace();
-                    Log.v(" onFailure "," getMessage "+t.getMessage());
+                    Log.v(" onFailure ", " getMessage " + t.getMessage());
                     if (t instanceof NoConnectivityException) {
                         // No internet connection
                         // Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
@@ -334,6 +334,7 @@ public class LoginActivity extends AppCompatActivity {
             return "did not work";
         }
     }
+
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)

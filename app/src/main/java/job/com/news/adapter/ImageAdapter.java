@@ -139,7 +139,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if (position >= getItemCount() - 1 && isMoreDataAvailable && !isLoading && loadMoreListener != null) {
             isLoading = true;
             loadMoreListener.onLoadMore();
@@ -149,14 +149,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             pos = position;
 
 
-            if (from[0].equals("admin_news_list") && !from[1].equals("")) {
+            if (from[0].equals("admin") && !from[1].equals("")) {
                 if (from[1].equals("pending")) {
                     imageViewHolder.ll_approve_or_dec.setVisibility(View.VISIBLE);
                     imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
                 } else if (from[1].equals("rejected")) {
 
                     comment = newsFeedList.get(position).getComment();
-                    Log.v("Adapter ","comment "+comment);
+                    Log.v("Adapter ", "comment " + comment);
                     if (!comment.equals("")) {
                         imageViewHolder.ll_reject_cmt.setVisibility(View.VISIBLE);
                         imageViewHolder.txt_reject_cmt.setText(comment);
@@ -219,9 +219,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             // RegisterMember
             imageViewHolder.txt_post_person_name.setText(member_name);
             Log.v("Adapter ", "mLoadedItems " + mLoadedItems);
-            if (from[0].equals("newsfeed_fragment")) {
+           /* if (from[0].equals("newsfeed_fragment")) {
                 position = mLoadedItems;
-            } /*else {
+            }*/ /*else {
                 position = position;
             }*/
 
@@ -346,15 +346,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             imageViewHolder.ll_content_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    loadNewsDetails(pos);
+                    loadNewsDetails(position);
                 }
             });
 
             imageViewHolder.txt_read_more.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    loadNewsDetails(pos);
+                    loadNewsDetails(position);
 
                 }
             });
@@ -381,13 +380,13 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        if (mLoadedItems == 0) {
-            return newsFeedList.size();
-        } else {
-            //return newsFeedList == null ? 0 : newsFeedList.size();
-            //return newsFeedApplication.hashMap.size();
-            return mLoadedItems;
-        }
+        // if (mLoadedItems == 0) {
+        return newsFeedList.size();
+        // } else {
+        //return newsFeedList == null ? 0 : newsFeedList.size();
+        //return newsFeedApplication.hashMap.size();
+        //    return mLoadedItems;
+        // }
     }
 
     public void setLoaded() {
@@ -507,6 +506,11 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
+    public void setFilter(List<NewsFeedList> models) {
+        newsFeedList = new ArrayList<>();
+        newsFeedList.addAll(models);
+        notifyDataSetChanged();
+    }
 }
 
 

@@ -1,18 +1,27 @@
 package job.com.news;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -69,11 +78,12 @@ public class NewsFeedFragment extends Fragment {
     private int lastVisibleItem, totalItemCount, firstVisibleItem;
     RelativeLayout bottomLayout;
     TextView tvEmptyView;
+    LinearLayout ll_news_feed;
     Context mContext;
     private MyPreferences myPreferences;
-    String emailId, fullName, memberToken,getLangFromPref,lang_arr[],language;
+    String emailId, fullName, memberToken, getLangFromPref, lang_arr[], language;
     private List<NewsFeedList> newsFeedListAll = new ArrayList<>();
-    private ArrayList<NewsFeedList> newsFeedList,listTwo;
+    private ArrayList<NewsFeedList> newsFeedList, listTwo, filteredList, filteredModelListNew;
     private List<NewsFeedList> newsFeedListResp = new ArrayList<>();
     private ArrayList<? extends NewsFeedList> newsFeedListNew = new ArrayList<>();
     private List<RegisterMember> memberList = new ArrayList<>();
@@ -108,6 +118,7 @@ public class NewsFeedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
+        setHasOptionsMenu(true);
         newsFeedApplication = NewsFeedApplication.getApp();
 
         mContext = getActivity();
@@ -121,10 +132,148 @@ public class NewsFeedFragment extends Fragment {
         return view;
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        setSearchViewMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void setSearchViewMenu(final Menu menu) {
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setQueryHint("Search by state and city");
+        SearchManager searchManager = (SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE);
+        if (searchItem != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        }
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                Log.v("onQueryTextChange ", "query " + query);
+                Log.v("onQueryTextChange ", "newsFeedList " + newsFeedList);
+                Log.v("onQueryTextChange ", "newsFeedList.Size " + newsFeedList.size());
+
+
+                //if (!newsFeedList.isEmpty()) {
+                List<NewsFeedList> filteredModelList = filter(newsFeedList, query);
+
+                if (filteredModelList.size() > 0) {
+                    adapter.setFilter(filteredModelList);
+                    // hideKeyboard();
+                    return true;
+                } else {
+                    // If not matching search filter data
+                    hideKeyboard();
+                    // Constants.snackbar(sp_av_layout, "Record Not Found..");
+                    Snackbar.make(ll_news_feed, "Record Not Found..", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    return false;
+                }
+
+                //    }
+                //  return true;
+            }
+        });
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean newViewFocus) {
+                if (!newViewFocus) {
+                    //Collapse the action item.
+                    searchItem.collapseActionView();
+                    //Clear the filter/search query.
+                    menu.findItem(R.id.action_search).setVisible(true);
+                    menu.findItem(R.id.action_create_article).setVisible(true);
+                    menu.findItem(R.id.action_change_language).setVisible(true);
+                    menu.findItem(R.id.action_change_pwd).setVisible(true);
+                    menu.findItem(R.id.action_logout).setVisible(true);
+                } else {
+                    menu.findItem(R.id.action_logout).setVisible(false);
+                    menu.findItem(R.id.action_change_pwd).setVisible(false);
+                    menu.findItem(R.id.action_create_article).setVisible(false);
+                    menu.findItem(R.id.action_change_language).setVisible(false);
+                }
+            }
+        });
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setItemsVisibility(menu, searchItem, false);
+
+            }
+        });
+        // Detect SearchView close
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                setItemsVisibility(menu, searchItem, true);
+
+
+                return false;
+            }
+        });
+    }
+
+    public void hideKeyboard() {
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    private List<NewsFeedList> filter(List<NewsFeedList> newsFeedList, String query) {
+        query = query.toLowerCase();
+        final List<NewsFeedList> filteredList = new ArrayList<>();
+        for (NewsFeedList list : newsFeedList) {
+
+            String cityFilter = list.getCity().toLowerCase();
+            String stateFilter = list.getState().toLowerCase();
+            String categoryFilter = list.getCategory();
+            if ((cityFilter.contains(query)) || (stateFilter.contains(query))) {
+                filteredList.add(list);
+            }
+
+        }
+
+        // NewsFeedFragment nf = new NewsFeedFragment();
+        //nf.loadDataFilter(filteredList, categoryFilter);
+        //  loadDataNew(filteredList);
+        setListToAdapter(filteredList, "filter");
+
+        return filteredList;
+    }
+
+    private void loadDataNew(List<NewsFeedList> filteredList) {
+
+        adapter = new ImageAdapter(getActivity(), filteredList, mRecyclerView, "newsfeed_fragment", 0);
+        mRecyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void setItemsVisibility(Menu menu, MenuItem exception, boolean visible) {
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item != exception) item.setVisible(visible);
+        }
+    }
+
     private void initializeComp() {
         newsListTable = new NewsListTable(mContext);
         handler = new Handler();
         newsFeedList = new ArrayList<>();
+        filteredList = new ArrayList<>();
+        filteredModelListNew = new ArrayList<>();
         listTwo = new ArrayList<>();
         categoryList = new ArrayList<>();
         catListNew = new ArrayList<>();
@@ -149,7 +298,7 @@ public class NewsFeedFragment extends Fragment {
         adapter.setLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                Log.v("Listener ","newsFeedList.size "+newsFeedList.size()+" listTwo.size"+listTwo.size());
+                Log.v("Listener ", "newsFeedList.size " + newsFeedList.size() + " listTwo.size" + listTwo.size());
                 if (newsFeedList.size() > 5) {
                     //                  newsFeedList.add(null);
 //                    adapter.notifyItemInserted(newsFeedList.size()-1);
@@ -265,14 +414,15 @@ public class NewsFeedFragment extends Fragment {
 
         lang_arr = getResources().getStringArray(R.array.language_arr);
         if (getLangFromPref.equalsIgnoreCase(lang_arr[1])) {
-            language="Hindi";
+            language = "Hindi";
         } else if (getLangFromPref.equalsIgnoreCase(lang_arr[2])) {
-            language="Marathi";
+            language = "Marathi";
         }
     }
 
     private void attachViews(View view) {
         int position = FragmentPagerItem.getPosition(getArguments());
+        ll_news_feed = (LinearLayout) view.findViewById(R.id.ll_news_feed);
         bottomLayout = (RelativeLayout) view.findViewById(R.id.loadItemsLayout_recyclerView);
         tvEmptyView = (TextView) view.findViewById(R.id.empty_view);
         itemProgressBar = (ProgressBar) view.findViewById(R.id.item_progress_bar);
@@ -377,29 +527,31 @@ public class NewsFeedFragment extends Fragment {
                 .show();
     }
 
-    private void loadDatatoList(String categoryList) {
+
+    public void loadDatatoList(String categoryList) {
 
         newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList));
+
         Log.v("", "getNewsFeedList " + newsFeedList.toString());
         Log.v("", "getNewsFeedListSIZE " + newsFeedList.size());
 
-        // if (newsFeedList.size() < 5) {
-            // for (int i = 0; i < 5; i++) {
 
-                 adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
-                 mRecyclerView.setAdapter(adapter);
-                 adapter.notifyDataSetChanged();
-             //}
+        setListToAdapter(newsFeedList, "bundle");
+        // if (newsFeedList.size() < 5) {
+        // for (int i = 0; i < 5; i++) {
+
+
+        //}
         // }else{
-            // for (int i = 0; i <= 5; i++) {
+        // for (int i = 0; i <= 5; i++) {
                 /* listTwo.add(newsFeedList.get(i));
                  adapter = new ImageAdapter(getActivity(), listTwo, mRecyclerView, "newsfeed_fragment", i);
                  mRecyclerView.setAdapter(adapter);
                 // adapter.notifyItemInserted(i);
 
                  adapter.notifyDataSetChanged();*/
-           //  }
-       //  }
+        //  }
+        //  }
 
 
      /*   if (newsFeedList.isEmpty()) {
@@ -429,6 +581,13 @@ public class NewsFeedFragment extends Fragment {
         });*/
 
 
+    }
+
+    private void setListToAdapter(List<NewsFeedList> newsFeedList, String from) {
+        Log.v("", " from " + from);
+        adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
+        mRecyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     private int[] tabsValues() {
@@ -602,5 +761,6 @@ public class NewsFeedFragment extends Fragment {
         newsFeedApplication.hashMap.put(4 + "", list);
 
     }
+
 
 }
