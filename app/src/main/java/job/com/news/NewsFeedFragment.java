@@ -55,7 +55,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class NewsFeedFragment extends Fragment {
-    //changes reflect to be 05/03
+    //changes reflect to be 26/03
     public RecyclerView mRecyclerView;
     private ImageAdapter adapter;
     private NewsFeedApplication newsFeedApplication;
@@ -379,7 +379,7 @@ public class NewsFeedFragment extends Fragment {
 
     private void loadDatatoList(String categoryList) {
 
-        newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList,language));
+        newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList));
         Log.v("", "getNewsFeedList " + newsFeedList.toString());
         Log.v("", "getNewsFeedListSIZE " + newsFeedList.size());
 

@@ -186,12 +186,12 @@ public class NewsListTable {
         return listAll;
     }
 
-    public ArrayList<NewsFeedList> getNewsRecordsByCategory(String category,String lang) {
+    public ArrayList<NewsFeedList> getNewsRecordsByCategory(String category) {
         db = dbHelper.getWritableDatabase();
         // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
         ArrayList<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
         NewsFeedList model;
-        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY + " = '" + category + "' AND "+NewsListTable.LANGUAGE+" ='"+lang+"'";
+        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY + " = '" + category + "'" /*"' AND "+NewsListTable.LANGUAGE+" ='"+lang+"'"*/;
         Log.v("", "query1 " + query1);
         Cursor cursor = db.rawQuery(query1, null);
         if (cursor.getCount() > 0) {

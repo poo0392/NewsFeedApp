@@ -107,7 +107,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
                 android.R.layout.simple_spinner_item, environmentArray);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         environmentSpinner.setAdapter(dataAdapter);
-        environmentSpinner.setSelection(0);
+        environmentSpinner.setSelection(1);
 
         environmentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -119,10 +119,11 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
                     * own key in PRODUCTION_ENV
                     */
                      ((EditText) findViewById(R.id.editTextMerchantKey)).setText("0MQaQP");
-                  //  ((EditText) findViewById(R.id.editTextMerchantKey)).setText("WiCZgZAf");
+                  // ((EditText) findViewById(R.id.editTextMerchantKey)).setText("WiCZgZAf");
                 } else {
                     //set the test key in test environment
                     ((EditText) findViewById(R.id.editTextMerchantKey)).setText("gtKFFx");//
+                   // ((EditText) findViewById(R.id.editTextMerchantKey)).setText("WiCZgZAf");//
 
                 }
             }
@@ -172,12 +173,13 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
     public void navigateToBaseActivity(View view) {
 
         merchantKey = ((EditText) findViewById(R.id.editTextMerchantKey)).getText().toString();
-       // merchantKey = "WiCZgZAf";
+      merchantKey = "WiCZgZAf";
         String amount = ((EditText) findViewById(R.id.editTextAmount)).getText().toString();
         String email = ((EditText) findViewById(R.id.editTextEmail)).getText().toString();
-        //email = "siddheshwarbhise@yahoo.com";
-       // String salt = "fkv0nUwlRI";
-        String salt = "13p0PXZk";
+       email = "siddheshwarbhise@yahoo.com";
+      String salt = "fkv0nUwlRI";
+       // String salt = "13p0PXZk";
+       // String salt = "S8P9yS673D";
 
         String value = environmentSpinner.getSelectedItem().toString();
         int environment;
@@ -196,17 +198,19 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
          * For Test Environment, merchantKey = "gtKFFx"
          * For Production Environment, merchantKey should be your live key or for testing in live you can use "0MQaQP"
          */
-        /*mPaymentParams.setKey("WiCZgZAf"); //0MQaQP
-        mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price", 0)));
+        //mPaymentParams.setKey("WiCZgZAf"); //0MQaQP
+     /*   mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price", 0)));
         mPaymentParams.setProductInfo("product_info");
         mPaymentParams.setFirstName("Siddheshwar");
         mPaymentParams.setEmail("siddheshwarbhise@yahoo.com");*/
+      //  mPaymentParams.setFirstName("firstname");
+       // mPaymentParams.setEmail("@gmail.com");
 
-        mPaymentParams.setKey("0MQaQP"); //
+        mPaymentParams.setKey(merchantKey); //
         mPaymentParams.setAmount(String.valueOf(getIntent().getIntExtra("Price",0)));
         mPaymentParams.setProductInfo("product_info");
         mPaymentParams.setFirstName("firstname");
-        mPaymentParams.setEmail("@gmail.com");
+        mPaymentParams.setEmail(email);
 
 
         /*
@@ -248,7 +252,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
 
         //TODO It is recommended to generate hash from server only. Keep your key and salt in server side hash generation code.
         //if(null == salt) {
-       // generateHashFromServer(mPaymentParams);
+        //generateHashFromServer(mPaymentParams);
         //}else {
 
         /**
@@ -411,8 +415,8 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
             try {
 
                 //TODO Below url is just for testing purpose, merchant needs to replace this with their server side hash generation url
-                //URL url = new URL("https://payu.herokuapp.com/get_hash");
-                URL url = new URL("http://thanehousingfederation.com/newsapp/payuhash.php");
+                URL url = new URL("https://payu.herokuapp.com/get_hash");
+               // URL url = new URL("http://thanehousingfederation.com/newsapp/payuhash.php");
 
 
                 // get the payuConfig first
