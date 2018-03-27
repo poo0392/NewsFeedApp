@@ -115,11 +115,12 @@ public class BackgroundService extends Service {
         long last_id = newsListTable.getLastId();
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
+        RequestBody paramAllNews = RequestBody.create(MediaType.parse("text/plain"), "1");
         RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
 
         Log.v("", " memberToken " + memberToken);
 
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id, paramAllNews);
        // Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override

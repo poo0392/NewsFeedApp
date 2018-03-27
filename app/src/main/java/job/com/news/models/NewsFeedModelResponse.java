@@ -15,8 +15,14 @@ public class NewsFeedModelResponse {
     @SerializedName("status")
     @Expose
     private Integer status;
-    // @SerializedName("description")
-    // @Expose
+
+
+    @SerializedName("code")
+    @Expose
+    private String code;
+
+    @SerializedName("description")
+    @Expose
     private String description;
 
 
@@ -25,6 +31,7 @@ public class NewsFeedModelResponse {
     // private NewsFeedList newsFeedList;
     private List<NewsFeedList> newsFeedList;
     private List<NewsFeedListParcable> newsFeedListParc;
+
     public List<NewsFeedListParcable> getNewsFeedListParc() {
         return newsFeedListParc;
     }
@@ -32,7 +39,6 @@ public class NewsFeedModelResponse {
     public void setNewsFeedListParc(List<NewsFeedListParcable> newsFeedListParc) {
         this.newsFeedListParc = newsFeedListParc;
     }
-
 
 
     public List<NewsFeedList> getNewsFeedList() {
@@ -61,6 +67,14 @@ public class NewsFeedModelResponse {
         this.description = description;
     }
 
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
    /* public NewsFeedList getNewsFeedList() {
         return newsFeedList;
     }

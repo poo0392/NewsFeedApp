@@ -38,7 +38,7 @@ public class MyFragmentPageAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
 
         //return myFragments.get(position);
-        return AdminRequestsListFragment.newInstance(position);
+        return RequestsListFragment.newInstance(position);
 
     }
 

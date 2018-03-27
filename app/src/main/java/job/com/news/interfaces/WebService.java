@@ -85,7 +85,8 @@ public interface WebService {
     Call<NewsFeedModelResponse> getNewsListRequest(@Part("member_token") RequestBody member_token,
                                                    @Part("member_id") RequestBody member_id,
                                                    @Part("news_status") RequestBody news_status,
-                                                   @Part("last_id") long last_id);
+                                                   @Part("last_id") long last_id,
+                                                   @Part("all_news") RequestBody paramAllNews);
 
 
 

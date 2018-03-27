@@ -450,6 +450,7 @@ public class NewsFeedFragment extends Fragment {
         String news_status = "";
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
+        RequestBody paramAllNews = RequestBody.create(MediaType.parse("text/plain"), "1");
         RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
 
 
@@ -458,7 +459,7 @@ public class NewsFeedFragment extends Fragment {
         Log.v("", " last_id " + "" + last_id);
         Log.v("", " last_id " + "" + news_status);
 
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id);
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id, paramAllNews);
         //  Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, last_id);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override

@@ -112,7 +112,7 @@ public class RequestStatusHomeFragment extends Fragment {
             b.putInt("position", i);
             // b.putParcelableArrayList("News",);
 
-            fragments.add(Fragment.instantiate(mContext, AdminRequestsListFragment.class.getName(), b));//AdminNewsListFragment
+            fragments.add(Fragment.instantiate(mContext, RequestsListFragment.class.getName(), b));//AdminNewsListFragment
         }
 
         return fragments;

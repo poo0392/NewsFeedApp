@@ -36,13 +36,13 @@ public class NewsDetailScreen extends AppCompatActivity {
     //changes added on 08/03
     CollapsingToolbarLayout collapsingToolbar;
     Toolbar mToolbar;
-    List<NewsFeedList> mNewsFeedList,newsListByNewsId;
+    List<NewsFeedList> mNewsFeedList, newsListByNewsId;
     List<RegisterMember> memberList;
     List<NewsImages> imagesList;
     NewsFeedApplication newsFeedApplication;
-    TextView txtTitle, txtNewsdesc, date, txt_post_time, txt_post_person_name;
+    TextView txtTitle, txtNewsdesc, date, txt_post_time, txt_post_person_name, txt_city;
     ImageView ivBackground;
-    int clickedPosition,newsId;
+    int clickedPosition, newsId;
     String category;
     NewsListTable newsListTable;
     MemberTable memberTable;
@@ -77,12 +77,12 @@ public class NewsDetailScreen extends AppCompatActivity {
 
 
     private void setData() {
-       // mNewsFeedList = newsListTable.getAllNewsRecords();
-       // mNewsFeedList = newsListTable.getNewsRecordsByCategory(category);
+        // mNewsFeedList = newsListTable.getAllNewsRecords();
+        // mNewsFeedList = newsListTable.getNewsRecordsByCategory(category);
 
         newsListByNewsId = newsListTable.getRecordById(newsId);
         Log.v("db ", "getNewsFeedList " + newsListByNewsId.toString());
-      //  for(int k=0;k<newsListByNewsId.size();k++)
+        //  for(int k=0;k<newsListByNewsId.size();k++)
         memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsListByNewsId.get(0).getMember_id()));
 
 
@@ -90,6 +90,7 @@ public class NewsDetailScreen extends AppCompatActivity {
         String member_name = memberList.get(0).getFirstName();
 
         txtTitle.setText(newsListByNewsId.get(0).getNews_title());
+        txt_city.setText(newsListByNewsId.get(0).getCity());
         txtNewsdesc.setText(newsListByNewsId.get(0).getNews_description());
         txt_post_person_name.setText(member_name);
         collapsingToolbar.setTitle(newsListByNewsId.get(0).getCategory());
@@ -102,12 +103,12 @@ public class NewsDetailScreen extends AppCompatActivity {
             image = imagesList.get(0).getNews_pic();
             load_image = Constant.IMAGE_URL + "/" + image;
             Log.v("Adapter ", "load_image" + load_image);
-         //   new DownloadImageTask(ivBackground).execute(load_image);
+            //   new DownloadImageTask(ivBackground).execute(load_image);
 
-        // Hide progress bar on successful load
-        Picasso.with(this).load(load_image)
-                .placeholder(R.drawable.default_no_image)
-                .into(ivBackground/*, new com.squareup.picasso.Callback() {
+            // Hide progress bar on successful load
+            Picasso.with(this).load(load_image)
+                    .placeholder(R.drawable.default_no_image)
+                    .into(ivBackground/*, new com.squareup.picasso.Callback() {
                     @Override
                     public void onSuccess() {
                         if (progressBar != null) {
@@ -120,7 +121,7 @@ public class NewsDetailScreen extends AppCompatActivity {
 
                     }
                 }*/);
-        }else{
+        } else {
             ivBackground.setImageResource(R.drawable.default_no_image);
         }
        /* Picasso.with(this)
@@ -165,10 +166,10 @@ public class NewsDetailScreen extends AppCompatActivity {
     private void getIntentData() {
         Intent intent = getIntent();
         clickedPosition = Integer.parseInt(intent.getStringExtra("itemPosition"));
-        newsId=Integer.parseInt(intent.getStringExtra("newsId"));
-        category=intent.getStringExtra("category");
+        newsId = Integer.parseInt(intent.getStringExtra("newsId"));
+        category = intent.getStringExtra("category");
 
-        Log.v("NewsDetailScreen ", "clickedPosition=" + clickedPosition+", newsId="+newsId+", category="+category);
+        Log.v("NewsDetailScreen ", "clickedPosition=" + clickedPosition + ", newsId=" + newsId + ", category=" + category);
     }
 
     private void setAppToolbar() {
@@ -188,8 +189,9 @@ public class NewsDetailScreen extends AppCompatActivity {
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsingToolbarLayout);
         // collapsingToolbar.setTitle("Sports");
 
-        progressBar=(ProgressBar)findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         txtTitle = (TextView) findViewById(R.id.details_title);
+        txt_city = (TextView) findViewById(R.id.txt_city);
         txtNewsdesc = (TextView) findViewById(R.id.details_desc);
         txt_post_time = (TextView) findViewById(R.id.txt_post_time);
         txt_post_person_name = (TextView) findViewById(R.id.txt_post_person_name);
@@ -214,12 +216,14 @@ public class NewsDetailScreen extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
     }
+
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
         public DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
+
         /* @Override
          protected void onPreExecute() {
              super.onPreExecute();
@@ -241,11 +245,11 @@ public class NewsDetailScreen extends AppCompatActivity {
         }
 
         protected void onPostExecute(Bitmap result) {
-            Log.v("","result "+result);
+            Log.v("", "result " + result);
             //  mProgressDialog.dismiss();
-            if(result!=null) {
+            if (result != null) {
                 bmImage.setImageBitmap(result);
-            }else{
+            } else {
                 bmImage.setImageResource(R.drawable.default_no_image);
             }
         }

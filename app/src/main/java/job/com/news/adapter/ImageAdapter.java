@@ -64,6 +64,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     int num = 1;
     String image;
     String load_image, comment;
+    View viewAppDec;
 
 
     // The minimum amount of items to have below your current scroll position
@@ -157,11 +158,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
                     comment = newsFeedList.get(position).getComment();
                     Log.v("Adapter ", "comment " + comment);
-                    if (!comment.equals("")) {
+
+                    if (comment == null) {
+                        imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
+                    } else if (comment.equals("") || comment.equals("\"\"")) {
+                        imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
+                    } else {
                         imageViewHolder.ll_reject_cmt.setVisibility(View.VISIBLE);
                         imageViewHolder.txt_reject_cmt.setText(comment);
-                    } else {
-                        imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
                     }
 
                     imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
@@ -169,18 +173,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
                     imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
                 }
-               /* switch (from[1]) {
-                    case "pending":
-                        imageViewHolder.ll_approve_or_dec.setVisibility(View.VISIBLE);
-                        break;
-                    case "approved":
-                        imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
-                        break;
-                    case "rejected":
-                        imageViewHolder.ll_approve_or_dec.setVisibility(View.VISIBLE);
-                        break;
 
-                }*/
 
             } else {
                 imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
@@ -361,6 +354,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             //callback.onItemClicked(pos,imageViewHolder.ll_decline);
 
+            if (from[0].equals("admin")) {
+                callback.onItemClicked(position, viewAppDec);
+            }
+
 
         } else {
             ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
@@ -444,13 +441,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ll_decline = (LinearLayout) itemView.findViewById(R.id.ll_decline);
             ll_reject_cmt = (LinearLayout) itemView.findViewById(R.id.ll_reject_cmt);
 
-            if (from[0].equals("admin_news_list")) {
-                callback.onItemClicked(pos, itemView);
-                //  int newsId = newsFeedList.get(pos).getId();
-                //  Log.v(" Adapter ","newsId "+newsId);
-            }
-            // itemView.setOnClickListener(this);
-            // itemView.setOnLongClickListener(this);
+
+            viewAppDec=itemView;
+
         }
 
 

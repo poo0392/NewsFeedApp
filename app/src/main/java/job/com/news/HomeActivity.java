@@ -110,7 +110,7 @@ public class HomeActivity extends AppCompatActivity
     NewsImagesTable newsImagesTable;
     CategoryMasterTable categoryMasterTable;
     SubCategoryTable subCategoryTable;
-    private List<NewsFeedList> newsFeedList = new ArrayList<>();
+    private List<NewsFeedList> newsFeedList;
     private List<NewsFeedList> newsFeedListNew;
     private List<NewsFeedList> ListNew, catList;
     private List<NewsFeedListParcable> newsFeedListParc = new ArrayList<>();
@@ -284,19 +284,25 @@ public class HomeActivity extends AppCompatActivity
                 .build();
 
         String news_status = "";
+        String all_news = "";
         WebService webService = retrofit.create(WebService.class);
         long last_id = newsListTable.getLastId();
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
+        RequestBody paramAllNews = RequestBody.create(MediaType.parse("text/plain"), "1");
         RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
 
+        HashMap<String, String> newsRequestList = new HashMap<>();
+        newsRequestList.put("member_token", memberToken);
+        newsRequestList.put("member_id", String.valueOf(memberId));
+        newsRequestList.put("last_id", String.valueOf(last_id));
+        newsRequestList.put("all_news", "1");
+        newsRequestList.put("news_status", news_status);
 
-        Log.v("", " memberToken " + memberToken);
-        Log.v("", " memberId " + memberId);
-        Log.v("", " last_id " + last_id);
-        Log.v("", " news_status " + news_status);
+        Log.v("callNewsListAPI", " newsRequestList " + newsRequestList);
 
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id);
+
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id, paramAllNews);
         //   Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId,id);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
@@ -316,40 +322,46 @@ public class HomeActivity extends AppCompatActivity
                     NewsFeedModelResponse serverResponse = response.body();
                     jsonResponse = new Gson().toJson(response.body());
                     Log.v(TAG + " callNewsListAPI ", "response " + jsonResponse);
+                    String code = serverResponse.getCode();
+                    String desc = serverResponse.getDescription();
                     if (serverResponse.getStatus() == 0) {
+                        if (serverResponse.getNewsFeedList() == null) {
+                            Log.v("callNewsListAPI ", "newsFeedList " + "null");
+                            Toast.makeText(mContext, "Error in Response. Please check after some time.", Toast.LENGTH_SHORT).show();
+                        } else {
 
-                        try {
-                            newsFeedList = serverResponse.getNewsFeedList();
-                            //    Log.v("", "newsFeedList " + newsFeedList.toString());
-
-                            NewsFeedList model;
                             try {
-                                RegisterMember member = new RegisterMember();
-                                List<NewsImages> imagesList = new ArrayList<>();
-                                NewsImages imagesModel = new NewsImages();
-                                for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
-                                    if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
+                                newsFeedList = serverResponse.getNewsFeedList();
+                                //    Log.v("", "newsFeedList " + newsFeedList.toString());
+
+                                NewsFeedList model;
+                                try {
+                                    RegisterMember member = new RegisterMember();
+                                    List<NewsImages> imagesList = new ArrayList<>();
+                                    NewsImages imagesModel = new NewsImages();
+                                    for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
+                                        if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
 
 
-                                        model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
-                                                serverResponse.getNewsFeedList().get(i).getNews_uuid(),
-                                                serverResponse.getNewsFeedList().get(i).getCategory(),
-                                                serverResponse.getNewsFeedList().get(i).getCategory_id(),
-                                                serverResponse.getNewsFeedList().get(i).getSub_category(),
-                                                serverResponse.getNewsFeedList().get(i).getSub_category_id(),
-                                                serverResponse.getNewsFeedList().get(i).getCountry(),
-                                                serverResponse.getNewsFeedList().get(i).getState(),
-                                                serverResponse.getNewsFeedList().get(i).getCity(),
-                                                serverResponse.getNewsFeedList().get(i).getNews_title(),
-                                                serverResponse.getNewsFeedList().get(i).getNews_description(),
-                                                serverResponse.getNewsFeedList().get(i).getLanguage(),
-                                                serverResponse.getNewsFeedList().get(i).getComment(),
-                                                serverResponse.getNewsFeedList().get(i).getLike_count(),
-                                                serverResponse.getNewsFeedList().get(i).getMember_id(),
-                                                serverResponse.getNewsFeedList().get(i).getCreated_at(),
-                                                serverResponse.getNewsFeedList().get(i).getNews_images(),
-                                                serverResponse.getNewsFeedList().get(i).getMember()
-                                        );
+                                            model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
+                                                    serverResponse.getNewsFeedList().get(i).getNews_uuid(),
+                                                    serverResponse.getNewsFeedList().get(i).getCategory(),
+                                                    serverResponse.getNewsFeedList().get(i).getCategory_id(),
+                                                    serverResponse.getNewsFeedList().get(i).getSub_category(),
+                                                    serverResponse.getNewsFeedList().get(i).getSub_category_id(),
+                                                    serverResponse.getNewsFeedList().get(i).getCountry(),
+                                                    serverResponse.getNewsFeedList().get(i).getState(),
+                                                    serverResponse.getNewsFeedList().get(i).getCity(),
+                                                    serverResponse.getNewsFeedList().get(i).getNews_title(),
+                                                    serverResponse.getNewsFeedList().get(i).getNews_description(),
+                                                    serverResponse.getNewsFeedList().get(i).getLanguage(),
+                                                    serverResponse.getNewsFeedList().get(i).getComment(),
+                                                    serverResponse.getNewsFeedList().get(i).getLike_count(),
+                                                    serverResponse.getNewsFeedList().get(i).getMember_id(),
+                                                    serverResponse.getNewsFeedList().get(i).getCreated_at(),
+                                                    serverResponse.getNewsFeedList().get(i).getNews_images(),
+                                                    serverResponse.getNewsFeedList().get(i).getMember()
+                                            );
                                        /* model.setId(serverResponse.getNewsFeedList().get(i).getId());
                                         model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
                                         model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
@@ -365,49 +377,54 @@ public class HomeActivity extends AppCompatActivity
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
                                         model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
 */
-                                        // for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMember(); k++) {
-                                        if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
-                                            member.setMemberId(model.getMember().getId());
-                                            //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
-                                            member.setFirstName(model.getMember().getFirstName().trim());
-                                            member.setLastName(model.getMember().getLastName().trim());
-                                            member.setEmailId(model.getMember().getEmailId().trim());
-                                            member.setMobile(model.getMember().getMobile());
+                                            // for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMember(); k++) {
+                                            if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
+                                                member.setMemberId(model.getMember().getId());
+                                                //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
+                                                member.setFirstName(model.getMember().getFirstName().trim());
+                                                member.setLastName(model.getMember().getLastName().trim());
+                                                member.setEmailId(model.getMember().getEmailId().trim());
+                                                member.setMobile(model.getMember().getMobile());
 
-                                            memberTable.insertMembers(member);
+                                                memberTable.insertMembers(member);
 
-                                        }
-                                        // }
-                                        //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
-                                        if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
-                                            for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getNews_images().size(); j++) {
-                                                imagesModel.setId(model.getNews_images().get(j).getId());
-                                                imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
-                                                imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
-                                                imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
-                                                imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
-
-                                                imagesList.add(imagesModel);
-//changes 06_03
-                                                newsImagesTable.insertNewsImages(imagesModel);
                                             }
+                                            // }
+                                            //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
+                                            if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
+                                                for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getNews_images().size(); j++) {
+                                                    imagesModel.setId(model.getNews_images().get(j).getId());
+                                                    imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
+                                                    imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
+                                                    imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
+                                                    imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
+
+                                                    imagesList.add(imagesModel);
+
+                                                    newsImagesTable.insertNewsImages(imagesModel);
+                                                }
+                                            }
+
+                                            newsListTable.insertNewsList(model);
+
                                         }
-
-                                        newsListTable.insertNewsList(model);
-
                                     }
-                                }
 
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
 
-                        //setListeners();
-                        syncNewsList();
-                        // loadCategoryUI();
+                            //setListeners();
+                           // syncNewsList();
+                            // loadCategoryUI();
+                        }
+                    } else {
+                        Log.v("Failure ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
+                        //setFailedAlertDialog(HomeActivity.this, serverResponse.getStatus().toString(), "Failure");
+                        Toast.makeText(mContext, "Error in Response ", Toast.LENGTH_SHORT).show();
 
                     }
                 }
@@ -493,6 +510,7 @@ public class HomeActivity extends AppCompatActivity
         categoryMasterTable = new CategoryMasterTable(mContext);
         subCategoryTable = new SubCategoryTable(mContext);
         newsImagesTable = new NewsImagesTable(mContext);
+        newsFeedList = new ArrayList<>();
         categoryList = new ArrayList<>();
         catDupList = new ArrayList<>();
         newsFeedApplication = NewsFeedApplication.getApp();
@@ -573,9 +591,9 @@ public class HomeActivity extends AppCompatActivity
                 //Log.v(""," group "+group);
                 if (group.equals("Home")) {
                     fragment = new HomeFragment();
-                } else if (group.equals("Requests")) {
-                    callRequestStatusHomeFragment();
-                }
+                } /*else if (group.equals("Requests")) {
+
+                }*/
 
                 //else if()
 
@@ -627,21 +645,22 @@ public class HomeActivity extends AppCompatActivity
                                         int groupPosition, int childPosition, long id) {
                 // TODO Auto-generated method stub
                 // Temporary code:
-                String group_name = listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
-                Log.v("", "group_name " + group_name);
+                String child_name = listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
+                Log.v("onChildClick ", "child_name " + child_name);
 
 
-                /*if(group_name.equals("Pending Requests")){
+                if (child_name.equals("Pending Request")) {
+                    callRequestStatusHomeFragment();
+                }
 
-                }else if(group_name.equals("Requests Status")){
-
-                }*/
-                // till here
+                    // till here
                /* Toast.makeText(
                         mContext,
                         listDataHeader.get(groupPosition) + " : " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
                         .show();*/
-                return false;
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                    return false;
             }
         });
     }

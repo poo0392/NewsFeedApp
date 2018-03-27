@@ -1,5 +1,6 @@
 package job.com.news;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -32,6 +33,7 @@ import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -57,7 +59,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Zafar.Hussain on 19/03/2018.
  */
 
-public class AdminRequestsListFragment extends Fragment {
+public class RequestsListFragment extends Fragment {
+    private static final String TAG = "RequestsListFragment";
     Context mContext;
     public RecyclerView mRecyclerView;
     private ImageAdapter adapter;
@@ -70,14 +73,14 @@ public class AdminRequestsListFragment extends Fragment {
     List<NewsFeedList> newsFeedList;
     ProgressDialog mProgressDialog;
     ItemClickListener clickListener;
-    int pos, newsId;
+    int newsId;
     SendMessage SM;
     boolean wrapInScrollView = true;
     LinearLayout ll_news_feed;
 
 
     public static Fragment newInstance(int position) {
-        AdminRequestsListFragment fragment = new AdminRequestsListFragment();
+        RequestsListFragment fragment = new RequestsListFragment();
         Bundle args = new Bundle();
         args.putInt("position", position);
         fragment.setArguments(args);
@@ -101,7 +104,7 @@ public class AdminRequestsListFragment extends Fragment {
 
         newsFeedList = new ArrayList<>();
         mRecyclerView = (RecyclerView) view.findViewById(R.id.news_feed_recycler_view);
-        ll_news_feed=(LinearLayout)view.findViewById(R.id.ll_news_feed);
+        ll_news_feed = (LinearLayout) view.findViewById(R.id.ll_news_feed);
         layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
     }
@@ -132,6 +135,7 @@ public class AdminRequestsListFragment extends Fragment {
 
     }
 
+    @SuppressLint("LongLogTag")
     private void callNewsListAPI(String memberToken, int memberId, String news_status) {
         mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setMessage("Loading...");
@@ -151,16 +155,23 @@ public class AdminRequestsListFragment extends Fragment {
 
         WebService webService = retrofit.create(WebService.class);
         //long id= newsListTable.getLastId();
+        String all_news = "0";
+        long last_id = 0;
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
+        RequestBody paramAllNews = RequestBody.create(MediaType.parse("text/plain"), all_news);
         RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
 
-        Log.v("", " memberToken " + memberToken);
-        Log.v("", " memberId " + memberId);
-        Log.v("", " last_id " + 0);
-        Log.v("", " news_status " + this.news_status);
+        HashMap<String, String> newsRequestList = new HashMap<>();
+        newsRequestList.put("member_token", memberToken);
+        newsRequestList.put("member_id", String.valueOf(memberId));
+        newsRequestList.put("last_id", String.valueOf(last_id));
+        newsRequestList.put("all_news", all_news);
+        newsRequestList.put("news_status", news_status);
 
-        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, 0);
+        Log.v(TAG + " callNewsListAPI", " newsRequestList " + newsRequestList);
+
+        Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id, paramAllNews);
         //  Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, 0);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
@@ -171,14 +182,14 @@ public class AdminRequestsListFragment extends Fragment {
                 if (response.isSuccessful()) {
                     NewsFeedModelResponse serverResponse = response.body();
                     String jsonResponse = new Gson().toJson(response.body());
-                    Log.v("callNewsListAPI ", "response " + jsonResponse);
+                    Log.v(TAG + "callNewsListAPI ", "response " + jsonResponse);
                     if (serverResponse.getStatus() == 0) {
 
                         try {
 
                             try {
                                 newsFeedList = serverResponse.getNewsFeedList();
-                                loadDatatoList(newsFeedList,"response");
+                                loadDatatoList(newsFeedList, "response");
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -204,13 +215,15 @@ public class AdminRequestsListFragment extends Fragment {
         });
     }
 
-    private void loadDatatoList(List<NewsFeedList> newsList,String from) {
-        Log.v("loadDatatoList "," from "+from);
-        if (!role.equals("1")) {
+    @SuppressLint("LongLogTag")
+    private void loadDatatoList(List<NewsFeedList> newsList, String from) {
+        Log.v(TAG + "loadDatatoList ", " from " + from);
+        Log.v(TAG + "loadDatatoList ", " role " + role);
+        if (role.equals("0")) {
             adapter = new ImageAdapter(getActivity(), newsList, mRecyclerView, "user" + ":" + news_status, 0);
             mRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-        } else {
+        } else if (role.equals("1")) {
             adapter = new ImageAdapter(getActivity(), newsList, mRecyclerView, "admin" + ":" + news_status, 0);
             mRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -218,27 +231,26 @@ public class AdminRequestsListFragment extends Fragment {
 
             adapter.setOnButtonClick(new onButtonClick() {
                 @Override
-                public void onItemClicked(int position, View view) {
-                    pos = position;
-                    Log.v(" ", "position 11 " + pos);
+                public void onItemClicked(final int position, View view) {
+
 
                     LinearLayout ll_approve_news = (LinearLayout) view.findViewById(R.id.ll_aprove);
                     LinearLayout ll_decline_news = (LinearLayout) view.findViewById(R.id.ll_decline);
 
                     ll_decline_news.setOnClickListener(new View.OnClickListener() {
+                        @SuppressLint("LongLogTag")
                         @Override
                         public void onClick(View v) {
-                            Log.v("ll_decline_news ", "position 22 " + pos);
-                            newsId = AdminRequestsListFragment.this.newsFeedList.get(pos).getId();
-                            Log.v("ll_decline_news ", "newsId " + newsId);
+
+                            newsId = RequestsListFragment.this.newsFeedList.get(position).getId();
+                            Log.v(TAG + " ll_decline_news ", "newsId " + newsId);
 
                             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                             View customView = inflater.inflate(R.layout.custom_reject_view, null);
                             TextView txt_news_title = (TextView) customView.findViewById(R.id.txt_news_title);
                             final EditText edt_comment = (EditText) customView.findViewById(R.id.edt_comment);
 
-                            txt_news_title.setText(AdminRequestsListFragment.this.newsFeedList.get(pos).getNews_title());
-                            comment = edt_comment.getText().toString();
+                            txt_news_title.setText(RequestsListFragment.this.newsFeedList.get(position).getNews_title());
 
                             new MaterialStyledDialog.Builder(mContext)
                                     //.setDescription()
@@ -250,7 +262,8 @@ public class AdminRequestsListFragment extends Fragment {
                                         @Override
                                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                             news_status = "rejected";
-
+                                            comment = edt_comment.getText().toString();
+                                            Log.v("ll_decline_news", "comment " + comment);
                                             callUpdateNewsStatus(memberToken, memberId, newsId, news_status, comment);
                                         }
                                     })
@@ -265,11 +278,11 @@ public class AdminRequestsListFragment extends Fragment {
                     });
 
                     ll_approve_news.setOnClickListener(new View.OnClickListener() {
+                        @SuppressLint("LongLogTag")
                         @Override
                         public void onClick(View v) {
-                            Log.v("ll_approve_news ", "position 22 " + pos);
-                            newsId = AdminRequestsListFragment.this.newsFeedList.get(pos).getId();
-                            Log.v("ll_approve_news ", "newsId " + newsId);
+                            newsId = RequestsListFragment.this.newsFeedList.get(position).getId();
+                            Log.v(TAG + "ll_approve_news ", "newsId " + newsId);
 
                             new MaterialStyledDialog.Builder(mContext)
                                     .setDescription("Do you want to approve this news?")
@@ -282,7 +295,7 @@ public class AdminRequestsListFragment extends Fragment {
                                             news_status = "approved";
                                             //   callNewsListAPI(memberToken, memberId, news_status);
                                             callUpdateNewsStatus(memberToken, memberId, newsId, news_status, "");
-                                            Log.v("ll_approve_news ", "position 33 " + pos);
+                                            Log.v("ll_approve_news ", "position 33 " + position);
 
                                         }
                                     })
@@ -301,8 +314,9 @@ public class AdminRequestsListFragment extends Fragment {
         }
     }
 
+    @SuppressLint("LongLogTag")
     private void callUpdateNewsStatus(final String memberToken, final int memberId, int newsId, final String news_status, String comment) {
-        Log.v("callUpdateNewsStatus", "news_status " + news_status);
+        Log.v(TAG + "callUpdateNewsStatus", "news_status " + news_status);
         mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setMessage("Loading...");
         mProgressDialog.show();
@@ -324,6 +338,16 @@ public class AdminRequestsListFragment extends Fragment {
         RequestBody paramNewsId = RequestBody.create(MediaType.parse("text/plain"), "" + newsId);
         RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
 
+
+        HashMap<String, String> updateNewsRequestList = new HashMap<>();
+        updateNewsRequestList.put("member_token", memberToken);
+        updateNewsRequestList.put("member_id", String.valueOf(memberId));
+        updateNewsRequestList.put("news_id", String.valueOf(newsId));
+        updateNewsRequestList.put("news_status", news_status);
+        updateNewsRequestList.put("comment", comment);
+
+        Log.v("callUpdateNewsStatus", " updateNewsRequestList " + updateNewsRequestList);
+
         Call<NewsFeedModelResponse> serverResponse = webService.addAdminNewsStatus(paramMemberToken, paramMemberId, paramNewsId, status, comment);
 
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
@@ -339,7 +363,7 @@ public class AdminRequestsListFragment extends Fragment {
                         try {
                             Toast.makeText(mContext, "Success", Toast.LENGTH_SHORT).show();
                             // callNewsListAPI(memberToken,memberId,news_status);
-                           /* AdminRequestsListFragment frg = new AdminRequestsListFragment();
+                           /* RequestsListFragment frg = new RequestsListFragment();
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
                             Bundle b = new Bundle();
                             b.putInt("position", 0);
@@ -513,9 +537,10 @@ public class AdminRequestsListFragment extends Fragment {
         // NewsFeedFragment nf = new NewsFeedFragment();
         //nf.loadDataFilter(filteredList, categoryFilter);
         //  loadDataNew(filteredList);
-        loadDatatoList(filteredList,"filter");
+        loadDatatoList(filteredList, "filter");
         return filteredList;
     }
+
     public void hideKeyboard() {
         View view = getActivity().getCurrentFocus();
         if (view != null) {
@@ -523,6 +548,7 @@ public class AdminRequestsListFragment extends Fragment {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
     private void setItemsVisibility(Menu menu, MenuItem exception, boolean visible) {
         for (int i = 0; i < menu.size(); ++i) {
             MenuItem item = menu.getItem(i);

@@ -136,7 +136,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:layout_toRightOf="@+id/view_city"
-                        android:text="Mumbai"
+                        android:text=""
                         android:textSize="13sp" />
                 </RelativeLayout>
 
