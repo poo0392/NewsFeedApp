@@ -53,6 +53,12 @@
 
         <service android:name=".service.BackgroundService" />
         <receiver android:name=".service.AlarmReceiver"></receiver>
+
+        <receiver android:name=".service.ConnectivityChangeReciever">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

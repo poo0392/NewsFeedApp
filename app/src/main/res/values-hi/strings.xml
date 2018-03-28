@@ -2,6 +2,7 @@
 <resources>
 
     <string name="home_toolbar_title">समाचार फ़ीड</string>
+    <string name="profile_toolbar_title">प्रोफाइल</string>
 
     <!--Login-->
     <string name="prompt_username">ईमेल</string>

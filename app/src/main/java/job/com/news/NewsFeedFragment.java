@@ -48,6 +48,7 @@ import job.com.news.models.NewsFeedList;
 import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
+import job.com.news.service.ConnectivityChangeReciever;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
@@ -123,7 +124,7 @@ public class NewsFeedFragment extends Fragment {
 
         mContext = getActivity();
         langSelection = new SessionManager(mContext);
-
+        ConnectivityChangeReciever.enableReceiver(mContext);
         initializeComp();
         getPrefData();
         attachViews(view);
@@ -136,13 +137,15 @@ public class NewsFeedFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        menu.findItem(R.id.action_search).setVisible(true);
+        menu.findItem(R.id.action_create_article).setVisible(true);
+        menu.findItem(R.id.action_change_language).setVisible(true);
+        menu.findItem(R.id.action_change_pwd).setVisible(true);
+        menu.findItem(R.id.action_logout).setVisible(true);
         setSearchViewMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
+
 
     public void setSearchViewMenu(final Menu menu) {
         final MenuItem searchItem = menu.findItem(R.id.action_search);
@@ -584,7 +587,7 @@ public class NewsFeedFragment extends Fragment {
 
     }
 
-    private void setListToAdapter(List<NewsFeedList> newsFeedList, String from) {
+    public void setListToAdapter(List<NewsFeedList> newsFeedList, String from) {
         Log.v("", " from " + from);
         adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
         mRecyclerView.setAdapter(adapter);

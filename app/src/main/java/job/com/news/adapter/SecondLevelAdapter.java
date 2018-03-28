@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -53,11 +54,18 @@ public class SecondLevelAdapter extends BaseExpandableListAdapter {
 
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        convertView = inflater.inflate(R.layout.list_child, null);
-        TextView text = (TextView) convertView.findViewById(R.id.lblListItem);
+        convertView = inflater.inflate(R.layout.list_child_child, null);
+        ImageView ivGroupIndicator = (ImageView) convertView.findViewById(R.id.ivGroupIndicator);
+        TextView text = (TextView) convertView.findViewById(R.id.lbl_ChildHeader);
         String groupText = getGroup(groupPosition).toString();
         text.setText(groupText);
-
+        if (groupText.equals("Small Classified")) {
+            ivGroupIndicator.setVisibility(View.VISIBLE);
+        } else if (groupText.equals("Career Related")) {
+            ivGroupIndicator.setVisibility(View.VISIBLE);
+        }else{
+            ivGroupIndicator.setVisibility(View.GONE);
+        }
         return convertView;
     }
 

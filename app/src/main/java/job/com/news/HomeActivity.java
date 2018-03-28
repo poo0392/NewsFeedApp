@@ -268,7 +268,7 @@ public class HomeActivity extends AppCompatActivity
         }*/
     }
 
-    private void callNewsListAPI(String memberToken, int memberId) {
+    public void callNewsListAPI(String memberToken, int memberId) {
         mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setMessage("Loading...");
         mProgressDialog.show();
@@ -362,21 +362,7 @@ public class HomeActivity extends AppCompatActivity
                                                     serverResponse.getNewsFeedList().get(i).getNews_images(),
                                                     serverResponse.getNewsFeedList().get(i).getMember()
                                             );
-                                       /* model.setId(serverResponse.getNewsFeedList().get(i).getId());
-                                        model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
-                                        model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
-                                        model.setCountry(serverResponse.getNewsFeedList().get(i).getCountry());
-                                        model.setState(serverResponse.getNewsFeedList().get(i).getState());
-                                        model.setCity(serverResponse.getNewsFeedList().get(i).getCity());
-                                        model.setNews_title(serverResponse.getNewsFeedList().get(i).getNews_title());
-                                        model.setNews_description(serverResponse.getNewsFeedList().get(i).getNews_description());
-                                        //  model.setNews_pic(serverResponse.getNewsFeedList().get(i).getNews_pic());
-                                        model.setNews_images(serverResponse.getNewsFeedList().get(i).getNews_images());
-                                        model.setLike_count(serverResponse.getNewsFeedList().get(i).getLike_count());
-                                        model.setMember_id(serverResponse.getNewsFeedList().get(i).getMember_id());
-                                        model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
-                                        model.setMember(serverResponse.getNewsFeedList().get(i).getMember());
-*/
+
                                             // for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMember(); k++) {
                                             if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
                                                 member.setMemberId(model.getMember().getId());
@@ -418,7 +404,7 @@ public class HomeActivity extends AppCompatActivity
                             }
 
                             //setListeners();
-                           // syncNewsList();
+                            // syncNewsList();
                             // loadCategoryUI();
                         }
                     } else {
@@ -535,22 +521,7 @@ public class HomeActivity extends AppCompatActivity
         enableExpandableList();
         // navigationView.setNavigationItemSelectedListener(this);
 
-       /* mRecyclerView = (RecyclerView) findViewById(R.id.news_feed_recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-        mRecyclerView.setLayoutManager(layoutManager);
-        setData();*/
 
-
-        /*addNewsFeedItems();
-        mAdapter = new HomeDashboardAdapter(HomeActivity.this, mNewsFeedList);
-        mRecyclerView.setAdapter(mAdapter);*/
-        // adapter = new ImageAdapter(HomeActivity.this);
-        // mRecyclerView.setAdapter(adapter);
-
-        //
-
-
-        //
     }
 
     private void getPrefData() {
@@ -586,17 +557,18 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v,
                                         int groupPosition, long id) {
-                Toast.makeText(mContext, "Group Clicked " + listDataHeader.get(groupPosition), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, "Group Clicked " + listDataHeader.get(groupPosition), Toast.LENGTH_SHORT).show();
                 String group = listDataHeader.get(groupPosition);
                 //Log.v(""," group "+group);
                 if (group.equals("Home")) {
                     fragment = new HomeFragment();
-                } /*else if (group.equals("Requests")) {
-
-                }*/
-
-                //else if()
-
+                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    drawer.closeDrawer(GravityCompat.START);
+                }else if(group.equals("Profile")){
+                    fragment = new ProfileFragment();
+                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    drawer.closeDrawer(GravityCompat.START);
+                }
                 //replacing the fragment
                 if (fragment != null) {
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -604,8 +576,6 @@ public class HomeActivity extends AppCompatActivity
                     ft.addToBackStack(null);
                     ft.commit();
                 }
-               /* DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);*/
                 return false;
             }
         });
@@ -653,21 +623,21 @@ public class HomeActivity extends AppCompatActivity
                     callRequestStatusHomeFragment();
                 }
 
-                    // till here
+                // till here
                /* Toast.makeText(
                         mContext,
                         listDataHeader.get(groupPosition) + " : " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
                         .show();*/
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
-                    return false;
+                return false;
             }
         });
     }
 
     private void prepareListData(List<String> listDataHeader, HashMap<String, List<String>> listDataChild, HashMap<String, List<String>> listThirdLevelChild) {
         listDataHeader.add("Home");
-        listDataHeader.add("User Profile");
+        listDataHeader.add("Profile");
         listDataHeader.add("Requests");
         listDataHeader.add("News Categories");
         listDataHeader.add("About Us");
@@ -699,10 +669,19 @@ public class HomeActivity extends AppCompatActivity
         newsCareerChild.add("Educational");
 
         List<String> newsSmallChild = new ArrayList<String>();
+        newsSmallChild.add("Property");
+        newsSmallChild.add("Birthday ads");
+        newsSmallChild.add("App Related Ads");
+        newsSmallChild.add("Buy and Sell");
+        newsSmallChild.add("Services");
+        newsSmallChild.add("Loan related");
+        newsSmallChild.add("Matrimony related");
+        newsSmallChild.add("Books and Literature");
+
 
         listDataChild.put(listDataHeader.get(2), requestsChild); // Header, Child data
         listDataChild.put(listDataHeader.get(3), newsChild);
-        // listThirdLevelChild.put(newsChild.get(10), newsThirdChild);
+        listThirdLevelChild.put(newsChild.get(9), newsSmallChild);
         listThirdLevelChild.put(newsChild.get(12), newsCareerChild);
 
         data.add(listThirdLevelChild);

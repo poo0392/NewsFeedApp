@@ -2,18 +2,24 @@ package job.com.news.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import job.com.news.HomeActivity;
 import job.com.news.R;
+import job.com.news.utils.SecondLevelExpandableListView;
 
 /**
  * Created by POOJA on 1/19/2018.
@@ -51,8 +57,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
         final String childText = (String) getChild(groupPosition, childPosition);
-        if (groupPosition == 2 || groupPosition == 3) {
-
+        if (groupPosition == 2 /*|| groupPosition == 3*/) {
 
             if (convertView == null) {
                 LayoutInflater infalInflater = (LayoutInflater) this._context
@@ -64,54 +69,89 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
                     .findViewById(R.id.lblListItem);
             txtListChild.setText(childText);
 
-            //List<String> child = _listDataChild.get(this._listDataHeader.get(groupPosition));
+            return convertView;
+        } else if ((childText.equals("Small Classified")) || (childText.equals("Career Related"))) {
+            // if (convertView != null) {
+            Log.v("", "childPosition " + childPosition);
+            Log.v("", "groupPosition " + _listDataChild.get(_listDataHeader.get(groupPosition)).get(childPosition));
+            final SecondLevelExpandableListView secondLevelELV = new SecondLevelExpandableListView(_context);
+            String header = _listDataChild.get(_listDataHeader.get(groupPosition)).get(childPosition);
 
-            // listThirdLevelChild.get(_listDataChild.get(_listDataHeader.get(groupPosition)).
+            header = header.replace("[", "").replace("]", "");
+            String str[] = header.split(",");
+            Log.v("", "header " + header);
+            List<String> headers = new ArrayList<>();
+            headers = Arrays.asList(str);
 
-        }else if (groupPosition == 3 && childText.equals("Career Related")) {
-            //group=News Categories
-            if (convertView == null) {
-                LayoutInflater infalInflater = (LayoutInflater) this._context
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = infalInflater.inflate(R.layout.list_child, null);
-            }
 
-            TextView txtListChild = (TextView) convertView
-                    .findViewById(R.id.lblListItem);
-            txtListChild.setText(childText);
+            Log.v("", "headers " + headers.toString());
 
-            List<String> childVal = listThirdLevelChild.get(childText);
-            int index = childVal.indexOf(childVal.get(0));
-            Log.v("", "00 " + listThirdLevelChild.get(childText));
-            Log.v("", "11 " + listThirdLevelChild.get(childText).get(index));
-            for (int i = 0; i < childVal.size(); i++) {
-                if (convertView == null) {
-                    LayoutInflater infalInflater = (LayoutInflater) this._context
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = infalInflater.inflate(R.layout.list_child, null);
+
+            List<List<String>> childData = new ArrayList<>();
+            HashMap<String, List<String>> secondLevelData = listThirdLevelChild;
+
+          //  for (String key : listThirdLevelChild.keySet()) {
+                childData.add(listThirdLevelChild.get(childText));
+                Log.v("", "childData " + childData);
+
+           // }
+            secondLevelELV.setIndicatorBounds(secondLevelELV.getRight() - 40, secondLevelELV.getWidth());
+                secondLevelELV.setGroupIndicator(null);
+           // setGroupIndicatorToRight(secondLevelELV);
+
+            secondLevelELV.setAdapter(new SecondLevelAdapter(_context, headers, childData));
+
+
+            secondLevelELV.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+                int previousGroup = -1;
+
+                @Override
+                public void onGroupExpand(int groupPosition) {
+                    if (groupPosition != previousGroup)
+                        secondLevelELV.collapseGroup(previousGroup);
+                    previousGroup = groupPosition;
                 }
+            });
 
-                TextView childNew = (TextView) convertView.findViewById(R.id.lblListItem);
-                childNew.setText(listThirdLevelChild.get(childText).get(i));
-                return convertView;
-            }
-            // Log.v("","22 "+listThirdLevelChild.get(_listDataChild.get(_listDataHeader.get(groupPosition))));
-            //childNew.setText((CharSequence) listThirdLevelChild.get(childText));
-            // childVal.indexOf()
-            //Log.v("", "getChildView 11" +listThirdLevelChild.get(_listDataChild.get(_listDataHeader.get(groupPosition))));
-            Log.v("", "getChildView 22" + _listDataChild.get(_listDataHeader.get(groupPosition)));
-            //Log.v("","get"+_listDataChild.get(this._listDataHeader.get(groupPosition)).get(childPosition));
 
+            return secondLevelELV;
+            //} else {
+
+        } else {
+            LayoutInflater infalInflater = (LayoutInflater) this._context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = infalInflater.inflate(R.layout.list_child, null);
+
+            TextView txtListChild = (TextView) convertView
+                    .findViewById(R.id.lblListItem);
+            txtListChild.setText(childText);
+
+            return convertView;
 
         }
+    }
 
-        return convertView;
+    private void setGroupIndicatorToRight(SecondLevelExpandableListView secondLevelELV) {
+    /* Get the screen width */
+        DisplayMetrics dm = new DisplayMetrics();
+        ((HomeActivity) _context).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+
+        secondLevelELV.setIndicatorBounds(width - getDipsFromPixel(35), width - getDipsFromPixel(5));
+    }
+
+    // Convert pixel to dip
+    public int getDipsFromPixel(float pixels) {
+        // Get the screen's density scale
+        final float scale = _context.getResources().getDisplayMetrics().density;
+        // Convert the dps to pixels, based on density scale
+        return (int) (pixels * scale + 0.5f);
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
         if (groupPosition == 2 || groupPosition == 3) {
-            return this._listDataChild.get(this._listDataHeader.get(groupPosition)).size();
+            return _listDataChild.get(_listDataHeader.get(groupPosition)).size();
         } else {
             return 0;
         }
@@ -119,12 +159,12 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getGroup(int groupPosition) {
-        return this._listDataHeader.get(groupPosition);
+        return _listDataHeader.get(groupPosition);
     }
 
     @Override
     public int getGroupCount() {
-        return this._listDataHeader.size();
+        return _listDataHeader.size();
     }
 
     @Override
@@ -158,7 +198,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
             ivListHeader.setImageDrawable(_context.getResources().getDrawable(R.mipmap.ic_home));
             // ivGroupIndicator.setSelected(false);
             ivGroupIndicator.setVisibility(View.GONE);
-        } else if (headerTitle.equals("User Profile")) {
+        } else if (headerTitle.equals("Profile")) {
             ivListHeader.setImageDrawable(_context.getResources().getDrawable(R.mipmap.ic_profile));
             //  ivGroupIndicator.setSelected(false);
             ivGroupIndicator.setVisibility(View.GONE);

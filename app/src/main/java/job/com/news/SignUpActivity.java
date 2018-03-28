@@ -23,11 +23,7 @@ import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 
-import java.sql.SQLException;
-
-import job.com.news.db.DBHelper;
 import job.com.news.db.MemberTable;
-import job.com.news.db.NewsListTable;
 import job.com.news.db.PersonalDetails;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
