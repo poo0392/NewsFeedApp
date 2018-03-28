@@ -251,6 +251,10 @@ public class SignUpActivity extends AppCompatActivity {
                                 myPreferences.setMobile(serverResponse.getMember().getMobile());
                                 myPreferences.setMemberId(serverResponse.getMember().getMemberId());
                                 myPreferences.setMemberToken(serverResponse.getMember().getMemberToken().trim());
+                                if( serverResponse.getMember().getRole() == null ||serverResponse.getMember().getRole().isEmpty()){
+                                    myPreferences.setRole("0");
+                                }
+
 
 
                                 //  Log.v("Response", "MemberId " + serverResponse.getMember().getMemberId());
@@ -280,7 +284,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 //Toast.makeText(SignUpActivity.this, "Register failed. Please try again after some time.", Toast.LENGTH_SHORT).show();
                             } else {
                                 // Toast.makeText(SignUpActivity.this, "Register failed." + desc, Toast.LENGTH_SHORT).show();
-                                setFailedAlertDialog(SignUpActivity.this, "Failed", "Register failed");
+                                setFailedAlertDialog(SignUpActivity.this, "Failed", desc);
                             }
 
                         }

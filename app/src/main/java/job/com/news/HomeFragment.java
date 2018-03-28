@@ -41,7 +41,7 @@ import job.com.news.sharedpref.SessionManager;
  */
 //changes added on 3/9/2018.
 public class HomeFragment extends Fragment {
-    private static final String TAG="HomeFragment";
+    private static final String TAG = "HomeFragment";
     Context mContext;
     Toolbar toolbar;
     private ProgressDialog mProgressDialog;
@@ -49,8 +49,8 @@ public class HomeFragment extends Fragment {
 
     private List<NewsFeedList> newsFeedListNew;
     private List<NewsFeedList> listItems;
-    private List<String> catListNew, catDupList;
-    ArrayList<String> categoryList;
+    private List<String> catListNew, catDupList,subCatDupList;
+    ArrayList<String> categoryList,subCategoryList;
     ArrayList<String> catListNewEn;
     Gson gson;
     NewsListTable newsListTable;
@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment {
     private TabLayout mTabLayout;
     private SmartTabLayout viewPagerTab;
     private MyPreferences myPreferences;
-    String emailId, fullName, memberToken,language;
+    String emailId, fullName, memberToken, language;
     int memberId;
     //private HashMap<String, ArrayList<String>> hashMap;
     private NewsFeedApplication newsFeedApplication;
@@ -109,9 +109,11 @@ public class HomeFragment extends Fragment {
         subCategoryTable = new SubCategoryTable(mContext);
         newsImagesTable = new NewsImagesTable(mContext);
         categoryList = new ArrayList<>();
+        subCategoryList = new ArrayList<>();
         catListNew = new ArrayList<>();
         catListNewEn = new ArrayList<>();
         catDupList = new ArrayList<>();
+        subCatDupList = new ArrayList<>();
         newsFeedListNew = new ArrayList<>();
         listItems = new ArrayList<>();
         newsFeedApplication = NewsFeedApplication.getApp();
@@ -145,7 +147,7 @@ public class HomeFragment extends Fragment {
 
 
         // for(int k=0;k<newsFeedListNew.size();k++) {
-        mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(), catListNew,catListNewEn);
+        mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(), catListNew, catListNewEn);
 
         // }
         for (int i = 0; i < catListNew.size(); i++) {
@@ -174,15 +176,18 @@ public class HomeFragment extends Fragment {
         newsFeedList = newsListTable.getAllNewsRecords();
         // categoryList = newsListTable.getCategory();
 
-        Log.v(TAG+" loadCategoryList ", "newsFeedList.size() " + newsFeedList.size());
-        if(newsFeedList !=null) {
+        Log.v(TAG + " loadCategoryList ", "newsFeedList.size() " + newsFeedList.size());
+        if (newsFeedList != null) {
             for (int k = 0; k < newsFeedList.size(); k++) {
                 catDupList.add(newsFeedList.get(k).getCategory());
+                subCatDupList.add(newsFeedList.get(k).getSub_category());
 
             }
 
             categoryList.addAll(new HashSet<>(catDupList));
+            subCategoryList.addAll(new HashSet<>(subCatDupList));
             for (int i = 0; i < categoryList.size(); i++) {
+             //   for (int l = 0; l < subCategoryList.size(); l++) {
                 if (categoryList.get(i).equals("National and International")) {
                     catListNew.add(mContext.getResources().getString(R.string.national_inter_menu));
                     catListNewEn.add("National and International");
@@ -204,7 +209,7 @@ public class HomeFragment extends Fragment {
                 } else if (categoryList.get(i).equals("Health Related") || categoryList.get(i).equals("Health")) {
                     catListNew.add(mContext.getResources().getString(R.string.health_rel_menu));
                     catListNewEn.add("National and International");
-                } else if (categoryList.get(i).equals("Business News")||categoryList.get(i).equals("Business")) {
+                } else if (categoryList.get(i).equals("Business News") || categoryList.get(i).equals("Business")) {
                     catListNew.add(mContext.getResources().getString(R.string.business_news_menu));
                     catListNewEn.add("Business News");
                 } else if (categoryList.get(i).equals("Agricultural News")) {
@@ -222,32 +227,48 @@ public class HomeFragment extends Fragment {
                 } else if (categoryList.get(i).equals("Entertainment News") || categoryList.get(i).equals("Entertainment")) {
                     catListNew.add(mContext.getResources().getString(R.string.ent_news_menu));
                     catListNewEn.add("Entertainment News");
-                }/*else if (categoryList.get(i).equals("Property")) {
-                catListNew.add(mContext.getResources().getString(R.string.cinema_menu));
-            }else if (categoryList.get(i).equals("Birthday ads")) {
-                catListNew.add(mContext.getResources().getString(R.string.birth_menu));
-            }else if (categoryList.get(i).equals("App Related Ads")) {
-                catListNew.add(mContext.getResources().getString(R.string.app_rel_menu));
-            }else if (categoryList.get(i).equals("Buy and Sell")) {
-                catListNew.add(mContext.getResources().getString(R.string.buy_sell_menu));
-            }else if (categoryList.get(i).equals("Services")) {
-                catListNew.add(mContext.getResources().getString(R.string.services_menu));
-            }else if (categoryList.get(i).equals("Loan related")) {
-                catListNew.add(mContext.getResources().getString(R.string.loan_rel_menu));
-            }else if (categoryList.get(i).equals("Matrimony related")) {
-                catListNew.add(mContext.getResources().getString(R.string.mat_rel_menu));
-            }else if (categoryList.get(i).equals("Books and Literature")) {
-                catListNew.add(mContext.getResources().getString(R.string.book_lit_menu));
-            }*/ else if (categoryList.get(i).equals("Career Related")||categoryList.get(i).equals("Career")) {
+                } else if (categoryList.get(i).equals("Career Related") || categoryList.get(i).equals("Career")) {
                     catListNew.add(mContext.getResources().getString(R.string.career_rel_menu));
                     catListNewEn.add("Career Related");
-                }/*else if (categoryList.get(i).equals("Job")) {
-                catListNew.add(mContext.getResources().getString(R.string.job_menu));
-            }else if (categoryList.get(i).equals("Business")) {
-                catListNew.add(mContext.getResources().getString(R.string.business_menu));
-            }else if (categoryList.get(i).equals("Educational")) {
-                catListNew.add(mContext.getResources().getString(R.string.edu_menu));
-            }*/
+                }
+
+
+/*
+                    if (subCategoryList.get(l).equals("Property")) {
+                        catListNew.add(mContext.getResources().getString(R.string.cinema_menu));
+                        catListNewEn.add("Property");
+                    } else if (subCategoryList.get(l).equals("Birthday ads")) {
+                        catListNew.add(mContext.getResources().getString(R.string.birth_menu));
+                        catListNewEn.add("Birthday ads");
+                    } else if (subCategoryList.get(l).equals("App Related Ads")) {
+                        catListNew.add(mContext.getResources().getString(R.string.app_rel_menu));
+                        catListNewEn.add("App Related Ads");
+                    } else if (subCategoryList.get(l).equals("Buy and Sell")) {
+                        catListNew.add(mContext.getResources().getString(R.string.buy_sell_menu));
+                        catListNewEn.add("Buy and Sell");
+                    } else if (subCategoryList.get(l).equals("Services")) {
+                        catListNew.add(mContext.getResources().getString(R.string.services_menu));
+                        catListNewEn.add("Services");
+                    } else if (subCategoryList.get(l).equals("Loan related")) {
+                        catListNew.add(mContext.getResources().getString(R.string.loan_rel_menu));
+                        catListNewEn.add("Loan related");
+                    } else if (subCategoryList.get(l).equals("Matrimony related")) {
+                        catListNew.add(mContext.getResources().getString(R.string.mat_rel_menu));
+                        catListNewEn.add("Matrimony related");
+                    } else if (subCategoryList.get(l).equals("Books and Literature")) {
+                        catListNew.add(mContext.getResources().getString(R.string.book_lit_menu));
+                        catListNewEn.add("Books and Literature");
+                    } else if (subCategoryList.get(l).equals("Job")) {
+                        catListNew.add(mContext.getResources().getString(R.string.job_menu));
+                        catListNewEn.add("Job");
+                    } else if (subCategoryList.get(l).equals("Business")) {
+                        catListNew.add(mContext.getResources().getString(R.string.business_menu));
+                        catListNewEn.add("Business");
+                    } else if (subCategoryList.get(l).equals("Educational")) {
+                        catListNew.add(mContext.getResources().getString(R.string.edu_menu));
+                        catListNewEn.add("Educational");
+                    }*/
+              //  }
             }
         }
     }

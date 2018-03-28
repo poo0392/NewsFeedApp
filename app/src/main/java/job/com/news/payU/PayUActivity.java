@@ -70,7 +70,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
     private View view;
     private Button btnPayNow;
     private EditText editText_amount;
-    private String Price_Cost;
+    private String Price_Cost,salt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +92,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
         toolBar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolBar);
 
+        salt="S8P9yS673D";
         // lets tell the people what version of sdk we are using
         PayUSdkDetails payUSdkDetails = new PayUSdkDetails();
 
@@ -172,11 +173,11 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
      */
     public void navigateToBaseActivity(View view) {
 
-        merchantKey = ((EditText) findViewById(R.id.editTextMerchantKey)).getText().toString();
-      merchantKey = "WiCZgZAf";
-        String amount = ((EditText) findViewById(R.id.editTextAmount)).getText().toString();
-        String email = ((EditText) findViewById(R.id.editTextEmail)).getText().toString();
-       email = "siddheshwarbhise@yahoo.com";
+      merchantKey = ((EditText) findViewById(R.id.editTextMerchantKey)).getText().toString();
+      //merchantKey = "WiCZgZAf";
+      String amount = ((EditText) findViewById(R.id.editTextAmount)).getText().toString();
+      String email = ((EditText) findViewById(R.id.editTextEmail)).getText().toString();
+      // email = "siddheshwarbhise@yahoo.com";
       String salt = "fkv0nUwlRI";
        // String salt = "13p0PXZk";
        // String salt = "S8P9yS673D";
@@ -186,7 +187,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
         String TEST_ENVIRONMENT = getResources().getString(R.string.test);
 
         if (value.equals(TEST_ENVIRONMENT))
-            environment = PayuConstants.PRODUCTION_ENV;
+            environment = PayuConstants.STAGING_ENV;
         else
             environment = PayuConstants.PRODUCTION_ENV;
 
@@ -211,6 +212,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
         mPaymentParams.setProductInfo("product_info");
         mPaymentParams.setFirstName("firstname");
         mPaymentParams.setEmail(email);
+        mPaymentParams.setPhone("");
 
 
         /*
@@ -252,7 +254,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
 
         //TODO It is recommended to generate hash from server only. Keep your key and salt in server side hash generation code.
         //if(null == salt) {
-        //generateHashFromServer(mPaymentParams);
+        generateHashFromServer(mPaymentParams);
         //}else {
 
         /**
@@ -261,7 +263,7 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
          * should not be used.
          * */
 
-          generateHashFromSDK(mPaymentParams, salt);
+        //  generateHashFromSDK(mPaymentParams, salt);
 
         // }
     }
@@ -415,8 +417,8 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
             try {
 
                 //TODO Below url is just for testing purpose, merchant needs to replace this with their server side hash generation url
-                URL url = new URL("https://payu.herokuapp.com/get_hash");
-               // URL url = new URL("http://thanehousingfederation.com/newsapp/payuhash.php");
+              //  URL url = new URL("https://payu.herokuapp.com/get_hash");
+                URL url = new URL("http://thanehousingfederation.com/newsapp/payuhash.php");
 
 
                 // get the payuConfig first
@@ -581,9 +583,11 @@ public class PayUActivity extends AppCompatActivity implements OneClickPaymentLi
         intent.putExtra(PayuConstants.PAYU_CONFIG, payuConfig);
         intent.putExtra(PayuConstants.PAYMENT_PARAMS, mPaymentParams);
         intent.putExtra(PayuConstants.PAYU_HASHES, payuHashes);
-      //  startActivityForResult(intent, PayuConstants.PAYU_REQUEST_CODE);
+        intent.putExtra(PayuConstants.SALT, salt);
+        intent.putExtra("PaymentType", "PAYU");
+        startActivityForResult(intent, PayuConstants.PAYU_REQUEST_CODE);
         //Lets fetch all the one click card tokens first
-        fetchMerchantHashes(intent);
+      //  fetchMerchantHashes(intent);
 
     }
 
