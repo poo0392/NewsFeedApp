@@ -109,7 +109,7 @@ public class NewsFeedFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt("position", position);
         args.putStringArrayList("categories", (ArrayList<String>) catListNewEn);
-        Log.v("newInstance ", " categories" + catListNewEn.toString());
+       // Log.v("newInstance ", " categories" + catListNewEn.toString());
         fragment.setArguments(args);
         return fragment;
     }
@@ -286,7 +286,7 @@ public class NewsFeedFragment extends Fragment {
     private void getBundleData() {
         pos = getArguments().getInt("position");
         Log.v("getBundleData ", "Fragpos " + pos);
-        Toast.makeText(getActivity(), "Position is: " + pos, Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(getActivity(), "Position is: " + pos, Toast.LENGTH_SHORT).show();
         categoryList = getArguments().getStringArrayList("categories");
         Log.v("getBundleData ", " categoryList" + categoryList.toString());
 

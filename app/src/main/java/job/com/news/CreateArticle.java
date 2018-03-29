@@ -819,19 +819,19 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-                if (validateFields()) {
-                  /*  Intent intent = new Intent(this, PayUActivity.class);
+              //  if (validateFields()) {
+                    Intent intent = new Intent(this, PayUActivity.class);
                     intent.putExtra("Price", 1);
                     startActivity(intent);
-                    finish();*/
+                    finish();
 //
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                    postNewsAPI();
-              }
+                //    postNewsAPI();
+              //}
 
                 break;
             case R.id.article_image1:
