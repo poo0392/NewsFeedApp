@@ -564,7 +564,7 @@ public class HomeActivity extends AppCompatActivity
                     fragment = new HomeFragment();
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                     drawer.closeDrawer(GravityCompat.START);
-                }else if(group.equals("Profile")){
+                } else if (group.equals("Profile")) {
                     fragment = new ProfileFragment();
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                     drawer.closeDrawer(GravityCompat.START);
@@ -895,7 +895,8 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            closeApplication();
+            // super.onBackPressed();
         }
     }
 
@@ -906,6 +907,33 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
+    private void closeApplication() {
+        new MaterialStyledDialog.Builder(HomeActivity.this)
+                .setTitle("Confirm Please...")
+                .setDescription("Do you want to close the app ?")
+                .setStyle(Style.HEADER_WITH_TITLE)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        //finishAffinity();
+                        // finish();
+
+                        //for lower api version than 16
+                        ActivityCompat.finishAffinity(HomeActivity.this);
+                    }
+                })
+                .setNegativeText(R.string.cancel)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+
+
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -948,4 +976,5 @@ public class HomeActivity extends AppCompatActivity
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
 }

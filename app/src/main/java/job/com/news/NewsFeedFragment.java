@@ -169,7 +169,8 @@ public class NewsFeedFragment extends Fragment {
 
 
                 //if (!newsFeedList.isEmpty()) {
-                List<NewsFeedList> filteredModelList = filter(newsFeedList, query);
+               // List<NewsFeedList> filteredModelList = filter(newsFeedList, query);
+                List<NewsFeedList> filteredModelList = filter(newsFeedListAll, query);
 
                 if (filteredModelList.size() > 0) {
                     adapter.setFilter(filteredModelList);
@@ -281,6 +282,8 @@ public class NewsFeedFragment extends Fragment {
         categoryList = new ArrayList<>();
         catListNew = new ArrayList<>();
         catDupList = new ArrayList<>();
+
+        newsFeedListAll.addAll(newsListTable.getAllNewsRecords());
     }
 
     private void getBundleData() {

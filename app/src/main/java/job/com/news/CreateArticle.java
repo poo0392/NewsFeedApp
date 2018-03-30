@@ -50,6 +50,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -112,7 +113,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     boolean valid = false;
     private int charges, sub_category_id;
     String state_arr[], article_arr[], no_of_days_arr[], lang_arr[];
-    String getLangFromPref,language, selectedState, selectedCity, selectedDays;
+    String getLangFromPref, language, selectedState, selectedCity, selectedDays;
     ArrayAdapter<String> state_adapter, article_adapter, sub_article_adapter, city_adapter, publish_days_adapter;
     RelativeLayout state_relative, city_relative, article_relative;
     BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsSubArticleSpinner, bsPublishDaysSpinner;
@@ -180,9 +181,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         getLangFromPref = langSelection.getLanguage();
         lang_arr = getResources().getStringArray(R.array.language_arr);
         if (getLangFromPref.equalsIgnoreCase(lang_arr[1])) {
-            language="Hindi";
+            language = "Hindi";
         } else if (getLangFromPref.equalsIgnoreCase(lang_arr[2])) {
-            language="Marathi";
+            language = "Marathi";
         }
     }
 
@@ -190,7 +191,16 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         Calendar cal = Calendar.getInstance();
         Date date = cal.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-        String strDate = sdf.format(date);
+
+
+       // DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
+       String strDate= DateFormat.getDateInstance(DateFormat.MEDIUM,Locale.getDefault()).format(date);
+       //DateFormat.getDateTimeInstance(DateFormat.DATE_FIELD,DateFormat.)
+       // DateTimeFormatter.ofPattern("MM/dd/yyyy",Locale.ENGLISH);
+        //DateFormat.getDa
+        //
+        // String s = dateFormat.format(date);
+      // String strDate = sdf.format(date);
         mDateView.setText(strDate);
     }
 
@@ -327,7 +337,14 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         desc_text = (TextView) findViewById(R.id.desc_text);
         total_charges_text = (TextView) findViewById(R.id.total_charges_text);
 
+        setDefaultValues();
+    }
 
+    private void setDefaultValues() {
+        radioGroupWords.check(R.id.article_100d_radio);
+        words = 100;
+        wordsLength = setDescpWordsLength(R.id.article_100d_radio);
+        setDescTextLength(wordsLength);
     }
 
     private void setListeners() {
@@ -417,23 +434,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 int radioId = group.getCheckedRadioButtonId();
                 wordsLength = setDescpWordsLength(radioId);
                 Log.v("radioGroupWords ", "wordsLength " + wordsLength);
-                //  mDescEdit.setText("");
-
-                mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
-                int editTextLength = mDescEdit.getText().toString().length();
-                Log.v("radioGroupWords ", "editTextLength " + editTextLength);
-                if (!(editTextLength == 100)) {
-                    if ((wordsLength <= editTextLength)) { //200<=300 & 200<=300
-                    /*if (wordsLength < 200) {
-                        Log.v("radioGroupWords ", "22 wordsLength " + wordsLength);
-                    } else {
-
-                    }*/
-
-                        mDescEdit.setText(mDescEdit.getText().toString().substring(0, mDescEdit.getText().toString().length() - 100));
-                    }
+                if (wordsLength == 400) {
+                    setDescTextLength(300000);
+                }else {
+                    setDescTextLength(wordsLength);
                 }
-
 
             }
         });
@@ -455,14 +460,14 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (wordsLength == 0) {
+                /*if (wordsLength == 0) {
                     mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
                     Toast.makeText(getApplicationContext(), mContext.getResources().getString(R.string.toast_msg_desc_select), Toast.LENGTH_SHORT).show();
-                } else {
+                } else {*/
                     wordsCount = charSequence.toString().trim().length();
                     Log.v("mDescEdit ", "wordsCount " + wordsCount);
                     radioGroupDays.clearCheck();
-                }
+               // }
 
             }
 
@@ -471,6 +476,24 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
             }
         });
+    }
+
+    private void setDescTextLength(int wordsLength) {
+        mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
+        int editTextLength = mDescEdit.getText().toString().length();
+        Log.v("radioGroupWords ", "editTextLength " + editTextLength);
+        if (!(editTextLength == 100)) {
+            if ((wordsLength <= editTextLength)) { //200<=300 & 200<=300
+                    /*if (wordsLength < 200) {
+                        Log.v("radioGroupWords ", "22 wordsLength " + wordsLength);
+                    } else {
+
+                    }*/
+
+                mDescEdit.setText(mDescEdit.getText().toString().substring(0, mDescEdit.getText().toString().length() - 100));
+            }
+        }
+
     }
 
     public static String getStringByLocal(Activity context, int id, String locale) {
@@ -568,10 +591,12 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             } else if (count > 300 && count <= 400) {
                 charLength = 3;
 
+            }else if(count>400){
+                charLength = 4;
             }
 
             int days = getDays(radioGroupDaysID);
-            Log.v("calculateCharges ", "days " + days);
+            Log.v("calculateCharges ", "days " + days + " charLength "+charLength);
 
             charges = charLength * days;
 
@@ -819,19 +844,19 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-              //  if (validateFields()) {
-                    Intent intent = new Intent(this, PayUActivity.class);
-                    intent.putExtra("Price", 1);
-                    startActivity(intent);
-                    finish();
+                //  if (validateFields()) {
+                Intent intent = new Intent(this, PayUActivity.class);
+                intent.putExtra("Price", 1);
+                startActivity(intent);
+                finish();
 //
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
-                    // memberId = String.valueOf(memberList.get(0).getMemberId());
-                    // memberToken = memberList.get(0).getMemberToken();
-                    // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
+                // memberId = String.valueOf(memberList.get(0).getMemberId());
+                // memberToken = memberList.get(0).getMemberToken();
+                // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
                 //    postNewsAPI();
-              //}
+                //}
 
                 break;
             case R.id.article_image1:
@@ -960,7 +985,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, image);
         */
         Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
-                paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc,language,photosToUploadList);
+                paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, language, photosToUploadList);
         //    Call<NewsFeedModelResponse> serverResponse = webService.post_news(mapValuesFinal);
 
         String reqParam = bodyToString(serverResponse.request().body());
@@ -1005,7 +1030,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(mContext, "Failure", Toast.LENGTH_SHORT).show();
                 if (t instanceof NoConnectivityException) {
                     // No internet connection
-                     Toast.makeText(mContext, "Please connect to Internet", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Please connect to Internet", Toast.LENGTH_SHORT).show();
                     // setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
                 }
             }
@@ -1175,7 +1200,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             Uri selectedImage = data.getData();
             mediaPath = getPathFromURI(selectedImage);
             Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
-
 
 
             String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);

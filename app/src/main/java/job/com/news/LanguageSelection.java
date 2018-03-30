@@ -69,6 +69,7 @@ public class LanguageSelection extends AppCompatActivity {
             locale = new Locale("hi");
             Locale.setDefault(locale);
             config.setLocale(locale);
+
         } else if (getLang.equalsIgnoreCase(lang_arr[2])) {
             locale = new Locale("mr");
             Locale.setDefault(locale);
@@ -77,6 +78,7 @@ public class LanguageSelection extends AppCompatActivity {
         //getResources().getConfiguration().setTo(config);
         getBaseContext().getResources().updateConfiguration(config,
                 getBaseContext().getResources().getDisplayMetrics());
+
     }
 
     private void setListeners() {
