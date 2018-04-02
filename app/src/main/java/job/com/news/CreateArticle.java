@@ -74,7 +74,6 @@ import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
-import job.com.news.payU.PayUActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -106,9 +105,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private String mRsSymbol;
     private String mArticleCode, categoryId, subCategoryId, stateId, cityId;
     private ImageView mArticleImage1, mArticleImage2, iv_info_desc, iv_info_title;
-    private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
+    private int REQUEST_CAMERA = 0, SELECT_FILE = 1, spaceCount;
     private String mediaPath;
-    private int currentImageView = 0, words, radioGroupDaysID, wordsCount = 0;
+    private int currentImageView = 0, words, radioGroupDaysID, wordsCount = 0, charLength;
     private Button btn_submit;
     boolean valid = false;
     private int charges, sub_category_id;
@@ -127,7 +126,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     String emailId, fullName, membertoken;
     int memberid;
     private MyPreferences myPreferences;
-    int wordsLength = 0;
+    int numOfWords = 0;
     List<String> newsPic;
     Uri realUri;
     SubCategoryTable subCategoryTable;
@@ -136,6 +135,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     ArrayList<String> filePaths = new ArrayList<>();
     String responseGson;
     List<MultipartBody.Part> photosToUploadList;
+    String nWords = "";
 
     //Indonesia
 
@@ -188,20 +188,31 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void setDateToText() {
+        Log.v("", "locale " + getResources().getConfiguration().locale);
         Calendar cal = Calendar.getInstance();
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm", new Locale("hi", "IN"));
 
 
-       // DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
-       String strDate= DateFormat.getDateInstance(DateFormat.MEDIUM,Locale.getDefault()).format(date);
-       //DateFormat.getDateTimeInstance(DateFormat.DATE_FIELD,DateFormat.)
-       // DateTimeFormatter.ofPattern("MM/dd/yyyy",Locale.ENGLISH);
+        // DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
+        // String strDate = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault()).format(date);
+        //DateFormat.getDateTimeInstance(DateFormat.DATE_FIELD,DateFormat.)
+        // DateTimeFormatter.ofPattern("MM/dd/yyyy",Locale.ENGLISH);
         //DateFormat.getDa
         //
         // String s = dateFormat.format(date);
-      // String strDate = sdf.format(date);
-        mDateView.setText(strDate);
+        String strDate = sdf.format(date);
+        //String strDate =DateFormat.getDateInstance().format(date);
+        // DateFormat.getInstance().format()
+
+        //Date dateObj = sdf.parse(my_input_string);
+
+        int datestyle = DateFormat.MEDIUM; // try also MEDIUM, and FULL
+        int timestyle = DateFormat.SHORT;
+        DateFormat df = DateFormat.getDateTimeInstance(datestyle, timestyle, new Locale("hi", "IN"));
+
+        mDateView.setText(df.format(date));
+        // mDateView.setText(strDate);
     }
 
     @Override
@@ -338,13 +349,19 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         total_charges_text = (TextView) findViewById(R.id.total_charges_text);
 
         setDefaultValues();
+        if (mDescEdit.getText().toString().isEmpty()
+                && mTitleEdit.getText().toString().isEmpty()) {
+            mTotalChargesView.setText(mRsSymbol + "0");
+        }
     }
 
     private void setDefaultValues() {
         radioGroupWords.check(R.id.article_100d_radio);
-        words = 100;
-        wordsLength = setDescpWordsLength(R.id.article_100d_radio);
-        setDescTextLength(wordsLength);
+
+        //  words = 100;
+        numOfWords = setDescpWordsNum(R.id.article_100d_radio);
+        Log.v("DefaultValues ", "numOfWords " + numOfWords);
+
     }
 
     private void setListeners() {
@@ -432,12 +449,12 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 int radioId = group.getCheckedRadioButtonId();
-                wordsLength = setDescpWordsLength(radioId);
-                Log.v("radioGroupWords ", "wordsLength " + wordsLength);
-                if (wordsLength == 400) {
+                numOfWords = setDescpWordsNum(radioId);
+                Log.v("radioGroupWords ", "numOfWords " + numOfWords);
+                if (numOfWords == 400) {
                     setDescTextLength(300000);
-                }else {
-                    setDescTextLength(wordsLength);
+                } else {
+                    setDescTextLength(numOfWords);
                 }
 
             }
@@ -447,7 +464,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 radioGroupDaysID = radioGroupDays.getCheckedRadioButtonId();
-                calculateCharges(wordsCount, radioGroupDaysID);
+                calculateCharges(numOfWords, radioGroupDaysID);
             }
         });
 
@@ -459,41 +476,167 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                /*if (wordsLength == 0) {
-                    mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
-                    Toast.makeText(getApplicationContext(), mContext.getResources().getString(R.string.toast_msg_desc_select), Toast.LENGTH_SHORT).show();
-                } else {*/
-                    wordsCount = charSequence.toString().trim().length();
-                    Log.v("mDescEdit ", "wordsCount " + wordsCount);
-                    radioGroupDays.clearCheck();
-               // }
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
 
+                wordsCount = countWords(s.toString());
+                Log.v("mDescEdit ", "words " + wordsCount);
+                charLength = s.toString().length();
+                Log.v("mDescEdit ", "length " + s.toString().length());
+
+                int count = getSpaces(mDescEdit.getText().toString());
+                Log.v("getSpaces ", "count " + count);
+
+
+                //  if (charLength > 0) {
+                //       calculateWordsLength(wordsCount, charLength);
+                // }
+
+                /*if (numOfWords == 0) {
+                    mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(numOfWords)});
+                    Toast.makeText(getApplicationContext(), mContext.getResources().getString(R.string.toast_msg_desc_select), Toast.LENGTH_SHORT).show();
+                }
+                 else {*/
+                /*for (int k = 0; k < numOfWords; k++) {
+                    wordsCount = countWords(s.toString());
+
+
+                    charLength = s.toString().length();
+
+                    //  radioGroupDays.clearCheck();
+                    // }
+                }
+
+               */
+                // calculateWordsLength(wordsCount, charLength);
+              /*  if (wordsCount == 100) {
+                    //if (!(words == 100)) {
+                    if ((charLength >= editTextLength)) { //200<=300 & 200<=300
+
+                        Log.v("radioGroupWords ", "22 numOfWords " + numOfWords);
+                    } else
+
+                        mDescEdit.setText(mDescEdit.getText().toString().substring(0, mDescEdit.getText().toString().length() - 100));
+                }*/
+                //}
+                //  }
+
+              /*  if (numOfWords > 0 && numOfWords <= 100 && wordsCount == 100) {
+                    mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(charLength)});
+                } else {
+                    Toast.makeText(CreateArticle.this, "Cannot add more than " + numOfWords + " words", Toast.LENGTH_SHORT).show();
+                   // mDescEdit.setText(mDescEdit.getText().toString().substring(0, ));
+                }*/
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
+                //    spaceCount = getSpaceCount(editable.toString());
+                //    Log.v("mDescEdit ", "spaceCount " + spaceCount);
+                //    setDescTextLength(wordsCount);
+                String[] arr = mDescEdit.getText().toString().split("\\s+");
+                //Splits words & assign to the arr[]  ex : arr[0] -> Copying ,arr[1] -> first
+
+
+                int N = 100; // NUMBER OF WORDS THAT YOU NEED
+
+
+                // concatenating number of words that you required
+                for (int k = 0; k < N; k++) {
+                    nWords = nWords + " " + arr[k];
+                }
+
+                Log.v("getSpaces ", "nWords " + nWords);
 
             }
         });
+
+        mDescEdit.setText(nWords);
+
+
     }
 
-    private void setDescTextLength(int wordsLength) {
-        mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(wordsLength)});
+    private int getSpaces(String s) {
+        int spaceCount = 0;
+        for (char c : s.toCharArray()) {
+            if (c == ' ') {
+                spaceCount++;
+            }
+        }
+        return spaceCount;
+    }
+
+    private void calculateWordsLength(int wordsCount, int charLength) {
+        switch (numOfWords) {
+            case 100:
+                if ((wordsCount > 0 && wordsCount <= 100)) {
+                    mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(charLength)});
+                } else {
+                    Toast.makeText(CreateArticle.this, "Cannot add more than " + numOfWords + " words", Toast.LENGTH_SHORT).show();
+                    mDescEdit.setText("");
+                }
+                break;
+            case 200:
+                if ((wordsCount > 0 && wordsCount <= 200)) {
+                    mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(charLength)});
+                } else {
+                    Toast.makeText(CreateArticle.this, "Cannot add more than " + numOfWords + " words", Toast.LENGTH_SHORT).show();
+                    mDescEdit.setText("");
+                }
+                break;
+        }
+
+    }
+
+    public int countWords(String str) {
+        String words[] = str.split(" ");
+        int count = words.length;
+        return count;
+    }
+
+    private void setDescTextLength(int wordsCount) { // 100 words
+        Log.v("setDescTextLength ", "wordsCount " + wordsCount);
+
+        //change 100 characters to 100 words
+
+        //
+        // words = countWords(mDescEdit.getText().toString());
+        //  Log.v("setDescTextLength ", "words " + words);
+
+
+        //   int spaceCount = getSpaceCount(mDescEdit.getText().toString());
+        //  Log.v("setDescTextLength ", "spaceCount " + spaceCount);
         int editTextLength = mDescEdit.getText().toString().length();
-        Log.v("radioGroupWords ", "editTextLength " + editTextLength);
-        if (!(editTextLength == 100)) {
-            if ((wordsLength <= editTextLength)) { //200<=300 & 200<=300
-                    /*if (wordsLength < 200) {
-                        Log.v("radioGroupWords ", "22 wordsLength " + wordsLength);
+
+        //   if (words > 0) {
+        mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(editTextLength)});
+        // }
+
+
+        // Log.v("setDescTextLength ", "charLength " + editTextLength);
+
+       /* if (!(words == 100)) {
+            if ((words <= editTextLength)) { //200<=300 & 200<=300
+                    *//*if (numOfWords < 200) {
+                        Log.v("radioGroupWords ", "22 numOfWords " + numOfWords);
                     } else {
 
-                    }*/
+                    }*//*
 
                 mDescEdit.setText(mDescEdit.getText().toString().substring(0, mDescEdit.getText().toString().length() - 100));
             }
-        }
+        }*/
 
+    }
+
+    private int getSpaceCount(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == ' ') {
+                spaceCount++;
+            } else {
+                spaceCount = 0;
+            }
+        }
+        return spaceCount;
     }
 
     public static String getStringByLocal(Activity context, int id, String locale) {
@@ -502,21 +645,29 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         return context.createConfigurationContext(configuration).getResources().getString(id);
     }
 
-    private int setDescpWordsLength(int radioId) {
+    private int setDescpWordsNum(int radioId) {
         // int radioId = radioGroupWords.getCheckedRadioButtonId();
         Log.v("", "radioId " + radioId);
         switch (radioId) {
             case R.id.article_100d_radio:
                 words = 100;
+                mDescEdit.setText("");
+                radioGroupDays.clearCheck();
                 break;
             case R.id.article_200d_radio:
                 words = 200;
+                mDescEdit.setText("");
+                radioGroupDays.clearCheck();
                 break;
             case R.id.article_300d_radio:
                 words = 300;
+                radioGroupDays.clearCheck();
+                mDescEdit.setText("");
                 break;
             case R.id.article_400d_radio:
                 words = 400;
+                radioGroupDays.clearCheck();
+                mDescEdit.setText("");
                 break;
             /*default:
                 words = 0;
@@ -566,7 +717,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         Log.v("calculateCharges", " count " + count);
         try {
             int charLength = 0;
-            mTotalChargesView.setText(count + "");
+
        /*     if (count > 0 && count <= 100) {
                 charLength = 1;
             } else if (count > 101 && count <= 200) {
@@ -591,12 +742,12 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             } else if (count > 300 && count <= 400) {
                 charLength = 3;
 
-            }else if(count>400){
+            } else if (count > 400) {
                 charLength = 4;
             }
 
             int days = getDays(radioGroupDaysID);
-            Log.v("calculateCharges ", "days " + days + " charLength "+charLength);
+            Log.v("calculateCharges ", "days " + days + " charLength " + charLength);
 
             charges = charLength * days;
 
@@ -844,19 +995,19 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-                //  if (validateFields()) {
-                Intent intent = new Intent(this, PayUActivity.class);
+                if (validateFields()) {
+                /*Intent intent = new Intent(this, PayUActivity.class);
                 intent.putExtra("Price", 1);
                 startActivity(intent);
-                finish();
+                finish();*/
 //
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
-                // memberId = String.valueOf(memberList.get(0).getMemberId());
-                // memberToken = memberList.get(0).getMemberToken();
-                // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                //    postNewsAPI();
-                //}
+                    // memberId = String.valueOf(memberList.get(0).getMemberId());
+                    // memberToken = memberList.get(0).getMemberToken();
+                    // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
+                    postNewsAPI();
+                }
 
                 break;
             case R.id.article_image1:
@@ -1203,32 +1354,50 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
 
             String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
+            try {
+                // bimatp factory
+                BitmapFactory.Options options = new BitmapFactory.Options();
 
-            Bitmap original = BitmapFactory.decodeFile(mediaPath);
-            Log.v("onSelectFromGallery ", " originalSize " + original.getByteCount());
+                // downsizing image as it throws OutOfMemory Exception for larger
+                // images
+                options.inSampleSize = 2;
 
-            Bitmap bmp = BitmapFactory.decodeFile(mediaPath);
+                Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
+                Bitmap originalSize = BitmapFactory.decodeFile(mediaPath);
+                Log.v("onSelectFromGallery ", " originalSize " + originalSize.getByteCount());
 
-            //create file which we want to send to server.
-            File imageFIle = new File(String.valueOf(realUri));
+                Log.v("onSelectFromGallery ", " compressedSize " + compressedBitmap.getByteCount());
+                try {
+                    if (compressedBitmap.getByteCount() > 26214400) {
+                        Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //create file which we want to send to server.
+                        File imageFIle = new File(String.valueOf(realUri));
 
-            // Set the Image in ImageView for Previewing the Media
-            if (currentImageView == 1) {
-                mArticleImage1.setBackgroundResource(0);
-                mArticleImage1.setImageBitmap(original);
-                // mArticleImage1.setImageBitmap(decoded);
+                        // Set the Image in ImageView for Previewing the Media
+                        if (currentImageView == 1) {
+                            mArticleImage1.setBackgroundResource(0);
+                            mArticleImage1.setImageBitmap(compressedBitmap);
+                            // mArticleImage1.setImageBitmap(decoded);
 
-                //   base64Image1 = getStringImage(bmp);
-                //  newsPic.add(base64Image1);
-                filePaths.add(mediaPath);
+                            //   base64Image1 = getStringImage(bmp);
+                            //  newsPic.add(base64Image1);
+                            filePaths.add(mediaPath);
 
-            } else if (currentImageView == 2) {
-                mArticleImage2.setBackgroundResource(0);
-                mArticleImage2.setImageBitmap(original);
-                // mArticleImage2.setImageBitmap(decoded);
-                // base64Image2 = getStringImage(bmp);
-                // newsPic.add(base64Image2);
-                filePaths.add(mediaPath);
+                        } else if (currentImageView == 2) {
+                            mArticleImage2.setBackgroundResource(0);
+                            mArticleImage2.setImageBitmap(compressedBitmap);
+                            // mArticleImage2.setImageBitmap(decoded);
+                            // base64Image2 = getStringImage(bmp);
+                            // newsPic.add(base64Image2);
+                            filePaths.add(mediaPath);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
 
         } catch (Exception e) {

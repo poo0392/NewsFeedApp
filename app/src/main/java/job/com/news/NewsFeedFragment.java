@@ -1,13 +1,14 @@
 package job.com.news;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -109,7 +110,7 @@ public class NewsFeedFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt("position", position);
         args.putStringArrayList("categories", (ArrayList<String>) catListNewEn);
-       // Log.v("newInstance ", " categories" + catListNewEn.toString());
+        // Log.v("newInstance ", " categories" + catListNewEn.toString());
         fragment.setArguments(args);
         return fragment;
     }
@@ -146,7 +147,6 @@ public class NewsFeedFragment extends Fragment {
     }
 
 
-
     public void setSearchViewMenu(final Menu menu) {
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -169,7 +169,7 @@ public class NewsFeedFragment extends Fragment {
 
 
                 //if (!newsFeedList.isEmpty()) {
-               // List<NewsFeedList> filteredModelList = filter(newsFeedList, query);
+                // List<NewsFeedList> filteredModelList = filter(newsFeedList, query);
                 List<NewsFeedList> filteredModelList = filter(newsFeedListAll, query);
 
                 if (filteredModelList.size() > 0) {
@@ -180,7 +180,8 @@ public class NewsFeedFragment extends Fragment {
                     // If not matching search filter data
                     hideKeyboard();
                     // Constants.snackbar(sp_av_layout, "Record Not Found..");
-                    Snackbar.make(ll_news_feed, "Record Not Found..", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    // Snackbar.make(ll_news_feed, "Record Not Found..", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    noDataFoundPopUp();
                     return false;
                 }
 
@@ -226,6 +227,27 @@ public class NewsFeedFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    private void noDataFoundPopUp() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        // builder.setTitle("Confirm Please...");
+        builder.setMessage("No Data Found !!");
+        builder.setCancelable(true);
+        builder.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        dialog.dismiss();
+                        dialog.cancel();
+
+                    }
+                });
+
+        AlertDialog alert1 = builder.create();
+        alert1.show();
+
     }
 
     public void hideKeyboard() {
@@ -289,7 +311,7 @@ public class NewsFeedFragment extends Fragment {
     private void getBundleData() {
         pos = getArguments().getInt("position");
         Log.v("getBundleData ", "Fragpos " + pos);
-      //  Toast.makeText(getActivity(), "Position is: " + pos, Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(getActivity(), "Position is: " + pos, Toast.LENGTH_SHORT).show();
         categoryList = getArguments().getStringArrayList("categories");
         Log.v("getBundleData ", " categoryList" + categoryList.toString());
 

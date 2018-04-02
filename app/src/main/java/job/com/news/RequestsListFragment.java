@@ -1,12 +1,13 @@
 package job.com.news;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
@@ -476,7 +477,9 @@ public class RequestsListFragment extends Fragment {
                     // If not matching search filter data
                     hideKeyboard();
                     // Constants.snackbar(sp_av_layout, "Record Not Found..");
-                    Snackbar.make(ll_news_feed, "Record Not Found..", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                  //  Snackbar.make(ll_news_feed, "Record Not Found..", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    noDataFoundPopUp();
+
                     return false;
                 }
 
@@ -540,7 +543,26 @@ public class RequestsListFragment extends Fragment {
         loadDatatoList(filteredList, "filter");
         return filteredList;
     }
+    private void noDataFoundPopUp() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        // builder.setTitle("Confirm Please...");
+        builder.setMessage("No Data Found !!");
+        builder.setCancelable(true);
+        builder.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
 
+                        dialog.dismiss();
+                        dialog.cancel();
+
+                    }
+                });
+
+        AlertDialog alert1 = builder.create();
+        alert1.show();
+
+    }
     public void hideKeyboard() {
         View view = getActivity().getCurrentFocus();
         if (view != null) {
