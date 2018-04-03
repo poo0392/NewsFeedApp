@@ -200,7 +200,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             String member_name;
             //  if(!from.equals("fromApi")) {
             memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
-            member_name = memberList.get(0).getFirstName();
+           // member_name = memberList.get(0).getFirstName();
             //}else {
 
             //  String member_name=newsFeedList.get(position).getMember().getFirstName();

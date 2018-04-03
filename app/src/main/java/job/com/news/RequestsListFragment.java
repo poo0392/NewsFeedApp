@@ -78,6 +78,7 @@ public class RequestsListFragment extends Fragment {
     SendMessage SM;
     boolean wrapInScrollView = true;
     LinearLayout ll_news_feed;
+    String all_news;
 
 
     public static Fragment newInstance(int position) {
@@ -156,7 +157,12 @@ public class RequestsListFragment extends Fragment {
 
         WebService webService = retrofit.create(WebService.class);
         //long id= newsListTable.getLastId();
-        String all_news = "0";
+
+        if(role.equals("1")){
+            all_news = "1";
+        }else{
+            all_news = "0";
+        }
         long last_id = 0;
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
         RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
@@ -199,6 +205,8 @@ public class RequestsListFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    setFailedAlertDialog(mContext, "Failed", "Something went Wrong");
                 }
             }
 

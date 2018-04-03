@@ -34,7 +34,7 @@ public class NewsFeedSubFragment extends Fragment {
     Context mContext;
     ArrayList<String> subCatList = new ArrayList<>();
     ArrayList<String> subCatListEn = new ArrayList<>();
-    List<NewsFeedList> newsFeedList = new ArrayList<>();
+    List<NewsFeedList>   newsFeedList = new ArrayList<>();
     String category, subCategory;
     public RecyclerView mRecyclerView;
     private ImageAdapter adapter;
@@ -48,6 +48,7 @@ public class NewsFeedSubFragment extends Fragment {
     private boolean fragmentVisible = false;
     private boolean fragmentOnCreated = false;
     int pos;
+    private boolean isDataLoading = true;
 
     public static Fragment newInstance(int position, ArrayList<String> subCategory, String category, ArrayList<String> subCatList) {
         NewsFeedSubFragment fragment = new NewsFeedSubFragment();
@@ -60,20 +61,15 @@ public class NewsFeedSubFragment extends Fragment {
         return fragment;
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.v(TAG+" ","onCreateView ");
+      //
         View view = inflater.inflate(R.layout.fragment_news_feed_sub, container, false);
-        setHasOptionsMenu(true);
 
-        mContext = getActivity();
-        ConnectivityChangeReciever.enableReceiver(mContext);
-        newsListTable = new NewsListTable(mContext);
-        attachViews(view);
-        setDataToAdapter();
-        //getBundleData();
-        //setListeners();
-
+       // ConnectivityChangeReciever.enableReceiver(mContext);
+        Log.v(TAG + " ", "onCreateView ");
         return view;
     }
 
@@ -84,32 +80,55 @@ public class NewsFeedSubFragment extends Fragment {
         if (newsFeedList != null || !newsFeedList.isEmpty()) {
             newsFeedList.clear();
         }
+
         newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat));
         Log.v("", "newsFeedList " + newsFeedList.size());
+       // isDataLoading = false;
 
-        setDataToAdapter();
-    }
-
-    private void setDataToAdapter() {
-        Log.v(TAG+" ","setDataToAdapter ");
-
-        if (!newsFeedList.isEmpty() || newsFeedList.size() > 0) {
-            Log.v("", "newsFeedList " + newsFeedList.size());
-
-            adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeedSubfragment", 0);
-            mRecyclerView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
+        Log.v(TAG, " isDataLoading "+isDataLoading);
+        if(!isDataLoading){
+            setDataToAdapter(newsFeedList);
         }
     }
 
 
+    private void setDataToAdapter(List<NewsFeedList> List) {
+        Log.v(TAG + " ", "setDataToAdapter ");
+
+        if (!List.isEmpty() || List.size() > 0) {
+            Log.v("", "newsFeedList " + List.size());
+
+            adapter = new ImageAdapter(getActivity(), List, mRecyclerView, "newsfeedSubfragment", 0);
+            mRecyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+    }
+   /* @SuppressLint("LongLogTag")
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.v(TAG + " onActivityCreated", " called ");
+        if(isDataLoading){
+            fetchData();
+        }else{
+            //get saved instance variable listData()
+        }
+    }*/
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        attachViews(view);
+       // setDataToAdapter(newsFeedList);
+
+    }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         Log.v(TAG, " setUserVisibleHint ");
 
-      //  Log.v(TAG, ":: isVisibleToUser " + isVisibleToUser);
+        //  Log.v(TAG, ":: isVisibleToUser " + isVisibleToUser);
         if (isVisibleToUser && isResumed()) {   // only at fragment screen is resumed
             fragmentResume = true;
             fragmentVisible = false;
@@ -119,6 +138,7 @@ public class NewsFeedSubFragment extends Fragment {
             fragmentResume = false;
             fragmentVisible = true;
             fragmentOnCreated = true;
+
         } else if (!isVisibleToUser && fragmentOnCreated) {// only when you go out of fragment screen
             fragmentVisible = false;
             fragmentResume = false;
@@ -127,7 +147,7 @@ public class NewsFeedSubFragment extends Fragment {
 
     @SuppressLint("LongLogTag")
     private void getBundleData() {
-        Log.v(TAG+" ","getBundleData ");
+        Log.v(TAG + " ", "getBundleData ");
         pos = getArguments().getInt("position");
         Log.v(TAG + " getBundleData ", "Fragpos " + pos);
         //  Toast.makeText(getActivity(), "Position is: " + pos, Toast.LENGTH_SHORT).show();
@@ -143,15 +163,20 @@ public class NewsFeedSubFragment extends Fragment {
         subCategory = subCatListEn.get(pos).toString();
         Log.v(TAG + " getBundleData ", " category" + category);
 
+     //  isDataLoading=false;
+
         setData(category, subCategory);
     }
 
     private void attachViews(View view) {
+        mContext = getActivity();
+        newsListTable = new NewsListTable(mContext);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.news_feed_sub_recycler_view);
-        layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager = new LinearLayoutManager(mContext);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
 
-
+        isDataLoading = false;
     }
 }

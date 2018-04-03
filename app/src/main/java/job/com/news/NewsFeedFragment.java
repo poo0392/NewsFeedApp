@@ -1,5 +1,6 @@
 package job.com.news;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
@@ -137,9 +138,11 @@ public class NewsFeedFragment extends Fragment {
     }
 
 
+    @SuppressLint("LongLogTag")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.v(TAG+" onCreateView ", " Called ");
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         setHasOptionsMenu(true);
         newsFeedApplication = NewsFeedApplication.getApp();
@@ -179,17 +182,12 @@ public class NewsFeedFragment extends Fragment {
         if (subCategoryListLang.size() > 0 || subCategoryListLang != null || !subCategoryListLang.isEmpty()) {
 
             ll_frag_nestedtabs.setVisibility(View.VISIBLE);
-            setListToNestedTabsAdapter(newsFeedList, subCategoryList, "bundle");
-
 
             subCategoryList.addAll(subCategoryTable.getSubCatByCatId(categoryId));
             Log.v("getBundleData ", " subCategoryList" + subCategoryList.toString());
             Log.v("", "subCategoryListLang " + subCategoryListLang.size());
 
 
-          /*  adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
-            mRecyclerView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();*/
             setupViewPager(viewPager);
 
         }
@@ -346,7 +344,7 @@ public class NewsFeedFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         Log.v(TAG, " setUserVisibleHint ");
 
-        Log.v(TAG, ":: isVisibleToUser " + isVisibleToUser);
+       // Log.v(TAG, ":: isVisibleToUser " + isVisibleToUser);
         if (isVisibleToUser && isResumed()) {   // only at fragment screen is resumed
             fragmentResume = true;
             fragmentVisible = false;
@@ -396,7 +394,9 @@ public class NewsFeedFragment extends Fragment {
         newsFeedListAll.addAll(newsListTable.getAllNewsRecords());
     }
 
+    @SuppressLint("LongLogTag")
     private void getBundleData() {
+        Log.v(TAG+" getBundleData ", " Called ");
         pos = getArguments().getInt("position");
         Log.v("getBundleData ", "Fragpos " + pos);
         //  Toast.makeText(getActivity(), "Position is: " + pos, Toast.LENGTH_SHORT).show();
@@ -409,10 +409,10 @@ public class NewsFeedFragment extends Fragment {
         Log.v("getBundleData ", " categoryId" + categoryId);
         if (categoryId == 10 || categoryId == 13) {
             setDataSubCat(categoryId,pos);
-        } else
+        } else {
             loadDatatoList(categoryListAll.get(pos).toString(), categoryId);
-        //  loadData(categoryListAll.get(pos).toString());
-
+            //  loadData(categoryListAll.get(pos).toString());
+        }
     }
 
 
@@ -552,6 +552,7 @@ public class NewsFeedFragment extends Fragment {
         itemProgressBar = (ProgressBar) view.findViewById(R.id.item_progress_bar);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.news_feed_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
 
         viewPager = (ViewPager) view.findViewById(R.id.frag_viewpager);
@@ -677,9 +678,9 @@ public class NewsFeedFragment extends Fragment {
                 .show();
     }
 
-
+    @SuppressLint("LongLogTag")
     public void loadDatatoList(String categoryList, int categoryId) {
-
+        Log.v(TAG+" loadDatatoList ", " Called ");
         newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList));
 
         Log.v("", "getNewsFeedList " + newsFeedList.toString());
@@ -766,9 +767,6 @@ public class NewsFeedFragment extends Fragment {
         //   }
     }
 
-    private void setListToNestedTabsAdapter(ArrayList<NewsFeedList> newsFeedList, ArrayList<String> subCategoryList, String bundle) {
-
-    }
 
     public void setListToAdapter(List<NewsFeedList> newsFeedList, String from) {
         Log.v("", " from " + from);
