@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import job.com.news.sharedpref.MyPreferences;
@@ -24,6 +25,7 @@ public class ProfileFragment extends Fragment {
     CircleImageView profile_image;
     CardView cardView_details;
     EditText edt_first_name,edt_last_name,edt_phone,edt_email;
+    ImageView iv_email_verified;
     MyPreferences myPreferences;
     String emailId,firstName,lastName,phoneNum;
 
@@ -55,6 +57,7 @@ public class ProfileFragment extends Fragment {
         edt_last_name=(EditText)view.findViewById(R.id.edt_last_name);
         edt_phone=(EditText)view.findViewById(R.id.edt_phone);
         edt_email=(EditText)view.findViewById(R.id.edt_email);
+        iv_email_verified=(ImageView)view.findViewById(R.id.iv_email_verified);
 
 
         edt_first_name.setText(firstName);

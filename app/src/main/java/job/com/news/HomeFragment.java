@@ -20,7 +20,6 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import job.com.news.adapter.DynamicFragmentAdapter;
@@ -49,8 +48,9 @@ public class HomeFragment extends Fragment {
 
     private List<NewsFeedList> newsFeedListNew;
     private List<NewsFeedList> listItems;
-    private List<String> catListNew, catDupList,subCatDupList;
-    ArrayList<String> categoryList,subCategoryList;
+    private List<String>  catDupList, subCatDupList;
+    ArrayList<String> categoryList, subCategoryList,catListNew;
+    ArrayList<String> subCategoryListLang=new ArrayList<>();
     ArrayList<String> catListNewEn;
     Gson gson;
     NewsListTable newsListTable;
@@ -109,7 +109,7 @@ public class HomeFragment extends Fragment {
         subCategoryTable = new SubCategoryTable(mContext);
         newsImagesTable = new NewsImagesTable(mContext);
         categoryList = new ArrayList<>();
-        subCategoryList = new ArrayList<>();
+
         catListNew = new ArrayList<>();
         catListNewEn = new ArrayList<>();
         catDupList = new ArrayList<>();
@@ -147,12 +147,10 @@ public class HomeFragment extends Fragment {
 
 
         // for(int k=0;k<newsFeedListNew.size();k++) {
-        mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(), catListNew, catListNewEn);
+        mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(), catListNew, catListNewEn, "");
 
         // }
         for (int i = 0; i < catListNew.size(); i++) {
-            //  mAdapter.addFragment(new NewsFeedFragment(),catListNew.get(i)   );
-            //  mFragmentList.add(new NewsFeedFragment());
 
             addTab(catListNew.get(i));
 
@@ -178,16 +176,19 @@ public class HomeFragment extends Fragment {
 
         Log.v(TAG + " loadCategoryList ", "newsFeedList.size() " + newsFeedList.size());
         if (newsFeedList != null) {
-            for (int k = 0; k < newsFeedList.size(); k++) {
+           /* for (int k = 0; k < newsFeedList.size(); k++) {
                 catDupList.add(newsFeedList.get(k).getCategory());
                 subCatDupList.add(newsFeedList.get(k).getSub_category());
 
             }
 
             categoryList.addAll(new HashSet<>(catDupList));
-            subCategoryList.addAll(new HashSet<>(subCatDupList));
+            subCategoryList.addAll(new HashSet<>(subCatDupList));*/
+
+            categoryList = categoryMasterTable.getCategoryName();
+
             for (int i = 0; i < categoryList.size(); i++) {
-             //   for (int l = 0; l < subCategoryList.size(); l++) {
+                //   for (int l = 0; l < subCategoryList.size(); l++) {
                 if (categoryList.get(i).equals("National and International")) {
                     catListNew.add(mContext.getResources().getString(R.string.national_inter_menu));
                     catListNewEn.add("National and International");
@@ -208,7 +209,7 @@ public class HomeFragment extends Fragment {
                     catListNewEn.add("Economical News");
                 } else if (categoryList.get(i).equals("Health Related") || categoryList.get(i).equals("Health")) {
                     catListNew.add(mContext.getResources().getString(R.string.health_rel_menu));
-                    catListNewEn.add("National and International");
+                    catListNewEn.add("Health Related");
                 } else if (categoryList.get(i).equals("Business News") || categoryList.get(i).equals("Business")) {
                     catListNew.add(mContext.getResources().getString(R.string.business_news_menu));
                     catListNewEn.add("Business News");
@@ -268,7 +269,7 @@ public class HomeFragment extends Fragment {
                         catListNew.add(mContext.getResources().getString(R.string.edu_menu));
                         catListNewEn.add("Educational");
                     }*/
-              //  }
+                //  }
             }
         }
     }

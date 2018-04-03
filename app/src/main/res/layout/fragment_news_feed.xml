@@ -6,33 +6,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- include progress layout that will be displayed while loading more data -->
-    <!-- initially it is hidden -->
+    <LinearLayout
+        android:id="@+id/ll_frag_nestedtabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-
-      <!--  <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar"
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        </android.support.design.widget.AppBarLayout>-->
-          <!--  <android.support.design.widget.TabLayout
-                android:id="@+id/result_tabs"
-                android:background="@color/colorPrimary"
-                app:tabTextColor="@color/black"
-                app:tabSelectedTextColor="@color/white"
-                app:tabIndicatorColor="@color/white"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                android:visibility="gone"/>
+
+
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout_frag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:tabMode="scrollable"/>
-
+                android:layout_below="@+id/toolbar_home"
+                android:background="?attr/colorPrimary"
+                android:minHeight="?attr/actionBarSize"
+                app:tabIndicatorColor="@color/white"
+                app:tabMode="scrollable"
+                app:tabGravity="fill"/>
+        </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.view.ViewPager
-            android:id="@+id/viewpager"
+            android:id="@+id/frag_viewpager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />-->
-   <!-- app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+            android:layout_height="match_parent" />
+
+
+    </LinearLayout>
 
 
     <android.support.v7.widget.RecyclerView

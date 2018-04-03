@@ -233,6 +233,42 @@ public class NewsListTable {
         return listAll;
     }
 
+
+    public List<NewsFeedList> getNewsRecordsByCategoryAndSubCat(String category,String subCat) {
+        db = dbHelper.getWritableDatabase();
+        List<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
+        NewsFeedList model;
+        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY + " = '" + category + "' AND "+NewsListTable.SUB_CATEGORY+" ='"+subCat+"'";
+        Log.v("", "query1 " + query1);
+        Cursor cursor = db.rawQuery(query1, null);
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                model = new NewsFeedList((cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID))),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_UUID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.SUB_CATEGORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.COUNTRY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.STATE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CITY)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.LANGUAGE)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.COMMENT)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.LIKE_COUNT)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.MEMBER_ID)),
+                        cursor.getString(cursor.getColumnIndex(NewsListTable.CREATED_AT)));
+                Log.v("db ", "NewsID " + cursor.getInt(cursor.getColumnIndex(NewsListTable.NEWS_ID)));
+
+                listAll.add(model);
+            }
+        }
+        cursor.close();
+        db.close();
+        return listAll;
+    }
     public long getLastId() {//SELECT last_insert_rowid();
         db = dbHelper.getWritableDatabase();
         String query1 = "select seq from sqlite_sequence where name = '" + NewsListTable.NEWS_LIST_TABLE_NAME + "'";

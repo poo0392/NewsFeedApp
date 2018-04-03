@@ -482,79 +482,34 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 Log.v("mDescEdit ", "words " + wordsCount);
                 charLength = s.toString().length();
                 Log.v("mDescEdit ", "length " + s.toString().length());
-
                 int count = getSpaces(mDescEdit.getText().toString());
                 Log.v("getSpaces ", "count " + count);
 
-
-                //  if (charLength > 0) {
-                //       calculateWordsLength(wordsCount, charLength);
-                // }
-
-                /*if (numOfWords == 0) {
-                    mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(numOfWords)});
-                    Toast.makeText(getApplicationContext(), mContext.getResources().getString(R.string.toast_msg_desc_select), Toast.LENGTH_SHORT).show();
-                }
-                 else {*/
-                /*for (int k = 0; k < numOfWords; k++) {
-                    wordsCount = countWords(s.toString());
-
-
-                    charLength = s.toString().length();
-
-                    //  radioGroupDays.clearCheck();
-                    // }
-                }
-
-               */
-                // calculateWordsLength(wordsCount, charLength);
-              /*  if (wordsCount == 100) {
-                    //if (!(words == 100)) {
-                    if ((charLength >= editTextLength)) { //200<=300 & 200<=300
-
-                        Log.v("radioGroupWords ", "22 numOfWords " + numOfWords);
-                    } else
-
-                        mDescEdit.setText(mDescEdit.getText().toString().substring(0, mDescEdit.getText().toString().length() - 100));
-                }*/
-                //}
-                //  }
-
-              /*  if (numOfWords > 0 && numOfWords <= 100 && wordsCount == 100) {
-                    mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(charLength)});
-                } else {
-                    Toast.makeText(CreateArticle.this, "Cannot add more than " + numOfWords + " words", Toast.LENGTH_SHORT).show();
-                   // mDescEdit.setText(mDescEdit.getText().toString().substring(0, ));
-                }*/
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                //    spaceCount = getSpaceCount(editable.toString());
-                //    Log.v("mDescEdit ", "spaceCount " + spaceCount);
-                //    setDescTextLength(wordsCount);
-                String[] arr = mDescEdit.getText().toString().split("\\s+");
-                //Splits words & assign to the arr[]  ex : arr[0] -> Copying ,arr[1] -> first
-
-
-                int N = 100; // NUMBER OF WORDS THAT YOU NEED
-
-
-                // concatenating number of words that you required
-                for (int k = 0; k < N; k++) {
-                    nWords = nWords + " " + arr[k];
-                }
-
-                Log.v("getSpaces ", "nWords " + nWords);
-
+              //  setTextToDescTextview(numOfWords);
             }
         });
 
-        mDescEdit.setText(nWords);
-
-
     }
 
+    private void setTextToDescTextview(int numOfWords){
+        if(!mDescEdit.getText().toString().equals("")) {
+            String[] arr = mDescEdit.getText().toString().split("\\s+");
+
+            //Splits words & assign to the arr[]  ex : arr[0] -> Copying ,arr[1] -> first
+            int N = 100; // NUMBER OF WORDS THAT YOU NEED
+            // concatenating number of words that you required
+            for (int k = numOfWords; k<mDescEdit.getText().toString().length(); k--) {
+                nWords = nWords + " " + arr[k];
+            }
+            Log.v("", "nWords " + nWords);
+
+            mDescEdit.setText(nWords);
+        }
+    }
     private int getSpaces(String s) {
         int spaceCount = 0;
         for (char c : s.toCharArray()) {
@@ -565,27 +520,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         return spaceCount;
     }
 
-    private void calculateWordsLength(int wordsCount, int charLength) {
-        switch (numOfWords) {
-            case 100:
-                if ((wordsCount > 0 && wordsCount <= 100)) {
-                    mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(charLength)});
-                } else {
-                    Toast.makeText(CreateArticle.this, "Cannot add more than " + numOfWords + " words", Toast.LENGTH_SHORT).show();
-                    mDescEdit.setText("");
-                }
-                break;
-            case 200:
-                if ((wordsCount > 0 && wordsCount <= 200)) {
-                    mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(charLength)});
-                } else {
-                    Toast.makeText(CreateArticle.this, "Cannot add more than " + numOfWords + " words", Toast.LENGTH_SHORT).show();
-                    mDescEdit.setText("");
-                }
-                break;
-        }
-
-    }
 
     public int countWords(String str) {
         String words[] = str.split(" ");

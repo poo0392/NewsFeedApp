@@ -19,11 +19,11 @@
 
     <ImageView
         android:id="@+id/ic_edit"
-        android:visibility="gone"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_edit"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/profile_image"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -134,16 +134,30 @@
                     android:text="Email"
                     android:textSize="15sp" />
 
-                <EditText
-                    android:id="@+id/edt_email"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:focusable="false"
-                    android:gravity="left|center"
-                    android:padding="5dp"
-                    android:textColor="#000000"
-                    android:typeface="sans" />
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/edt_email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:background="@android:color/white"
+                        android:focusable="false"
+                        android:gravity="left|center"
+                        android:padding="5dp"
+                        android:textColor="#000000"
+                        android:typeface="sans" />
+
+                    <ImageView
+                        android:id="@+id/iv_email_verified"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/ic_approve_news"
+                        android:layout_gravity="center"/>
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

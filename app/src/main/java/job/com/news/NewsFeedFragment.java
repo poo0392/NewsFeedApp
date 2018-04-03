@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -39,8 +41,13 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import java.util.ArrayList;
 import java.util.List;
 
+import job.com.news.adapter.DynamicFragmentAdapter;
 import job.com.news.adapter.ImageAdapter;
+import job.com.news.db.CategoryMasterTable;
 import job.com.news.db.NewsListTable;
+import job.com.news.db.SubCategoryTable;
+import job.com.news.db.SubCategoryTableHi;
+import job.com.news.db.SubCategoryTableMr;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.OnLoadMoreListener;
@@ -66,12 +73,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class NewsFeedFragment extends Fragment {
+    public static final String TAG = "NewsFeedFragment";
+    private boolean fragmentResume = false;
+    private boolean fragmentVisible = false;
+    private boolean fragmentOnCreated = false;
+
     //changes reflect to be 26/03
     public RecyclerView mRecyclerView;
     private ImageAdapter adapter;
     private NewsFeedApplication newsFeedApplication;
     LinearLayoutManager layoutManager;
     private int mLoadedItems = 0;
+    DynamicFragmentAdapter DynamicFragmentAdapter;
+    private ViewPager viewPager;
+    private TabLayout mTabLayout;
 
     //For Recyclerview scroll
     private boolean isLoading = true;
@@ -80,7 +95,7 @@ public class NewsFeedFragment extends Fragment {
     private int lastVisibleItem, totalItemCount, firstVisibleItem;
     RelativeLayout bottomLayout;
     TextView tvEmptyView;
-    LinearLayout ll_news_feed;
+    LinearLayout ll_news_feed, ll_frag_nestedtabs;
     Context mContext;
     private MyPreferences myPreferences;
     String emailId, fullName, memberToken, getLangFromPref, lang_arr[], language;
@@ -92,15 +107,21 @@ public class NewsFeedFragment extends Fragment {
     private List<NewsImages> imagesList = new ArrayList<>();
     ArrayList<String> categoryResp = new ArrayList<>();
     ArrayList<String> categoryL = new ArrayList<>();
+    ArrayList<String> subCategoryListLang;
+    ArrayList<String> subCategoryList;
     int memberId;
     int pos;
     String category;
     ProgressDialog mProgressDialog;
     NewsListTable newsListTable;
+    SubCategoryTable subCategoryTable;
+    SubCategoryTableHi subCategoryTableHi;
+    SubCategoryTableMr subCategoryTableMr;
+    CategoryMasterTable categoryTable;
     protected Handler handler;
 
     private OnLoadMoreListener onLoadMoreListener;
-    private List<String> categoryList, catListNew, catDupList;
+    private ArrayList<String> categoryListAll, catListNew, catDupList;
     ProgressBar itemProgressBar;
     SessionManager langSelection;
 
@@ -129,9 +150,49 @@ public class NewsFeedFragment extends Fragment {
         initializeComp();
         getPrefData();
         attachViews(view);
-        getBundleData();
+        //getBundleData();
         //setListeners();
+
         return view;
+    }
+
+    private void setDataSubCat(int categoryId, int pos) {
+        //  int categoryId = categoryTable.getCategoryIdByName(categoryListAll.get(pos).toString());
+        // Log.v("getBundleData ", " categoryId" + categoryId);
+
+        subCategoryListLang = new ArrayList<>();
+        if (categoryListAll.get(pos).toString().equals("Small Classifieds")) {
+            if (getLangFromPref.equalsIgnoreCase(lang_arr[1])) {
+                subCategoryListLang.addAll(subCategoryTableHi.getSubCatByCatId(categoryId));
+            } else if (getLangFromPref.equalsIgnoreCase(lang_arr[2])) {
+                subCategoryListLang.addAll(subCategoryTableMr.getSubCatByCatId(categoryId));
+            }
+        } else if (categoryListAll.get(pos).toString().equals("Career Related")) {
+            if (getLangFromPref.equalsIgnoreCase(lang_arr[1])) {
+                subCategoryListLang.addAll(subCategoryTableHi.getSubCatByCatId(categoryId));
+            } else if (getLangFromPref.equalsIgnoreCase(lang_arr[2])) {
+                subCategoryListLang.addAll(subCategoryTableMr.getSubCatByCatId(categoryId));
+            }
+            //  }
+        }
+
+        if (subCategoryListLang.size() > 0 || subCategoryListLang != null || !subCategoryListLang.isEmpty()) {
+
+            ll_frag_nestedtabs.setVisibility(View.VISIBLE);
+            setListToNestedTabsAdapter(newsFeedList, subCategoryList, "bundle");
+
+
+            subCategoryList.addAll(subCategoryTable.getSubCatByCatId(categoryId));
+            Log.v("getBundleData ", " subCategoryList" + subCategoryList.toString());
+            Log.v("", "subCategoryListLang " + subCategoryListLang.size());
+
+
+          /*  adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
+            mRecyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();*/
+            setupViewPager(viewPager);
+
+        }
     }
 
 
@@ -280,6 +341,27 @@ public class NewsFeedFragment extends Fragment {
         return filteredList;
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Log.v(TAG, " setUserVisibleHint ");
+
+        Log.v(TAG, ":: isVisibleToUser " + isVisibleToUser);
+        if (isVisibleToUser && isResumed()) {   // only at fragment screen is resumed
+            fragmentResume = true;
+            fragmentVisible = false;
+            fragmentOnCreated = true;
+            getBundleData();
+        } else if (isVisibleToUser) {        // only at fragment onCreated
+            fragmentResume = false;
+            fragmentVisible = true;
+            fragmentOnCreated = true;
+        } else if (!isVisibleToUser && fragmentOnCreated) {// only when you go out of fragment screen
+            fragmentVisible = false;
+            fragmentResume = false;
+        }
+    }
+
     private void loadDataNew(List<NewsFeedList> filteredList) {
 
         adapter = new ImageAdapter(getActivity(), filteredList, mRecyclerView, "newsfeed_fragment", 0);
@@ -296,14 +378,20 @@ public class NewsFeedFragment extends Fragment {
 
     private void initializeComp() {
         newsListTable = new NewsListTable(mContext);
+        subCategoryTable = new SubCategoryTable(mContext);
+        subCategoryTableHi = new SubCategoryTableHi(mContext);
+        subCategoryTableMr = new SubCategoryTableMr(mContext);
+        categoryTable = new CategoryMasterTable(mContext);
         handler = new Handler();
         newsFeedList = new ArrayList<>();
+        subCategoryList = new ArrayList<>();
         filteredList = new ArrayList<>();
         filteredModelListNew = new ArrayList<>();
         listTwo = new ArrayList<>();
-        categoryList = new ArrayList<>();
+        categoryListAll = new ArrayList<>();
         catListNew = new ArrayList<>();
         catDupList = new ArrayList<>();
+
 
         newsFeedListAll.addAll(newsListTable.getAllNewsRecords());
     }
@@ -312,11 +400,18 @@ public class NewsFeedFragment extends Fragment {
         pos = getArguments().getInt("position");
         Log.v("getBundleData ", "Fragpos " + pos);
         //  Toast.makeText(getActivity(), "Position is: " + pos, Toast.LENGTH_SHORT).show();
-        categoryList = getArguments().getStringArrayList("categories");
-        Log.v("getBundleData ", " categoryList" + categoryList.toString());
+        categoryListAll = getArguments().getStringArrayList("categories");
+        Log.v("getBundleData ", " categoryListAll" + categoryListAll.toString());
+        Log.v("getBundleData ", " categoryListByPos " + categoryListAll.get(pos).toString());
 
-        loadDatatoList(categoryList.get(pos).toString());
-        //  loadData(categoryList.get(pos).toString());
+
+        int categoryId = categoryTable.getCategoryIdByName(categoryListAll.get(pos).toString());
+        Log.v("getBundleData ", " categoryId" + categoryId);
+        if (categoryId == 10 || categoryId == 13) {
+            setDataSubCat(categoryId,pos);
+        } else
+            loadDatatoList(categoryListAll.get(pos).toString(), categoryId);
+        //  loadData(categoryListAll.get(pos).toString());
 
     }
 
@@ -339,7 +434,7 @@ public class NewsFeedFragment extends Fragment {
                             int end = index + 5;
 
                             for (int i = index; i < end; i++) {
-                                // loadDatatoList(categoryList.get(pos).toString());
+                                // loadDatatoList(categoryListAll.get(pos).toString());
                                 adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", i);
                                 adapter.notifyDataSetChanged();
                             }
@@ -355,8 +450,8 @@ public class NewsFeedFragment extends Fragment {
       /*  mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
             @Override
             public void onLoadMore() {
-                // loadDatatoList(categoryList.get(pos).toString());
-                loadData(categoryList.get(pos).toString());
+                // loadDatatoList(categoryListAll.get(pos).toString());
+                loadData(categoryListAll.get(pos).toString());
             }
         });*/
 
@@ -451,12 +546,38 @@ public class NewsFeedFragment extends Fragment {
     private void attachViews(View view) {
         int position = FragmentPagerItem.getPosition(getArguments());
         ll_news_feed = (LinearLayout) view.findViewById(R.id.ll_news_feed);
+        ll_frag_nestedtabs = (LinearLayout) view.findViewById(R.id.ll_frag_nestedtabs);
         bottomLayout = (RelativeLayout) view.findViewById(R.id.loadItemsLayout_recyclerView);
         tvEmptyView = (TextView) view.findViewById(R.id.empty_view);
         itemProgressBar = (ProgressBar) view.findViewById(R.id.item_progress_bar);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.news_feed_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
+
+        viewPager = (ViewPager) view.findViewById(R.id.frag_viewpager);
+        //  viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpagertab);
+
+        mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout_frag);
+        mTabLayout.setupWithViewPager(viewPager);
+        //  setupViewPager(viewPager);
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        DynamicFragmentAdapter = new DynamicFragmentAdapter(getFragmentManager(), subCategoryListLang,subCategoryList, categoryListAll.get(pos).toString(), "sub_cat");
+        for (int i = 0; i < subCategoryListLang.size(); i++) {
+            addTab(subCategoryListLang.get(i));
+
+        }
+        viewPager.setAdapter(DynamicFragmentAdapter);
+    }
+
+    private void addTab(String title) {
+        mTabLayout.addTab(mTabLayout.newTab().setText(title));
+        addTabPage();
+    }
+
+    public void addTabPage() {
+        DynamicFragmentAdapter.notifyDataSetChanged();
     }
 
     private void callNewsListAPI(String memberToken, int memberId, long last_id) {
@@ -511,8 +632,8 @@ public class NewsFeedFragment extends Fragment {
                                 categoryResp.add(newsFeedListResp.get(i).getCategory());
                                 imagesList = newsFeedListResp.get(i).getNews_images();
                             }
-                            for (int k = 0; k < categoryResp.size(); k++)
-                                loadDatatoList(categoryResp.get(k).toString());
+                            //for (int k = 0; k < categoryResp.size(); k++)
+                            //   loadDatatoList(categoryResp.get(k).toString(), );
                         } else {//result size 0 means there is no more data available at server
                             adapter.setMoreDataAvailable(false);
                             //telling adapter to stop calling load more as no more server data available
@@ -557,13 +678,15 @@ public class NewsFeedFragment extends Fragment {
     }
 
 
-    public void loadDatatoList(String categoryList) {
+    public void loadDatatoList(String categoryList, int categoryId) {
 
         newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList));
 
         Log.v("", "getNewsFeedList " + newsFeedList.toString());
         Log.v("", "getNewsFeedListSIZE " + newsFeedList.size());
 
+
+        ll_frag_nestedtabs.setVisibility(View.GONE);
 
         setListToAdapter(newsFeedList, "bundle");
         // if (newsFeedList.size() < 5) {
@@ -609,6 +732,41 @@ public class NewsFeedFragment extends Fragment {
             }
         });*/
 
+
+    }
+
+    private void getSubCategories(int id) {
+        // for (int i = 0; i < categoryListAll.size(); i++) {
+
+
+
+           /* if(subCategoryList.get(i).equals("Property")){
+                subCategoryListLang.add(mContext.getResources().getString(R.string.national_inter_menu));
+            }else  if(subCategoryList.get(i).equals("Birthday Ads")){
+
+            }else  if(subCategoryList.get(i).equals("App Related Ads")){
+
+            }else  if(subCategoryList.get(i).equals("Buy and Sell")){
+
+            }else  if(subCategoryList.get(i).equals("Services")){
+
+            }else  if(subCategoryList.get(i).equals("Loan related")){
+
+            }else  if(subCategoryList.get(i).equals("Matrimony related")){
+
+            }else  if(subCategoryList.get(i).equals("Books and Literature")){
+
+            }else  if(subCategoryList.get(i).equals("Job")){
+
+            }else  if(subCategoryList.get(i).equals("Business")){
+
+            }else  if(subCategoryList.get(i).equals("Educational")){
+
+            }*/
+        //   }
+    }
+
+    private void setListToNestedTabsAdapter(ArrayList<NewsFeedList> newsFeedList, ArrayList<String> subCategoryList, String bundle) {
 
     }
 
