@@ -71,5 +71,21 @@ public class SubCategoryTable {
         db.close();
         return listAll;
     }
+    public ArrayList<String> getSubCatIdByCatId(int cat_id) {
+        db = dbHelper.getWritableDatabase();
+        // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
+        ArrayList<String> listAll = new ArrayList<String>();
+        String query1 = "SELECT " + SubCategoryTable.SUB_CATEGORY_ID + " FROM " + SubCategoryTable.SUB_CATEGORY_TABLE_NAME + " where " + SubCategoryTable.CATEGORY_ID + " = " + cat_id;
+        Cursor cursor = db.rawQuery(query1, null);
 
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                listAll.add(String.valueOf(cursor.getInt(cursor.getColumnIndex(SubCategoryTable.SUB_CATEGORY_ID))));
+            }
+        }
+        cursor.close();
+        db.close();
+        return listAll;
+    }
 }

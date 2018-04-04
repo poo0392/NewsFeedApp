@@ -196,7 +196,9 @@ public class RequestsListFragment extends Fragment {
 
                             try {
                                 newsFeedList = serverResponse.getNewsFeedList();
-                                loadDatatoList(newsFeedList, "response");
+                                if(newsFeedList!=null || !newsFeedList.isEmpty()) {
+                                    loadDatatoList(newsFeedList, "response");
+                                }
 
                             } catch (Exception e) {
                                 e.printStackTrace();

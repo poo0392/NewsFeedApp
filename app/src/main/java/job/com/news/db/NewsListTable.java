@@ -234,11 +234,12 @@ public class NewsListTable {
     }
 
 
-    public List<NewsFeedList> getNewsRecordsByCategoryAndSubCat(String category,String subCat) {
+    public List<NewsFeedList> getNewsRecordsByCategoryAndSubCat(int category_id,String sub_cat_id) {
+        int subCatId= Integer.parseInt(sub_cat_id);
         db = dbHelper.getWritableDatabase();
         List<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
         NewsFeedList model;
-        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY + " = '" + category + "' AND "+NewsListTable.SUB_CATEGORY+" ='"+subCat+"'";
+        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY_ID + " = " + category_id + " AND "+NewsListTable.SUB_CATEGORY_ID+" = "+subCatId+" ";
         Log.v("", "query1 " + query1);
         Cursor cursor = db.rawQuery(query1, null);
         if (cursor.getCount() > 0) {

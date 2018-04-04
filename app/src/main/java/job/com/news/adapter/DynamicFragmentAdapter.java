@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import job.com.news.NewsFeedFragment;
+import job.com.news.SubCategoryNewsFragment;
 import job.com.news.db.NewsListTable;
 import job.com.news.models.NewsFeedList;
 
@@ -31,7 +32,8 @@ public class DynamicFragmentAdapter extends FragmentStatePagerAdapter {
     NewsListTable newsListTable;
     Context mContext;
     Bundle b;
-    String from,category;
+    String from;
+    int category;
 
     public DynamicFragmentAdapter(FragmentManager fm, ArrayList<String> catListNew, ArrayList<String> catListNewEn, String from) {
         super(fm);
@@ -40,7 +42,7 @@ public class DynamicFragmentAdapter extends FragmentStatePagerAdapter {
         this.from = from;
     }
 
-    public DynamicFragmentAdapter(FragmentManager fm, ArrayList<String> catListNew, ArrayList<String> subCatList, String category, String from) {
+    public DynamicFragmentAdapter(FragmentManager fm, ArrayList<String> catListNew, ArrayList<String> subCatList, int category, String from) {
         super(fm);
         this.catListNew = catListNew;
         this.category = category;
@@ -50,20 +52,13 @@ public class DynamicFragmentAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        // for (int i = 0; i < catListNew.size(); i++) {
-        //  return mFragmentList.get(position);
-        ////   fragment = NewsFeedFragment.newInstance();
-        //   break;
-        // }
-        // return mFragmentList.get(position);
-        // for (int i = 0; i < catListEn.size(); i++) {
-        // NewsList.addAll(newsListTable.getNewsRecordsByCategory(catListEn.get(i)));
-        //    NewsList=newsListTable.getNewsRecordsByCategory(catListEn.get(i));
-
-        //  fragment = NewsFeedFragment.newInstance(position,newsFeedListNew);
-        // }
+       //catListNew == language
+        //catListNewEn == category list in english
+        //category == category value from list
+        //subCatList = subcategory list
         if (from.equals("sub_cat")) {
-            return NewsFeedSubFragment.newInstance(position, catListNew,category,subCatList);
+         //   return NewsFeedSubFragment.newInstance(position, catListNew,category,subCatList);
+            return SubCategoryNewsFragment.newInstance(position, catListNew,category,subCatList);
         } else
             return NewsFeedFragment.newInstance(position, catListNewEn);
 

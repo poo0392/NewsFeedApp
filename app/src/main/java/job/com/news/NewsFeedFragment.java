@@ -153,8 +153,7 @@ public class NewsFeedFragment extends Fragment {
         initializeComp();
         getPrefData();
         attachViews(view);
-        //getBundleData();
-        //setListeners();
+
 
         return view;
     }
@@ -183,12 +182,13 @@ public class NewsFeedFragment extends Fragment {
 
             ll_frag_nestedtabs.setVisibility(View.VISIBLE);
 
-            subCategoryList.addAll(subCategoryTable.getSubCatByCatId(categoryId));
+           // subCategoryList.addAll(subCategoryTable.getSubCatByCatId(categoryId));
+            subCategoryList.addAll(subCategoryTable.getSubCatIdByCatId(categoryId));
             Log.v("getBundleData ", " subCategoryList" + subCategoryList.toString());
             Log.v("", "subCategoryListLang " + subCategoryListLang.size());
 
 
-            setupViewPager(viewPager);
+            setupViewPager(viewPager,categoryId);
 
         }
     }
@@ -563,8 +563,8 @@ public class NewsFeedFragment extends Fragment {
         //  setupViewPager(viewPager);
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        DynamicFragmentAdapter = new DynamicFragmentAdapter(getFragmentManager(), subCategoryListLang,subCategoryList, categoryListAll.get(pos).toString(), "sub_cat");
+    private void setupViewPager(ViewPager viewPager, int categoryId) {
+        DynamicFragmentAdapter = new DynamicFragmentAdapter(getFragmentManager(), subCategoryListLang,subCategoryList, categoryId, "sub_cat");
         for (int i = 0; i < subCategoryListLang.size(); i++) {
             addTab(subCategoryListLang.get(i));
 

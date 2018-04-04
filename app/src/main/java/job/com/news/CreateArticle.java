@@ -98,6 +98,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private Context mContext;
     private LinkedHashMap<String, String> mapValuesFinal;
     private HashMap<String, Integer> mapState, cityMap;//changes done
+    boolean validWords = false;
 
     private ArrayList<HashMap<String, String>> stateList;
     private TextView mTotalChargesView, mDateView;
@@ -451,11 +452,12 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 int radioId = group.getCheckedRadioButtonId();
                 numOfWords = setDescpWordsNum(radioId);
                 Log.v("radioGroupWords ", "numOfWords " + numOfWords);
-                if (numOfWords == 400) {
+               /* if (numOfWords == 400) {
                     setDescTextLength(300000);
                 } else {
-                    setDescTextLength(numOfWords);
-                }
+                  //  setDescTextLength(numOfWords);
+                    setLengthDescTextview();
+                }*/
 
             }
         });
@@ -470,6 +472,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
 
         mDescEdit.addTextChangedListener(new TextWatcher() {
+            boolean mToggle = false;
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -484,32 +487,54 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 Log.v("mDescEdit ", "length " + s.toString().length());
                 int count = getSpaces(mDescEdit.getText().toString());
                 Log.v("getSpaces ", "count " + count);
+               // if (mToggle) {
+
+                if (numOfWords != 400) {
+                    if (wordsCount <= numOfWords) {
+                        validWords = true;
+                    } else {
+
+                        mDescEdit.setText(value(mDescEdit.getText().toString(), numOfWords));
+                        //  Toast.makeText(getApplicationContext(), "You cannot add more than " + numOfWords, Toast.LENGTH_SHORT).show();
+                       // setFailedAlertDialog(CreateArticle.this, "", "You cannot add more than " + numOfWords + " words");
+                        mToggle=true;
+                        //hideKeyboard();
+                        //  return;
+                    }
+                }
+              //  }
 
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-              //  setTextToDescTextview(numOfWords);
+String s=editable.toString();
+               //
+                if(mToggle) {
+                    setFailedAlertDialog(CreateArticle.this, "", "You cannot add more than " + numOfWords + " words");
+                }
+
+
             }
         });
 
+
     }
 
-    private void setTextToDescTextview(int numOfWords){
-        if(!mDescEdit.getText().toString().equals("")) {
-            String[] arr = mDescEdit.getText().toString().split("\\s+");
 
-            //Splits words & assign to the arr[]  ex : arr[0] -> Copying ,arr[1] -> first
-            int N = 100; // NUMBER OF WORDS THAT YOU NEED
-            // concatenating number of words that you required
-            for (int k = numOfWords; k<mDescEdit.getText().toString().length(); k--) {
-                nWords = nWords + " " + arr[k];
-            }
-            Log.v("", "nWords " + nWords);
+    public String value(String s, int numOfWords) {
+        String result = "";
 
-            mDescEdit.setText(nWords);
+        int wordsCount = countWords(s);
+        if (wordsCount <= numOfWords) {
+            result = s;
+        } else {
+            int length = wordsCount - numOfWords;
+            result = s.substring(0, s.length() - length);
         }
+        return result;
     }
+
     private int getSpaces(String s) {
         int spaceCount = 0;
         for (char c : s.toCharArray()) {

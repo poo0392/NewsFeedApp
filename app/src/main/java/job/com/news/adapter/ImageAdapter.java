@@ -84,8 +84,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.mLoadedItems = mLoadedItems;
         memberTable = new MemberTable(mContext);
         newsImagesTable = new NewsImagesTable(mContext);
-        this.memberList = new ArrayList<>();
-        this.imagesList = new ArrayList<>();
+        memberList = new ArrayList<>();
+        imagesList = new ArrayList<>();
         from = value_status.split(":");
         Log.v("", "" + Arrays.toString(from));
 
@@ -378,8 +378,11 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemCount() {
         // if (mLoadedItems == 0) {
-        return newsFeedList.size();
-        // } else {
+        if(newsFeedList!=null || !newsFeedList.isEmpty()) {
+            return newsFeedList.size();
+        }
+         else
+             return 0;
         //return newsFeedList == null ? 0 : newsFeedList.size();
         //return newsFeedApplication.hashMap.size();
         //    return mLoadedItems;
