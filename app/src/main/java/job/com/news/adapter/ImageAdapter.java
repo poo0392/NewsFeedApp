@@ -77,6 +77,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
 
     public ImageAdapter(Context mContext, List<NewsFeedList> newsFeedList, RecyclerView mRecyclerView, String value_status, int mLoadedItems) {
+        Log.v("", "ImageAdapter" + " called");
         newsFeedApplication = NewsFeedApplication.getApp();
         this.mContext = mContext;
         this.newsFeedList = newsFeedList;
@@ -87,7 +88,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         memberList = new ArrayList<>();
         imagesList = new ArrayList<>();
         from = value_status.split(":");
-        Log.v("", "" + Arrays.toString(from));
+        Log.v("", "FROM " + Arrays.toString(from));
+        Log.v("", "LIST  " + newsFeedList.size());
 
       /*  final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -117,10 +119,11 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.loadMoreListener = loadMoreListener;
     }
 
-    @Override
+   /* @Override
     public int getItemViewType(int position) {
+        Log.v("getItemViewType"," position "+position);
         return newsFeedList.get(position) == null ? VIEW_PROG : VIEW_ITEM;
-    }
+    }*/
 
     public void setOnButtonClick(onButtonClick callback) {
         this.callback = callback;
@@ -128,23 +131,27 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.v("", "CreateViewH " + "called");
         if (viewType == VIEW_ITEM) {
+            Log.v("", "CreateViewH " + "VIEW_ITEM");
             View view = LayoutInflater.from(mContext).inflate(R.layout.news_feed_item, parent, false);
             return new ImageViewHolder(view);
-        } else if (viewType == VIEW_PROG) {
+        } /*else if (viewType == VIEW_PROG) {
+            Log.v("", "CreateViewH " + "VIEW_PROG");
             // View view = LayoutInflater.from(mContext).inflate(R.layout.layout_loading_item, parent, false);
             View view = LayoutInflater.from(mContext).inflate(R.layout.load_more_progressbar, parent, false);
             return new ProgressViewHolder(view);
-        }
+        }*/
         return null;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        if (position >= getItemCount() - 1 && isMoreDataAvailable && !isLoading && loadMoreListener != null) {
+        Log.v("", "onBindViewHolder " + "called");
+       /* if (position >= getItemCount() - 1 && isMoreDataAvailable && !isLoading && loadMoreListener != null) {
             isLoading = true;
             loadMoreListener.onLoadMore();
-        }
+        }*/
         if (holder instanceof ImageViewHolder) {
             ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
             pos = position;
@@ -200,18 +207,19 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             String member_name;
             //  if(!from.equals("fromApi")) {
             memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsFeedList.get(position).getMember_id()));
-           // member_name = memberList.get(0).getFirstName();
+            // member_name = memberList.get(0).getFirstName();
             //}else {
 
             //  String member_name=newsFeedList.get(position).getMember().getFirstName();
             member_name = memberList.get(0).getFirstName();
+            Log.v("Adapter ", "member_name " + member_name);
             //  }
 
 
 //get Member from member_id in news List i.e select member from member_table where member_id = NewsListTable.Member_id;
             // RegisterMember
             imageViewHolder.txt_post_person_name.setText(member_name);
-            Log.v("Adapter ", "mLoadedItems " + mLoadedItems);
+            //Log.v("Adapter ", "mLoadedItems " + mLoadedItems);
            /* if (from[0].equals("newsfeed_fragment")) {
                 position = mLoadedItems;
             }*/ /*else {
@@ -378,15 +386,17 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemCount() {
         // if (mLoadedItems == 0) {
-        if(newsFeedList!=null || !newsFeedList.isEmpty()) {
+
+       /* if (newsFeedList != null || !newsFeedList.isEmpty()) {
             return newsFeedList.size();
-        }
-         else
-             return 0;
+        } else
+            return 0;*/
         //return newsFeedList == null ? 0 : newsFeedList.size();
         //return newsFeedApplication.hashMap.size();
         //    return mLoadedItems;
         // }
+        Log.v("getItemCount ","Size "+newsFeedList.size());
+        return newsFeedList.size();
     }
 
     public void setLoaded() {
@@ -445,7 +455,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ll_reject_cmt = (LinearLayout) itemView.findViewById(R.id.ll_reject_cmt);
 
 
-            viewAppDec=itemView;
+            viewAppDec = itemView;
 
         }
 

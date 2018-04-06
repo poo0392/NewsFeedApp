@@ -339,7 +339,7 @@ public class NewsFeedFragment extends Fragment {
         return filteredList;
     }
 
-    @Override
+   /* @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         Log.v(TAG, " setUserVisibleHint ");
@@ -358,7 +358,7 @@ public class NewsFeedFragment extends Fragment {
             fragmentVisible = false;
             fragmentResume = false;
         }
-    }
+    }*/
 
     private void loadDataNew(List<NewsFeedList> filteredList) {
 
@@ -415,6 +415,11 @@ public class NewsFeedFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getBundleData();
+    }
 
     private void setListeners() {
 

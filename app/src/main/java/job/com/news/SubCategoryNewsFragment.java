@@ -35,6 +35,7 @@ public class SubCategoryNewsFragment extends Fragment {
     ArrayList<String> subCatIdList = new ArrayList<>();
     List<NewsFeedList> newsFeedList = new ArrayList<>();
     String category, subCategory;
+    private View rootView;
     private boolean fragmentResume = false;
     private boolean fragmentVisible = false;
     private boolean fragmentOnCreated = false;
@@ -42,7 +43,9 @@ public class SubCategoryNewsFragment extends Fragment {
     private boolean isVisible;
     private boolean isStarted;
 
+    public SubCategoryNewsFragment() {
 
+    }
 
     public static Fragment newInstance(int position, ArrayList<String> subCategory, int categoryId, ArrayList<String> subCatList) {
         SubCategoryNewsFragment fragment = new SubCategoryNewsFragment();
@@ -55,7 +58,7 @@ public class SubCategoryNewsFragment extends Fragment {
         return fragment;
     }
 
-    @Override
+   /* @Override
     public void onStart() {
         super.onStart();
         isStarted = true;
@@ -66,18 +69,26 @@ public class SubCategoryNewsFragment extends Fragment {
     public void onStop() {
         super.onStop();
         isStarted = false;
-    }
+    }*/
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_news_feed_sub, container, false);
-        mContext = getActivity();
-       // setUserVisibleHint(false);
-        return view;
+        Log.v(TAG," onCreateView "+" called");
+        if(rootView==null){
+            rootView = inflater.inflate(R.layout.fragment_news_feed_sub, container, false);
+            mContext = getActivity();
+            // setUserVisibleHint(false);
+            findViews(rootView);
+        }else{
+            Log.v(TAG," rootview "+" null");
+        }
+
+
+        return rootView;
     }
 
-    @Override
+   /* @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         Log.v(TAG, " setUserVisibleHint ");
@@ -87,7 +98,7 @@ public class SubCategoryNewsFragment extends Fragment {
 
 
         //  Log.v(TAG, ":: isVisibleToUser " + isVisibleToUser);
-       /* if (isVisibleToUser && isResumed()) {   // only at fragment screen is resumed
+       *//* if (isVisibleToUser && isResumed()) {   // only at fragment screen is resumed
             fragmentResume = true;
             fragmentVisible = false;
             fragmentOnCreated = true;
@@ -99,25 +110,36 @@ public class SubCategoryNewsFragment extends Fragment {
         } else if (!isVisibleToUser && fragmentOnCreated) {// only when you go out of fragment screen
             fragmentVisible = false;
             fragmentResume = false;
-        }*/
-    }
+        }*//*
+    }*/
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        // super.onViewCreated(view, savedInstanceState);
+         super.onViewCreated(view, savedInstanceState);
+        Log.v(TAG," ViewCr "+" called");
+
         newsListTable = new NewsListTable(getActivity());
+        findViews(view);
+
+
+        readBundle(getArguments());
+    }
+
+    private void findViews(View view) {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.news_feed_sub_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        //readBundle(getArguments());
+
     }
 
-    /*@Override
+    @Override
     public void onResume() {
         super.onResume();
+        Log.v(TAG," onResume "+" called");
         readBundle(getArguments());
-    }*/
+    }
 
     @SuppressLint("LongLogTag")
     private void readBundle(Bundle bundle) {
@@ -150,8 +172,14 @@ public class SubCategoryNewsFragment extends Fragment {
         if (newsFeedList != null || !newsFeedList.isEmpty()) {
             newsFeedList.clear();
         }
-        newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat));
+        //newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat));
+        newsFeedList=newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat);
         Log.v("setData ", "newsFeedList " + newsFeedList.size());
+
+        mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.news_feed_sub_recycler_view);
+       // layoutManager = ;
+       // layoutManager.setOrientation();
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
 
         adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeedSubfragment", 0);
         mRecyclerView.setAdapter(adapter);
