@@ -87,8 +87,8 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
             Log.v("", "headers " + headers.toString());
 
 
-            List<List<String>> childData = new ArrayList<>();
-            HashMap<String, List<String>> secondLevelData = listThirdLevelChild;
+            final List<List<String>> childData = new ArrayList<>();
+            final HashMap<String, List<String>> secondLevelData = listThirdLevelChild;
 
           //  for (String key : listThirdLevelChild.keySet()) {
                 childData.add(listThirdLevelChild.get(childText));
@@ -110,6 +110,15 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
                     if (groupPosition != previousGroup)
                         secondLevelELV.collapseGroup(previousGroup);
                     previousGroup = groupPosition;
+                }
+            });
+
+            secondLevelELV.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                @Override
+                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+               //     String child_name = childData.get(childPosition);
+
+                    return false;
                 }
             });
 

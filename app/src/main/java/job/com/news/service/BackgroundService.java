@@ -9,11 +9,10 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import job.com.news.Constant;
-import job.com.news.NewsFeedFragment;
-import job.com.news.adapter.ImageAdapter;
 import job.com.news.db.MemberTable;
 import job.com.news.db.NewsListTable;
 import job.com.news.helper.ConnectivityInterceptor;
@@ -111,6 +110,7 @@ public class BackgroundService extends Service {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         String news_status = "";
+        String all_news = "";
         WebService webService = retrofit.create(WebService.class);
         long last_id = newsListTable.getLastId();
         RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
@@ -118,40 +118,30 @@ public class BackgroundService extends Service {
         RequestBody paramAllNews = RequestBody.create(MediaType.parse("text/plain"), "1");
         RequestBody status = RequestBody.create(MediaType.parse("text/plain"), news_status);
 
-        Log.v("", " memberToken " + memberToken);
+        HashMap<String, String> newsRequestList = new HashMap<>();
+        newsRequestList.put("member_token", memberToken);
+        newsRequestList.put("member_id", String.valueOf(memberId));
+        newsRequestList.put("last_id", String.valueOf(last_id));
+        newsRequestList.put("all_news", "1");
+        newsRequestList.put("news_status", news_status);
+
+        Log.v("callNewsListAPI", " newsRequestList " + newsRequestList);
 
         Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id, paramAllNews);
        // Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
-                // mProgressDialog.dismiss();
                 String newsList = "";
                 if (response.isSuccessful()) {
 
-                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
-                    }.getType();
-                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
-                            .fromJson(String.valueOf(response.body()), collectionType);*/
-
                     NewsFeedModelResponse serverResponse = response.body();
-                    //    newsList=serverResponse.toString();
                     if (serverResponse.getStatus() == 0) {
                         Log.v("BackSercallNewsListAPI ", "response " + new Gson().toJson(response.body()));
-                        //   Log.v("", "Response " + serverResponse.getNewsFeedList().toString());
-                      /*  Log.v("", "News Category " + serverResponse.getNewsFeedList().getCategory());
-                        Log.v("", "News Desc " + serverResponse.getNewsFeedList().getNews_description());*/
 
-//                        serverResponse = gson.fromJson(newsList, NewsFeedModelResponse.class);
-                        //   newsFeedList = serverResponse.getNewsFeedList();
-                        //  gson.fromJson(serverResponse);
-                        //  Log.v("callNewsListAPI ", "response " + newsFeedList.toString());
                         try {
                             newsFeedList = serverResponse.getNewsFeedList();
                             Log.v("", "newsFeedList " + newsFeedList.toString());
-
-                            //   loadDatatoList(newsFeedList);
-
 
                             NewsFeedList model;
                             try {
@@ -211,15 +201,7 @@ public class BackgroundService extends Service {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            NewsFeedFragment frag = new NewsFeedFragment();
 
-                            newsFeedListTable = newsListTable.getAllNewsRecords();
-                            Log.v("db ", "getNewsFeedList " + newsFeedList.toString());
-                            ImageAdapter adapter = new ImageAdapter(context, newsFeedList, frag.mRecyclerView, "background_service",0);
-                            /*frag.mRecyclerView.setAdapter(adapter);*/
-                            //recyclerView.setAdapter(new RecyclerViewAdapter(newList));
-                            adapter.notifyDataSetChanged();
-                            //changes 06_03
 
                         } catch (Exception e) {
                             e.printStackTrace();

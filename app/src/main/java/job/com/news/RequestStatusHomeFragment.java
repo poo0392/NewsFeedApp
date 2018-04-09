@@ -49,7 +49,7 @@ public class RequestStatusHomeFragment extends Fragment {
 
     private void getIntentData() {
         if (fromStatus.equals("")) {
-            Log.v("", "fromStatus is null");
+           // Log.v("", "fromStatus is null");
         } else {
             try {
                 if (fromStatus.equals("approved")) {
@@ -59,7 +59,7 @@ public class RequestStatusHomeFragment extends Fragment {
                 } else {
                     mViewPager.setCurrentItem(0);
                 }
-                Toast.makeText(mContext, "if not null", Toast.LENGTH_SHORT).show();
+             //   Toast.makeText(mContext, "if not null", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }

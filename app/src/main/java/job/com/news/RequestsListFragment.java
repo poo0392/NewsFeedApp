@@ -122,8 +122,8 @@ public class RequestsListFragment extends Fragment {
 
     private void getBundleData() {
         int position = getArguments().getInt("position");
-        Log.v("AdminReqLstFragment ", "position " + position);
-        Toast.makeText(getActivity(), "Position is: " + position, Toast.LENGTH_SHORT).show();
+      //  Log.v("AdminReqLstFragment ", "position " + position);
+      //  Toast.makeText(getActivity(), "Position is: " + position, Toast.LENGTH_SHORT).show();
         if (position == 0) {
             news_status = "pending";
             callNewsListAPI(memberToken, memberId, news_status);

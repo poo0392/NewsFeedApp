@@ -96,6 +96,20 @@ public class MyPreferences {
         manipulatePref.setString("role", role);
     }
 
+
+    public void setExpandPosition(int position){
+        manipulatePref.setInt("expandpos",position);
+    }
+    public int getExpandPosition(){
+        return manipulatePref.getInt("expandpos");
+    }
+    public void setExpandChildName(String childName){
+        manipulatePref.setString("childName",childName);
+    }
+
+    public String getExpandChildName(){
+        return manipulatePref.getString("childName");
+    }
     class ManipulatePref {
 
         final String DEFAULT_Str = null;

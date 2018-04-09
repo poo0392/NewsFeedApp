@@ -98,7 +98,7 @@ public class NewsFeedSubFragment extends Fragment implements IFragmentToActivity
         if (newsFeedList != null || !newsFeedList.isEmpty()) {
             newsFeedList.clear();
         }
-        newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat));
+      //  newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat));
         Log.v("setData ", "newsFeedList " + newsFeedList.size());
 
        // isDataLoading = false;

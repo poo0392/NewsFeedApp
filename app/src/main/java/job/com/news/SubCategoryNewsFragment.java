@@ -173,7 +173,7 @@ public class SubCategoryNewsFragment extends Fragment {
             newsFeedList.clear();
         }
         //newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat));
-        newsFeedList=newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat);
+       // newsFeedList=newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat);
         Log.v("setData ", "newsFeedList " + newsFeedList.size());
 
         mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.news_feed_sub_recycler_view);

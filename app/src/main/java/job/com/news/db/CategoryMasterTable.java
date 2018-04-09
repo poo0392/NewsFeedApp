@@ -44,17 +44,17 @@ public class CategoryMasterTable {
 
            return id;
        }*/
-    public ArrayList<String> getCategoryName() {
+    public ArrayList<Integer> getCategoryId() {
         db = dbHelper.getWritableDatabase();
         // Cursor cursor = mDb.query(NewsListTable.NEWS_LIST_TABLE_NAME, null, null, null, null, null, null);
-        ArrayList<String> listAll = new ArrayList<String>();
-        String query1 = "SELECT " + CategoryMasterTable.CATEGORY_NAME + " FROM " + CategoryMasterTable.CATEGORY_TABLE_NAME;
+        ArrayList<Integer> listAll = new ArrayList<Integer>();
+        String query1 = "SELECT " + CategoryMasterTable.CATEGORY_ID + " FROM " + CategoryMasterTable.CATEGORY_TABLE_NAME;
         Cursor cursor = db.rawQuery(query1, null);
 
         if (cursor.getCount() > 0) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToNext();
-                listAll.add(cursor.getString(cursor.getColumnIndex(CategoryMasterTable.CATEGORY_NAME)));
+                listAll.add(cursor.getInt(cursor.getColumnIndex(CategoryMasterTable.CATEGORY_ID)));
             }
         }
         cursor.close();

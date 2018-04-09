@@ -47,6 +47,7 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -65,7 +66,7 @@ import job.com.news.models.NewsFeedListParcable;
 import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
-import job.com.news.service.BackgroundService;
+import job.com.news.service.AlarmReceiver;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
 import okhttp3.MediaType;
@@ -130,8 +131,7 @@ public class HomeActivity extends AppCompatActivity
         newsListTable = new NewsListTable(mContext);
         ll_linBase = (LinearLayout) findViewById(R.id.ll_linBase);
         //DBHelper.getInstance(getApplicationContext());
-
-
+        scheduleAlarm();
         getPrefData();
 
 
@@ -250,14 +250,24 @@ public class HomeActivity extends AppCompatActivity
         tx.commit();
     }
 
-    private void syncNewsList() {
-        startService(new Intent(this, BackgroundService.class));
+    private void scheduleAlarm() {
+       // startService(new Intent(this, AlarmReceiver.class));
         Calendar cal = Calendar.getInstance();
-        Intent intent = new Intent(this, BackgroundService.class);
-        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
-        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        //PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Setup periodic alarm every every half hour from this point onwards
+        long firstMillis = System.currentTimeMillis(); // alarm is set right away
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
+        // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
+                AlarmManager.INTERVAL_HALF_HOUR, pIntent); //
+
+       // AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         // Start service every 15 min
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 900000, pintent);
+       // alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 900000, pintent);
 
        /* Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
         boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
@@ -404,7 +414,7 @@ public class HomeActivity extends AppCompatActivity
                             }
 
                             //setListeners();
-                            // syncNewsList();
+                            // scheduleAlarm();
                             // loadCategoryUI();
                         }
                     } else {
@@ -531,9 +541,32 @@ public class HomeActivity extends AppCompatActivity
         memberToken = myPreferences.getMemberToken().trim();
         emailId = myPreferences.getEmailId().trim();
         fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
+       String childName = myPreferences.getExpandChildName();
+       if(childName!=null){
+           myPreferences.setExpandChildName("null");
+       }
     }
 
     private void enableExpandableList() {
+
+        newsFeedList = newsListTable.getAllNewsRecords();
+        if (newsFeedList != null) {
+            for (int k = 0; k < newsFeedList.size(); k++) {
+                catDupList.add(newsFeedList.get(k).getCategory());
+              /*  categoryIDList.add(Integer.valueOf(newsFeedList.get(k).getCategory_id()));
+                if (*//*newsFeedList.get(k).getSub_category()!=null || *//*newsFeedList.get(k).getSub_category_id() != null) {
+                    subCatDupList.add(newsFeedList.get(k).getSub_category());
+
+                }
+                if (newsFeedList.get(k).getSub_category() == null) {
+                    subCategoryIDList.add(0, 0);
+                } else {
+                    subCategoryIDList.add(Integer.valueOf(newsFeedList.get(k).getSub_category_id()));
+                }*/
+            }
+        }
+        categoryList.addAll(new HashSet<>(catDupList));
+
         listDataHeader = new ArrayList<String>();
         listDataChild = new HashMap<String, List<String>>();
         listThirdLevelChild = new HashMap<>();
@@ -621,6 +654,21 @@ public class HomeActivity extends AppCompatActivity
 
                 if (child_name.equals("Pending Request")) {
                     callRequestStatusHomeFragment();
+                }else if(child_name.equals("Request Status")) {
+
+                }else{
+                    myPreferences.setExpandPosition(childPosition);
+                    myPreferences.setExpandChildName(child_name);
+                    /*for(int i=0;i<categoryList.size();i++){
+                        String categoryName=categoryList.get(i);
+                        if(child_name.equals(categoryName)){
+                           myPreferences.set
+                        }
+                    }*/
+                    fragment = new HomeFragment();
+                //    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                  //  drawer.closeDrawer(GravityCompat.START);
+
                 }
 
                 // till here
@@ -628,6 +676,12 @@ public class HomeActivity extends AppCompatActivity
                         mContext,
                         listDataHeader.get(groupPosition) + " : " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
                         .show();*/
+                 if (fragment != null) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.content_frame, fragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                 }
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
                 return false;

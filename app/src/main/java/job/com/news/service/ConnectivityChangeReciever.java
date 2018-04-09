@@ -43,7 +43,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by Zafar.Hussain on 28/03/2018.
+ * Created by Pooja.Patil on 28/03/2018.
  */
 
 public class ConnectivityChangeReciever extends BroadcastReceiver {

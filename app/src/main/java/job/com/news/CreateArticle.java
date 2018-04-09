@@ -72,6 +72,7 @@ import job.com.news.db.SubCategoryTableMr;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.LocaleHelper;
 import job.com.news.helper.NoConnectivityException;
+import job.com.news.helper.TimeoutException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.register.RegisterMember;
@@ -898,7 +899,10 @@ String s=editable.toString();
                     t.printStackTrace();
                     if (t instanceof NoConnectivityException) {
                         // No internet connection
-                        Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                        setFailedAlertDialog(mContext, "Failed", "No Internet! Please Check Your internet connection");
+                    }else if(t instanceof TimeoutException){
+                        setFailedAlertDialog(mContext, "Failed", t.getMessage());
                     }
                 }
             });
@@ -1129,6 +1133,8 @@ String s=editable.toString();
                         Toast.makeText(mContext, "status " + serverResponse.getStatus() + "\n Failure ", Toast.LENGTH_SHORT).show();
 
                     }
+                }else{
+
                 }
             }
 

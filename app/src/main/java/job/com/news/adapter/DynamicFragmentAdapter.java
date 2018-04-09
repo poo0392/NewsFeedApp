@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import job.com.news.NewsFeedFragment;
-import job.com.news.SubCategoryNewsFragment;
 import job.com.news.db.NewsListTable;
 import job.com.news.models.NewsFeedList;
 
@@ -27,6 +26,7 @@ public class DynamicFragmentAdapter extends FragmentStatePagerAdapter {
     private ArrayList<String> catListNew;
     ArrayList<String> catListNewEn,subCatList;
     List<NewsFeedList> newsFeedListNew;
+    ArrayList<Integer> subCategoryIDList,categoryIDList;
     Map<String,List<NewsFeedList>> mapItems;
     Fragment fragment = null;
     NewsListTable newsListTable;
@@ -35,19 +35,20 @@ public class DynamicFragmentAdapter extends FragmentStatePagerAdapter {
     String from;
     int category;
 
-    public DynamicFragmentAdapter(FragmentManager fm, ArrayList<String> catListNew, ArrayList<String> catListNewEn, String from) {
+    /*public DynamicFragmentAdapter(FragmentManager fm, ArrayList<String> catListNew, ArrayList<String> catListNewEn, String from) {
         super(fm);
         this.catListNew = catListNew;
         this.catListNewEn = catListNewEn;
         this.from = from;
-    }
+    }*/
 
-    public DynamicFragmentAdapter(FragmentManager fm, ArrayList<String> catListNew, ArrayList<String> subCatList, int category, String from) {
+    public DynamicFragmentAdapter(FragmentManager fm, ArrayList<String> catListNew, ArrayList<Integer> categoryIDList, int category, ArrayList<Integer> subCategoryIDList, String from) {
         super(fm);
         this.catListNew = catListNew;
         this.category = category;
         this.from = from;
-        this.subCatList = subCatList;
+        this.categoryIDList = categoryIDList;
+        this.subCategoryIDList = subCategoryIDList;
     }
 
     @Override
@@ -56,11 +57,12 @@ public class DynamicFragmentAdapter extends FragmentStatePagerAdapter {
         //catListNewEn == category list in english
         //category == category value from list
         //subCatList = subcategory list
-        if (from.equals("sub_cat")) {
-         //   return NewsFeedSubFragment.newInstance(position, catListNew,category,subCatList);
+       /* if (from.equals("sub_cat")) {
+
             return SubCategoryNewsFragment.newInstance(position, catListNew,category,subCatList);
-        } else
-            return NewsFeedFragment.newInstance(position, catListNewEn);
+        } else*/
+          //  return NewsFeedFragment.newInstance(position, catListNewEn);
+        return NewsFeedFragment.newInstance(position, catListNew,category,categoryIDList,subCategoryIDList);
 
     }
 

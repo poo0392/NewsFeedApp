@@ -130,12 +130,34 @@
                 android:layout_weight=".1"
                 android:padding="5dp">
 
-                <TextView
-                    android:id="@+id/txt_news_category"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sports"
-                    android:textSize="13sp" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txt_news_sub_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:text="Matrimony"
+                        android:textSize="13sp" />
+
+                    <View
+                        android:id="@+id/sub_cat_view"
+                        android:layout_width="1dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@color/DarkGray" />
+
+                    <TextView
+                        android:id="@+id/txt_news_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:text="Sports"
+                        android:textSize="13sp" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/txt_read_more"
@@ -158,18 +180,20 @@
             android:orientation="horizontal"
             android:padding="5dp"
             android:visibility="gone">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Rejection purpose : "
-                android:textSize="14sp"
-                android:textColor="@color/cb_errorRed"/>
+                android:textColor="@color/cb_errorRed"
+                android:textSize="14sp" />
+
             <TextView
                 android:id="@+id/txt_reject_cmt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:text="innapropiate news"/>
+                android:text="innapropiate news"
+                android:textSize="13sp" />
         </LinearLayout>
         <!--Approve or Reject Option, Only for Admin-->
         <LinearLayout

@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import job.com.news.Constant;
@@ -88,8 +87,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         memberList = new ArrayList<>();
         imagesList = new ArrayList<>();
         from = value_status.split(":");
-        Log.v("", "FROM " + Arrays.toString(from));
-        Log.v("", "LIST  " + newsFeedList.size());
+      //  Log.v("", "FROM " + Arrays.toString(from));
+       // Log.v("", "LIST  " + newsFeedList.size());
 
       /*  final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -147,7 +146,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        Log.v("", "onBindViewHolder " + "called");
+      //  Log.v("", "onBindViewHolder " + "called");
        /* if (position >= getItemCount() - 1 && isMoreDataAvailable && !isLoading && loadMoreListener != null) {
             isLoading = true;
             loadMoreListener.onLoadMore();
@@ -225,7 +224,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             }*/ /*else {
                 position = position;
             }*/
-
+            if (newsFeedList.get(position).getSub_category() != null) {
+                imageViewHolder.sub_cat_view.setVisibility(View.VISIBLE);
+                imageViewHolder.txt_news_sub_category.setVisibility(View.VISIBLE);
+                imageViewHolder.txt_news_sub_category.setText(newsFeedList.get(position).getSub_category());
+            } else {
+                imageViewHolder.sub_cat_view.setVisibility(View.GONE);
+                imageViewHolder.txt_news_sub_category.setVisibility(View.GONE);
+            }
             imageViewHolder.textViewSummary.setText(newsFeedList.get(position).getNews_title());
             imageViewHolder.txt_city.setText(newsFeedList.get(position).getCity());
             imageViewHolder.txt_news_category.setText(newsFeedList.get(position).getCategory());
@@ -395,7 +401,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         //return newsFeedApplication.hashMap.size();
         //    return mLoadedItems;
         // }
-        Log.v("getItemCount ","Size "+newsFeedList.size());
+      //  Log.v("getItemCount ", "Size " + newsFeedList.size());
         return newsFeedList.size();
     }
 
@@ -428,9 +434,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             implements View.OnClickListener, View.OnLongClickListener */ {
         TextView textViewDate, textViewSummary, txt_news_category, txt_approve_news, txt_decline_news, txt_read_more, txt_reject_cmt;
         ImageView imageView;
-        TextView txt_post_person_name, txt_post_time, txt_desc, txt_city, txt_state;
+        TextView txt_post_person_name, txt_post_time, txt_desc, txt_city, txt_state, txt_news_sub_category;
         LinearLayout ll_approve_or_dec, ll_content_view, ll_decline, ll_aprove, ll_reject_cmt;
         private ItemClickListener clickListener;
+        View sub_cat_view;
 
         public ImageViewHolder(View itemView) {
             super(itemView);
@@ -441,6 +448,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             txt_read_more = (TextView) itemView.findViewById(R.id.txt_read_more);
             txt_reject_cmt = (TextView) itemView.findViewById(R.id.txt_reject_cmt);
             txt_post_person_name = (TextView) itemView.findViewById(R.id.txt_post_person_name);
+            txt_news_sub_category = (TextView) itemView.findViewById(R.id.txt_news_sub_category);
+            sub_cat_view = (View) itemView.findViewById(R.id.sub_cat_view);
             txt_news_category = (TextView) itemView.findViewById(R.id.txt_news_category);
             txt_post_time = (TextView) itemView.findViewById(R.id.txt_post_time);
             txt_desc = (TextView) itemView.findViewById(R.id.txt_desc);

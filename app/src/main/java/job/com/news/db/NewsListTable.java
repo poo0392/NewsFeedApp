@@ -70,10 +70,10 @@ public class NewsListTable {
         cv.put(NewsListTable.STATE, model.getState());
         cv.put(NewsListTable.CITY, model.getCity());
         cv.put(NewsListTable.NEWS_TITLE, model.getNews_title());
-        cv.put(NewsListTable.NEWS_DESCRIPTION, model.getNews_description());
         cv.put(NewsListTable.LANGUAGE, model.getLanguage());
         cv.put(NewsListTable.COMMENT, model.getComment());
         cv.put(NewsListTable.LIKE_COUNT, model.getLike_count());
+        cv.put(NewsListTable.NEWS_DESCRIPTION, model.getNews_description());
         cv.put(NewsListTable.MEMBER_ID, model.getMember_id());
         cv.put(NewsListTable.CREATED_AT, model.getCreated_at());
         cv.put(NewsListTable.IS_UPDATED, "Y");
@@ -234,12 +234,17 @@ public class NewsListTable {
     }
 
 
-    public List<NewsFeedList> getNewsRecordsByCategoryAndSubCat(int category_id,String sub_cat_id) {
-        int subCatId= Integer.parseInt(sub_cat_id);
+    public List<NewsFeedList> getNewsRecordsByCategoryAndSubCat(int category_id,int sub_cat_id) {
+      //  int subCatId= Integer.parseInt(sub_cat_id);
+        String query1="";
         db = dbHelper.getWritableDatabase();
         List<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
         NewsFeedList model;
-        String query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY_ID + " = " + category_id + " AND "+NewsListTable.SUB_CATEGORY_ID+" = "+subCatId+" ";
+        if(sub_cat_id!=0) {
+            query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY_ID + " = " + category_id + " AND " + NewsListTable.SUB_CATEGORY_ID + " = " + sub_cat_id + " ";
+        }else{
+            query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY_ID + " = " + category_id /*+ " AND " + NewsListTable.SUB_CATEGORY_ID + " = " + sub_cat_id + " "*/;
+        }
         Log.v("", "query1 " + query1);
         Cursor cursor = db.rawQuery(query1, null);
         if (cursor.getCount() > 0) {
