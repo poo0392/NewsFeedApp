@@ -60,6 +60,7 @@ import job.com.news.db.NewsListTable;
 import job.com.news.db.SubCategoryTable;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
+import job.com.news.interfaces.FragmentFromAdapter;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedList;
 import job.com.news.models.NewsFeedListParcable;
@@ -83,7 +84,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 //changes added on //changes 16_03.
 public class HomeActivity extends AppCompatActivity
-        implements View.OnClickListener {
+        implements View.OnClickListener, FragmentFromAdapter {
     //changes reflect to be 05/03
     private static final String TAG = "HomeActivity";
     private Context mContext;
@@ -251,7 +252,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void scheduleAlarm() {
-       // startService(new Intent(this, AlarmReceiver.class));
+        // startService(new Intent(this, AlarmReceiver.class));
         Calendar cal = Calendar.getInstance();
         Intent intent = new Intent(this, AlarmReceiver.class);
         //PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
@@ -265,9 +266,9 @@ public class HomeActivity extends AppCompatActivity
         alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
                 AlarmManager.INTERVAL_HALF_HOUR, pIntent); //
 
-       // AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        // AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         // Start service every 15 min
-       // alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 900000, pintent);
+        // alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 900000, pintent);
 
        /* Intent alarm = new Intent(HomeActivity.this, AlarmReceiver.class);
         boolean alarmRunning = (PendingIntent.getBroadcast(HomeActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
@@ -541,10 +542,10 @@ public class HomeActivity extends AppCompatActivity
         memberToken = myPreferences.getMemberToken().trim();
         emailId = myPreferences.getEmailId().trim();
         fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
-       String childName = myPreferences.getExpandChildName();
-       if(childName!=null){
-           myPreferences.setExpandChildName("null");
-       }
+        String childName = myPreferences.getExpandChildName();
+        if (childName != null) {
+            myPreferences.setExpandChildName("null");
+        }
     }
 
     private void enableExpandableList() {
@@ -571,7 +572,7 @@ public class HomeActivity extends AppCompatActivity
         listDataChild = new HashMap<String, List<String>>();
         listThirdLevelChild = new HashMap<>();
         data = new ArrayList<>();
-
+        HomeActivity activity = new HomeActivity();
         expListView = (ExpandableListView) findViewById(R.id.left_drawer);
         expListView.setIndicatorBounds(expListView.getRight() - 40, expListView.getWidth());
         prepareListData(listDataHeader, listDataChild, listThirdLevelChild);
@@ -580,7 +581,7 @@ public class HomeActivity extends AppCompatActivity
         // set adapter
         // expListView.setAdapter( threeLevelListAdapterAdapter );
 
-        listAdapter = new ExpandListAdapter(mContext, listDataHeader, listDataChild, listThirdLevelChild);
+        listAdapter = new ExpandListAdapter(mContext, listDataHeader, listDataChild, listThirdLevelChild, this);
         expListView.setAdapter(listAdapter);
 
         setGroupIndicatorToRight();
@@ -654,20 +655,10 @@ public class HomeActivity extends AppCompatActivity
 
                 if (child_name.equals("Pending Request")) {
                     callRequestStatusHomeFragment();
-                }else if(child_name.equals("Request Status")) {
+                } else if (child_name.equals("Request Status")) {
 
-                }else{
-                    myPreferences.setExpandPosition(childPosition);
-                    myPreferences.setExpandChildName(child_name);
-                    /*for(int i=0;i<categoryList.size();i++){
-                        String categoryName=categoryList.get(i);
-                        if(child_name.equals(categoryName)){
-                           myPreferences.set
-                        }
-                    }*/
-                    fragment = new HomeFragment();
-                //    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                  //  drawer.closeDrawer(GravityCompat.START);
+                } else {
+                    setFragment(child_name, childPosition);
 
                 }
 
@@ -676,17 +667,23 @@ public class HomeActivity extends AppCompatActivity
                         mContext,
                         listDataHeader.get(groupPosition) + " : " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
                         .show();*/
-                 if (fragment != null) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.content_frame, fragment);
-                ft.addToBackStack(null);
-                ft.commit();
-                 }
+               /* if (fragment != null) {
+                    openFragment(fragment);
+                }*/
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
-                return false;
+                return true;
             }
         });
+    }
+
+    public void openFragment(Fragment fragment) {
+        //HomeActivity activity=new HomeActivity();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_frame, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
+
     }
 
     private void prepareListData(List<String> listDataHeader, HashMap<String, List<String>> listDataChild, HashMap<String, List<String>> listThirdLevelChild) {
@@ -1031,4 +1028,20 @@ public class HomeActivity extends AppCompatActivity
         transaction.commit();
     }
 
+    @Override
+    public void setFragment(String childName, int childPosition) {
+        myPreferences = MyPreferences.getMyAppPref(mContext);
+        myPreferences.setExpandPosition(childPosition);
+        myPreferences.setExpandChildName(childName);
+        HomeFragment fragment = new HomeFragment();
+        if (fragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.content_frame, fragment);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
+    }
 }

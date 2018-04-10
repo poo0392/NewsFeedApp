@@ -125,7 +125,7 @@ public class BackgroundService extends Service {
         newsRequestList.put("all_news", "1");
         newsRequestList.put("news_status", news_status);
 
-        Log.v("callNewsListAPI", " newsRequestList " + newsRequestList);
+      //  Log.v("callNewsListAPI", " newsRequestList " + newsRequestList);
 
         Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id, paramAllNews);
        // Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
@@ -137,11 +137,11 @@ public class BackgroundService extends Service {
 
                     NewsFeedModelResponse serverResponse = response.body();
                     if (serverResponse.getStatus() == 0) {
-                        Log.v("BackSercallNewsListAPI ", "response " + new Gson().toJson(response.body()));
+                    //    Log.v("BackSercallNewsListAPI ", "response " + new Gson().toJson(response.body()));
 
                         try {
                             newsFeedList = serverResponse.getNewsFeedList();
-                            Log.v("", "newsFeedList " + newsFeedList.toString());
+                         //   Log.v("", "newsFeedList " + newsFeedList.toString());
 
                             NewsFeedList model;
                             try {

@@ -12,6 +12,9 @@ public class MyPreferences {
     static MyPreferences myAppPreferences;
     ManipulatePref manipulatePref;
     private SharedPreferences sharedPreferences;
+    private boolean isOverrideResultScreen = true;
+    public static int selectedTheme = -1;
+    public static final long MENU_DELAY = 300;
 
     public MyPreferences(Context context) {
         sharedPreferences = context.getSharedPreferences("newsFeedPref", Context.MODE_PRIVATE);
@@ -106,7 +109,13 @@ public class MyPreferences {
     public void setExpandChildName(String childName){
         manipulatePref.setString("childName",childName);
     }
+    public boolean isOverrideResultScreen() {
+        return isOverrideResultScreen;
+    }
 
+    public void setOverrideResultScreen(boolean overrideResultScreen) {
+        isOverrideResultScreen = overrideResultScreen;
+    }
     public String getExpandChildName(){
         return manipulatePref.getString("childName");
     }

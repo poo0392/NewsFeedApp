@@ -144,21 +144,29 @@ public class HomeFragment extends Fragment {
 
     private void setClickListeners() {
         Collections.reverse(catListNewEn);
-        for (int i = 0; i < catListNewEn.size(); i++) {
-            if (/*childName != null || */!childName.equals("null")) {
+
+        if (!childName.equals("null")) {
+            /*else if (fromStatus.equals("rejected")) {
+            mViewPager.setCurrentItem(2);
+        } else {
+            mViewPager.setCurrentItem(0);
+        }*/
+            //childName= Health Related
+           // catListNewEn.get(0)= Health Related
+
+
+           // if(childName==catListNewEn.get(0))
+
+
+
+            for (int i = 0; i < catListNewEn.size(); i++)
                 if (childName.equals(catListNewEn.get(i))) {
                     viewPager.setCurrentItem(i);
+                    return;
                 } else {
+                Log.v("","No data available");
                     Toast.makeText(mContext, "No data available", Toast.LENGTH_SHORT).show();
                 }
-
-
-                /*else if (fromStatus.equals("rejected")) {
-                mViewPager.setCurrentItem(2);
-            } else {
-                mViewPager.setCurrentItem(0);
-            }*/
-            }
         }
     }
 

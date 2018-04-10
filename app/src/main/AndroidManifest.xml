@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="job.com.news">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,13 +12,14 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />-->
 
     <!-- android:hardwareAccelerated="false"
-     android:largeHeap="true"-->
+     android:largeHeap="true"
+     -->
     <application
         android:name=".NewsFeedApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-
+        tools:replace="android:allowBackup"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SplashScreen">
@@ -54,7 +56,7 @@
         <activity android:name=".forgotpassword.ForgotPassword" />
         <activity android:name=".changepassword.ChangePassword" />
         <activity android:name=".payU.MerchantCheckoutActivity" />
-        <activity android:name=".payU.PayUActivity" />
+        <activity android:name=".payU.PayUPnPActivity" />
 
         <service android:name=".service.BackgroundService" />
 
