@@ -83,12 +83,14 @@ public class HomeFragment extends Fragment {
     //Title List
     private final List<String> mFragmentTitleList = new ArrayList<>();
     DynamicFragmentAdapter mDynAdapter;
+    int i = 0, status = -1;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         Log.v(TAG, " onCreateView called");
+
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         //setTootlbarTitle("Home");
         toolbar.setTitle(getResources().getString(R.string.home_toolbar_title));
@@ -144,29 +146,38 @@ public class HomeFragment extends Fragment {
 
     private void setClickListeners() {
         Collections.reverse(catListNewEn);
+        try {
 
-        if (!childName.equals("null")) {
+
+            if (!childName.equals("null")) {
             /*else if (fromStatus.equals("rejected")) {
             mViewPager.setCurrentItem(2);
         } else {
             mViewPager.setCurrentItem(0);
         }*/
-            //childName= Health Related
-           // catListNewEn.get(0)= Health Related
+                //childName= Health Related
+                // catListNewEn.get(0)= Health Related
 
 
-           // if(childName==catListNewEn.get(0))
+                // if(childName==catListNewEn.get(0))
 
 
-
-            for (int i = 0; i < catListNewEn.size(); i++)
-                if (childName.equals(catListNewEn.get(i))) {
-                    viewPager.setCurrentItem(i);
-                    return;
-                } else {
-                Log.v("","No data available");
-                    Toast.makeText(mContext, "No data available", Toast.LENGTH_SHORT).show();
+                for (int i = 0; i < catListNewEn.size(); i++) {
+                    if (childName.equals(catListNewEn.get(i))) {
+                        // i++;
+                        status = i;
+                    }
                 }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (status != -1) {
+            viewPager.setCurrentItem(status);
+        } else {
+            Log.v("", "No data available");
+            Toast.makeText(mContext, "No data available", Toast.LENGTH_SHORT).show();
         }
     }
 

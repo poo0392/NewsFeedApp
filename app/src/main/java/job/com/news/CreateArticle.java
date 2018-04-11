@@ -101,6 +101,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private LinkedHashMap<String, String> mapValuesFinal;
     private HashMap<String, Integer> mapState, cityMap;//changes done
     boolean validWords = false;
+    int status = 0;
+    boolean mToggle = false;
 
     private ArrayList<HashMap<String, String>> stateList;
     private TextView mTotalChargesView, mDateView;
@@ -472,11 +474,14 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
         });
 
-
-        mDescEdit.addTextChangedListener(new TextWatcher() {
+        mDescEdit.addTextChangedListener(new EditTextListener());
+        /*mDescEdit.addTextChangedListener(new TextWatcher() {
             boolean mToggle = false;
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+               *//* if(mToggle) {
+                    setFailedAlertDialog(CreateArticle.this, "", "You cannot add more than " + numOfWords + " words");
+                }*//*
 
             }
 
@@ -489,7 +494,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 Log.v("mDescEdit ", "length " + s.toString().length());
                 int count = getSpaces(mDescEdit.getText().toString());
                 Log.v("getSpaces ", "count " + count);
-               // if (mToggle) {
+                // if (mToggle) {
 
                 if (numOfWords != 400) {
                     if (wordsCount <= numOfWords) {
@@ -497,31 +502,83 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     } else {
 
                         mDescEdit.setText(value(mDescEdit.getText().toString(), numOfWords));
-                        //  Toast.makeText(getApplicationContext(), "You cannot add more than " + numOfWords, Toast.LENGTH_SHORT).show();
-                       // setFailedAlertDialog(CreateArticle.this, "", "You cannot add more than " + numOfWords + " words");
-                        mToggle=true;
+
+                        // Toast.makeText(getApplicationContext(), "You cannot add more than " + numOfWords, Toast.LENGTH_SHORT).show();
+                        //  mToggle=true;
                         //hideKeyboard();
-                        //  return;
+                        //
                     }
                 }
-              //  }
+                //  }
 
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-String s=editable.toString();
+            *//*String s=editable.toString();
                //
-                if(mToggle) {
+
+*//*          if (mToggle) {
                     setFailedAlertDialog(CreateArticle.this, "", "You cannot add more than " + numOfWords + " words");
                 }
+                mToggle = !mToggle;
 
 
             }
-        });
+        });*/
 
 
     }
+
+    private class EditTextListener implements TextWatcher {
+        boolean mToggle = false;
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+
+            wordsCount = countWords(s.toString());
+            Log.v("mDescEdit ", "words " + wordsCount);
+            charLength = s.toString().length();
+            Log.v("mDescEdit ", "length " + s.toString().length());
+            int count = getSpaces(mDescEdit.getText().toString());
+            Log.v("getSpaces ", "count " + count);
+            // if (mToggle) {
+
+            if (numOfWords != 400) {
+                if (wordsCount <= numOfWords) {
+                    validWords = true;
+                } else {
+
+                    mDescEdit.setText(value(mDescEdit.getText().toString(), numOfWords));
+
+                    Toast.makeText(getApplicationContext(), "You cannot add more than " + numOfWords, Toast.LENGTH_SHORT).show();
+                    //  mToggle=true;
+                    //hideKeyboard();
+                    //
+                }
+            }
+            //  }
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            /*String s=editable.toString();
+               //
+
+*/         /* if (mToggle) {
+                setFailedAlertDialog(CreateArticle.this, "", "You cannot add more than " + numOfWords + " words");
+            }
+            mToggle = !mToggle;*/
+
+
+        }
+    };
 
 
     public String value(String s, int numOfWords) {
@@ -900,9 +957,9 @@ String s=editable.toString();
                     t.printStackTrace();
                     if (t instanceof NoConnectivityException) {
                         // No internet connection
-                      //  Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+                        //  Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
                         setFailedAlertDialog(mContext, "Failed", "No Internet! Please Check Your internet connection");
-                    }else if(t instanceof TimeoutException){
+                    } else if (t instanceof TimeoutException) {
                         setFailedAlertDialog(mContext, "Failed", t.getMessage());
                     }
                 }
@@ -959,19 +1016,20 @@ String s=editable.toString();
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-             //   if (validateFields()) {
-                Intent intent = new Intent(this, PayUPnPActivity.class);
-                intent.putExtra("Price", 1);
-                startActivity(intent);
-                finish();
+                if (validateFields()) {
+               /* */
 //
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                  //  postNewsAPI();
-             //   }
+                    postNewsAPI();
+                   /* Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                    intent.putExtra("Price",1);
+                    startActivity(intent);
+                    finish();*/
+                }
 
                 break;
             case R.id.article_image1:
@@ -1134,7 +1192,7 @@ String s=editable.toString();
                         Toast.makeText(mContext, "status " + serverResponse.getStatus() + "\n Failure ", Toast.LENGTH_SHORT).show();
 
                     }
-                }else{
+                } else {
 
                 }
             }
@@ -1164,8 +1222,12 @@ String s=editable.toString();
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Intent i = new Intent(CreateArticle.this, HomeActivity.class);
+                        /*Intent i = new Intent(CreateArticle.this, HomeActivity.class);
                         startActivity(i);
+                        finish();*/
+                        Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                        intent.putExtra("Price",charges);
+                        startActivity(intent);
                         finish();
                     }
                 })
@@ -1334,7 +1396,7 @@ String s=editable.toString();
 
                 Log.v("onSelectFromGallery ", " compressedSize " + compressedBitmap.getByteCount());
                 try {
-                    if (compressedBitmap.getByteCount() > 26214400) {
+                    if (compressedBitmap.getByteCount() > 5000000) {
                         Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
                     } else {
                         //create file which we want to send to server.
@@ -1441,5 +1503,10 @@ String s=editable.toString();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
         return encodedImage;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

@@ -21,7 +21,7 @@ public class NewsFeedApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        appEnvironment = AppEnvironment.SANDBOX;
+        appEnvironment = AppEnvironment.PRODUCTION;
         mApp = this;
         mImageDetails = new ArrayList<>();
         hashMap = new HashMap<>();

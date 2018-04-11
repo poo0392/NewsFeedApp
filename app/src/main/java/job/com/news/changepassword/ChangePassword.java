@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -43,6 +44,7 @@ public class ChangePassword extends AppCompatActivity {
         setContentView(R.layout.activity_change_password);
 
         myPreferences = MyPreferences.getMyAppPref(this);
+        setAppToolbar();
         mPwdView = (EditText) findViewById(R.id.pwd_change_pwd);
         getPrefrenceData();
         Button mSubmitButton = (Button) findViewById(R.id.change_pwd_submit_btn);
@@ -53,6 +55,18 @@ public class ChangePassword extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setAppToolbar() {
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(getResources().getString(R.string.change_pwd_menu));
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     private void attemptSubmit() {
@@ -89,18 +103,20 @@ public class ChangePassword extends AppCompatActivity {
                 sendForgotPwdReq(pwd);
             }
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     private void getPrefrenceData() {
         //Load Data From SharedPrefernce in UserName & Passowrd
         try {
-            memberId= myPreferences.getMemberId();
+            memberId = myPreferences.getMemberId();
         } catch (Exception e) {
             Log.d("Core", "e :" + e.toString());
         }
     }
+
     private void sendForgotPwdReq(String pwd) {
         try {
 
@@ -121,30 +137,30 @@ public class ChangePassword extends AppCompatActivity {
             RequestBody bodyMemberToken = RequestBody.create(MediaType.parse("text/plain"), myPreferences.getMemberToken());
             RequestBody bodyPwd = RequestBody.create(MediaType.parse("text/plain"), pwd);
 
-            Log.v("ChangePassword ","bodyMemberId  : "+String.valueOf(memberId));
-            Log.v("ChangePassword ","bodyMemberToken  : "+myPreferences.getMemberToken());
-            Log.v("ChangePassword ","bodyPwd : "+pwd);
+            Log.v("ChangePassword ", "bodyMemberId  : " + String.valueOf(memberId));
+            Log.v("ChangePassword ", "bodyMemberToken  : " + myPreferences.getMemberToken());
+            Log.v("ChangePassword ", "bodyPwd : " + pwd);
 
             Call<ForgotPasswordResp> serverResponse = webService.changePasswordRequest(bodyMemberId, bodyMemberToken, bodyPwd);
-            Log.v("ChangePassword ","LoginParameters url : "+serverResponse.request().url());
+            Log.v("ChangePassword ", "LoginParameters url : " + serverResponse.request().url());
             serverResponse.enqueue(new Callback<ForgotPasswordResp>() {
                 @Override
                 public void onResponse(Call<ForgotPasswordResp> call, Response<ForgotPasswordResp> response) {
                     progressDialog.dismiss();
-                    if(response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         ForgotPasswordResp serverResponse = response.body();
-                        if(serverResponse.getStatus() == 0){
+                        if (serverResponse.getStatus() == 0) {
                             //register success
                             String desc = serverResponse.getDescription();
-                            Toast.makeText(ChangePassword.this, "0" , Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChangePassword.this, "0", Toast.LENGTH_SHORT).show();
                             showSuccessAlertDialog(ChangePassword.this, "Success", "Your new password is updated succesfully");
-                         //   finish();
+                            //   finish();
                         } else {
                             //login failed
                             String desc = serverResponse.getDescription();
-                            Log.v("ForgotPasswordResp ","failed_desc"+desc);
-                            Toast.makeText(ChangePassword.this, "1" , Toast.LENGTH_SHORT).show();
-                           // setFailedAlertDialog(ChangePassword.this, "Failed", "Invalid Credentials.");
+                            Log.v("ForgotPasswordResp ", "failed_desc" + desc);
+                            Toast.makeText(ChangePassword.this, "1", Toast.LENGTH_SHORT).show();
+                            // setFailedAlertDialog(ChangePassword.this, "Failed", "Invalid Credentials.");
                         }
                     }
                 }
@@ -156,10 +172,11 @@ public class ChangePassword extends AppCompatActivity {
                 }
             });
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     private void showSuccessAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)
@@ -176,6 +193,7 @@ public class ChangePassword extends AppCompatActivity {
                 })
                 .show();
     }
+
     private void setFailedAlertDialog(Context context, String title, String desc) {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)
@@ -190,5 +208,11 @@ public class ChangePassword extends AppCompatActivity {
                     }
                 })
                 .show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
     }
 }

@@ -38,6 +38,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
     MyPreferences myPreferences;
     HomeActivity activity;
     FragmentFromAdapter callback;
+    private int lastExpandedPosition = -1;
 
     public ExpandListAdapter(Context context, List<String> listDataHeader,
                              HashMap<String, List<String>> listChildData, HashMap<String, List<String>> listThirdLevelChild,FragmentFromAdapter callback) {
@@ -116,13 +117,19 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
 
 
             secondLevelELV.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-                int previousGroup = -1;
+               // int previousGroup = -1;
 
                 @Override
                 public void onGroupExpand(int groupPosition) {
-                    if (groupPosition != previousGroup)
+                    Log.v("onGroupExpand ", "groupPosition " + groupPosition);
+                   /* if (groupPosition != previousGroup)
                         secondLevelELV.collapseGroup(previousGroup);
-                    previousGroup = groupPosition;
+                    previousGroup = groupPosition;*/
+                    if (lastExpandedPosition != -1
+                            && groupPosition != lastExpandedPosition) {
+                        secondLevelELV.collapseGroup(lastExpandedPosition);
+                    }
+                    lastExpandedPosition = groupPosition;
                 }
             });
 
@@ -130,10 +137,10 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                     String childName = childData.get(groupPosition).get(childPosition);
-                    Log.v("onChildClick ", " childPosition " + childPosition + " groupPosition " + groupPosition);
-                    Log.v("onChildClick ", "00 " + childName);
+                 //   Log.v("onChildClick ", " childPosition " + childPosition + " groupPosition " + groupPosition);
+                  //  Log.v("onChildClick ", "00 " + childName);
                     int cp = (int) secondAdapter.getChildId(groupPosition, childPosition);
-                    Log.v("onChildClick ", "11 " + cp);
+                 //   Log.v("onChildClick ", "11 " + cp);
 
                     callback.setFragment(childName, cp);
                    // myPreferences.setExpandPosition(cp);

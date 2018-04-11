@@ -120,6 +120,8 @@ public class HomeActivity extends AppCompatActivity
     Gson gson;
     Fragment fragment;
     JSONArray jsonArray;
+    private int lastExpandedPosition = -1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -626,6 +628,11 @@ public class HomeActivity extends AppCompatActivity
                 /*if(group.equals("Home")){
 
                 }*/
+                if (lastExpandedPosition != -1
+                        && groupPosition != lastExpandedPosition) {
+                    expListView.collapseGroup(lastExpandedPosition);
+                }
+                lastExpandedPosition = groupPosition;
             }
         });
 
@@ -655,9 +662,9 @@ public class HomeActivity extends AppCompatActivity
 
                 if (child_name.equals("Pending Request")) {
                     callRequestStatusHomeFragment();
-                } else if (child_name.equals("Request Status")) {
+                } /*else if (child_name.equals("Request Status")) {
 
-                } else {
+                }*/ else {
                     setFragment(child_name, childPosition);
 
                 }
@@ -695,7 +702,7 @@ public class HomeActivity extends AppCompatActivity
 
         List<String> requestsChild = new ArrayList<String>();
         requestsChild.add("Pending Request");
-        requestsChild.add("Request Status");
+       // requestsChild.add("Request Status");
 
 
         List<String> newsChild = new ArrayList<String>();

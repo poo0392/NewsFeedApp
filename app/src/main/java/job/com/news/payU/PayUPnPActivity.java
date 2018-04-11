@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRadioButton;
@@ -40,6 +39,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import job.com.news.HomeActivity;
 import job.com.news.NewsFeedApplication;
 import job.com.news.R;
 import job.com.news.sharedpref.MyPreferences;
@@ -94,7 +94,7 @@ public class PayUPnPActivity extends AppCompatActivity {
     }
 
     private void initListeners() {
-        radioGroup_select_env.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        /*radioGroup_select_env.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 switch (i) {
@@ -109,7 +109,8 @@ public class PayUPnPActivity extends AppCompatActivity {
                         break;
                 }
             }
-        });
+        });*/
+        selectProdEnv();
         payNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -257,9 +258,9 @@ public class PayUPnPActivity extends AppCompatActivity {
     private void setupCitrusConfigs() {
         AppEnvironment appEnvironment = ((NewsFeedApplication) getApplication()).getAppEnvironment();
         if (appEnvironment == AppEnvironment.PRODUCTION) {
-            Toast.makeText(PayUPnPActivity.this, "Environment Set to Production", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(PayUPnPActivity.this, "Environment Set to Production", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(PayUPnPActivity.this, "Environment Set to SandBox", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(PayUPnPActivity.this, "Environment Set to SandBox", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -421,7 +422,10 @@ public class PayUPnPActivity extends AppCompatActivity {
                         .setMessage("Payu's Data : " + payuResponse + "\n\n\n Merchant's Data: " + merchantResponse)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                dialog.dismiss();
+                                //dialog.dismiss();
+                                Intent i = new Intent(PayUPnPActivity.this, HomeActivity.class);
+                                startActivity(i);
+                                finish();
                             }
                         }).show();
 

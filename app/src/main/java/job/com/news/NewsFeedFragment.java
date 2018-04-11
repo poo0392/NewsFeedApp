@@ -100,7 +100,7 @@ public class NewsFeedFragment extends Fragment {
     Context mContext;
     private MyPreferences myPreferences;
     String emailId, fullName, memberToken, getLangFromPref, lang_arr[], language;
-    private List<NewsFeedList> newsFeedListAll = new ArrayList<>();
+    private List<NewsFeedList> newsFeedListAll;
     private ArrayList<NewsFeedList> newsFeedList, listTwo, filteredList, filteredModelListNew;
     private List<NewsFeedList> newsFeedListResp = new ArrayList<>();
     private ArrayList<? extends NewsFeedList> newsFeedListNew = new ArrayList<>();
@@ -234,7 +234,7 @@ public class NewsFeedFragment extends Fragment {
 
                 //if (!newsFeedList.isEmpty()) {
                 // List<NewsFeedList> filteredModelList = filter(newsFeedList, query);
-                List<NewsFeedList> filteredModelList = filter(newsFeedListAll, query);
+                List<NewsFeedList> filteredModelList = filter(newsFeedList, query);
 
                 if (filteredModelList.size() > 0) {
                     adapter.setFilter(filteredModelList);
@@ -390,6 +390,7 @@ public class NewsFeedFragment extends Fragment {
         subCategoryList = new ArrayList<>();
         filteredList = new ArrayList<>();
         filteredModelListNew = new ArrayList<>();
+        newsFeedListAll = new ArrayList<>();
         listTwo = new ArrayList<>();
         categoryListAll = new ArrayList<>();
         subCatIdList = new ArrayList<>();
@@ -397,7 +398,7 @@ public class NewsFeedFragment extends Fragment {
         catDupList = new ArrayList<>();
 
 
-        newsFeedListAll.addAll(newsListTable.getAllNewsRecords());
+       // newsFeedListAll.addAll(newsListTable.getAllNewsRecords());
     }
 
     @SuppressLint("LongLogTag")

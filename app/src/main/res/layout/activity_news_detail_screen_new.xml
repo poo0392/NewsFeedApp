@@ -128,7 +128,8 @@
                         android:layout_height="20dp"
                         android:layout_marginLeft="10dp"
                         android:layout_toRightOf="@+id/txt_post_time"
-                        android:background="@color/DarkGray" />
+                        android:background="@color/DarkGray"
+                        />
 
                     <TextView
                         android:id="@+id/txt_city"
@@ -136,7 +137,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:layout_toRightOf="@+id/view_city"
-                        android:text=""
+                        android:text="Mandi"
                         android:textSize="13sp" />
                 </RelativeLayout>
 
