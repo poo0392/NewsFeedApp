@@ -14,14 +14,13 @@
     <ImageView
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:background="@mipmap/ic_launcher"
+        android:background="@drawable/ic_launcher"
         android:layout_gravity="center"/>
     <TextView
-        android:paddingLeft="25dp"
         android:id="@+id/splash_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="News Feed"
+        android:text="Apna News"
         android:layout_gravity="center"
         android:textSize="@dimen/text_xtra_large_splash"
         android:textColor="@color/colorPrimary"

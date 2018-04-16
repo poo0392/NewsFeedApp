@@ -3,7 +3,6 @@ package job.com.news.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 import static job.com.news.db.MemberTable.MEMBER_ID;
 
@@ -130,7 +129,7 @@ public class DBHelper extends SQLiteOpenHelper {
         insertSubCategory(db);
         insertSubCategoryMR(db);
         insertSubCategoryHI(db);
-        Toast.makeText(context, "Table Created in db", Toast.LENGTH_SHORT).show();
+     //   Toast.makeText(context, "Table Created in db", Toast.LENGTH_SHORT).show();
     }
 
     @Override

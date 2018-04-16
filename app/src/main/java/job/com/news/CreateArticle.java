@@ -75,7 +75,6 @@ import job.com.news.helper.NoConnectivityException;
 import job.com.news.helper.TimeoutException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
-import job.com.news.payU.PayUPnPActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -1016,7 +1015,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-                if (validateFields()) {
+              //  if (validateFields()) {
                /* */
 //
 //                    // memberList = db.getMember();
@@ -1029,7 +1028,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     intent.putExtra("Price",1);
                     startActivity(intent);
                     finish();*/
-                }
+            //    }
 
                 break;
             case R.id.article_image1:
@@ -1124,7 +1123,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         RequestBody paramNewsDesc = RequestBody.create(MediaType.parse("text/plain"), "" + newsDesc);
         //  RequestBody paramNewsPic = RequestBody.create(MediaType.parse("text/plain"), "" + newsPic);
 
-      /*  mapValuesFinal.put("member_token",membertoken);
+        mapValuesFinal.put("member_token",membertoken);
         mapValuesFinal.put("member_id", String.valueOf(memberid));
         mapValuesFinal.put("category_id",categoryId);
         mapValuesFinal.put("sub_category_id", String.valueOf(sub_category_id));
@@ -1133,9 +1132,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mapValuesFinal.put("city_id",cityId);
         mapValuesFinal.put("news_title",newsTitle);
         mapValuesFinal.put("news_desc",newsDesc);
-        mapValuesFinal.put("news_images", String.valueOf(newsPic));*/
+       // mapValuesFinal.put("news_images", String.valueOf(newsPic));
 
-        Log.v("postNewsAPI ", "membertoken " + membertoken);
+    /*    Log.v("postNewsAPI ", "membertoken " + membertoken);
         Log.v("postNewsAPI ", "memberid " + memberid);
         Log.v("postNewsAPI ", "countryId " + countryId);
         Log.v("postNewsAPI ", "categoryId " + categoryId);
@@ -1149,10 +1148,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         Log.v("postNewsAPI ", "imageName11 " + new Gson().toJson(image));
         Log.v("postNewsAPI ", "photosToUploadList " + new Gson().toJson(photosToUploadList));
         Log.v("postNewsAPI ", "photosToUploadListSize " + photosToUploadList.size());
-
+*/
 
         // String news_pic_str = Arrays.toString(newsList);
-        // Log.v("postNewsAPI ", "newsPic " + news_pic_str);
+        Log.v("postNewsAPI ", "reqParams " + mapValuesFinal.toString());
 
         /*Call<NewsFeedModelResponse> serverResponse = webService.post_news(paramMemberToken, paramMemberId,
                 paramCategoryId, paramSubCategoryId, paramCountryId, paramStateId, paramCityId, paramNewsTitle, paramNewsDesc, image);
@@ -1162,8 +1161,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         //    Call<NewsFeedModelResponse> serverResponse = webService.post_news(mapValuesFinal);
 
         String reqParam = bodyToString(serverResponse.request().body());
-        Log.v("postNewsAPI ", "reqParam : " + reqParam);
-        Log.v("postNewsAPI ", "LoginParameters : " + serverResponse.request().body().toString());
+       /// Log.v("postNewsAPI ", "reqParam : " + reqParam);
+       // Log.v("postNewsAPI ", "LoginParameters : " + serverResponse.request().body().toString());
         Log.v("postNewsAPI ", "postNewsAPI req : " + serverResponse.request().toString());
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
@@ -1222,13 +1221,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        /*Intent i = new Intent(CreateArticle.this, HomeActivity.class);
+                        Intent i = new Intent(CreateArticle.this, HomeActivity.class);
                         startActivity(i);
-                        finish();*/
-                        Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                        finish();
+                      /*  Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
                         intent.putExtra("Price",charges);
                         startActivity(intent);
-                        finish();
+                        finish();*/
                     }
                 })
                 .show();

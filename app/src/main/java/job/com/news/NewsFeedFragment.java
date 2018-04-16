@@ -710,8 +710,10 @@ public class NewsFeedFragment extends Fragment {
         if (newsFeedList != null || !newsFeedList.isEmpty()) {
             newsFeedList.clear();
         }
-        //newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat));
-        newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(categoryId, subCategory));
+      //  for(int k=0;k<subCategory.size();k++) {
+            //newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat));
+            newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(categoryId, subCategory));
+    //    }
         Log.v("loadDatatoList ", "newsFeedList " + newsFeedList.size());
 
         Log.v("", "getNewsFeedList " + newsFeedList.toString());

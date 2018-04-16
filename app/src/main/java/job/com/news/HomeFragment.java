@@ -22,7 +22,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import job.com.news.adapter.DynamicFragmentAdapter;
@@ -168,16 +168,19 @@ public class HomeFragment extends Fragment {
                         status = i;
                     }
                 }
+            } else {
+                status = 0;
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (status != -1) {
-            viewPager.setCurrentItem(status);
-        } else {
+        Log.v("", "status " + status);
+        if (status == -1 && status == 0) {
             Log.v("", "No data available");
             Toast.makeText(mContext, "No data available", Toast.LENGTH_SHORT).show();
+        } else {
+            viewPager.setCurrentItem(status);
         }
     }
 
@@ -202,7 +205,7 @@ public class HomeFragment extends Fragment {
 
         mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(), catListNew, categoryIDList, categoryId, subCategoryIDList, "");
         //     Log.v("11", " catListNew " + catListNew);
-        Collections.reverse(catListNew);
+       // Collections.reverse(catListNew);
         for (int i = 0; i < catListNew.size(); i++) {
 
             addTab(catListNew.get(i));
@@ -234,40 +237,23 @@ public class HomeFragment extends Fragment {
             for (int k = 0; k < newsFeedList.size(); k++) {
                 catDupList.add(newsFeedList.get(k).getCategory());
                 categoryIDList.add(Integer.valueOf(newsFeedList.get(k).getCategory_id()));
-                if (/*newsFeedList.get(k).getSub_category()!=null || */newsFeedList.get(k).getSub_category_id() != null) {
+                if (newsFeedList.get(k).getSub_category_id() != null) {
                     subCatDupList.add(newsFeedList.get(k).getSub_category());
 
                 }
                 if (newsFeedList.get(k).getSub_category() == null) {
-                    subCategoryIDList.add(0, 0);
+                    subCategoryIDList.add(0);
                 } else {
                     subCategoryIDList.add(Integer.valueOf(newsFeedList.get(k).getSub_category_id()));
                 }
             }
             Log.v(TAG + " loadCategoryList ", "subCategoryIDList " + subCategoryIDList);
-            //if(news.categoryId=categoryM.categoryId){//10
-            // getCategoryNameFromDb(categoryList.get(i).toString)
-//            String ids[]=catId.split(",");
-            // idListCat
-            categoryList.addAll(new HashSet<>(catDupList));
-            subCategoryList.addAll(new HashSet<>(subCatDupList));
-           /* for (int i=0;i<categoryIDList.size();i++) {
-                categoryId=categoryIDList.get(i);
 
-            }*/
 
-            //   List<Integer> categoryList = categoryMasterTable.getCategoryId();
+            categoryList.addAll(new LinkedHashSet<>(catDupList));
+            subCategoryList.addAll(new LinkedHashSet<>(subCatDupList));
 
-            //
-            // subCategoryIDList.addAll(subCategoryTable.getSubCatIdByCatId(categoryId));
 
-          /*  List<Integer> catIdList=new ArrayList<>(categoryMasterTable.getCategoryId());
-
-            for(int i=0;i<catIdList.size();i++){ //4 & catIsList == 10
-
-                if(ids[i])
-            }
-*/
             for (int i = 0; i < categoryList.size(); i++) {
                 //   for (int l = 0; l < subCategoryList.size(); l++) {
                 categoryId = categoryMasterTable.getCategoryIdByName(categoryList.get(i).toString());
@@ -309,6 +295,7 @@ public class HomeFragment extends Fragment {
                         if (subCategoryList.get(m).equals("Property")) {
                             catListNew.add(mContext.getResources().getString(R.string.property_menu));
                             catListNewEn.add("Property");
+                           // break;
                         } else if (subCategoryList.get(m).equals("Birthday ads")) {
                             catListNew.add(mContext.getResources().getString(R.string.birth_menu));
                             catListNewEn.add("Birthday ads");
@@ -324,10 +311,10 @@ public class HomeFragment extends Fragment {
                         } else if (subCategoryList.get(m).equals("Loan related")) {
                             catListNew.add(mContext.getResources().getString(R.string.loan_rel_menu));
                             catListNewEn.add("Loan related");
-                        } else if (subCategoryList.get(m).equals("Matrimony related") ||
-                                subCategoryList.get(m).equals("Matrimony")) {
+                        } else if (subCategoryList.get(m).equals("Matrimony related") || subCategoryList.get(m).equals("Matrimony")) {
                             catListNew.add(mContext.getResources().getString(R.string.mat_rel_menu));
                             catListNewEn.add("Matrimony related");
+                         //   break;
                         } else if (subCategoryList.get(m).equals("Books and Literature")) {
                             catListNew.add(mContext.getResources().getString(R.string.book_lit_menu));
                             catListNewEn.add("Books and Literature");
@@ -349,9 +336,11 @@ public class HomeFragment extends Fragment {
                         } else if (subCategoryList.get(m).equals("Business")) {
                             catListNew.add(mContext.getResources().getString(R.string.business_menu));
                             catListNewEn.add("Business");
+                          //  break;
                         } else if (subCategoryList.get(m).equals("Educational")) {
                             catListNew.add(mContext.getResources().getString(R.string.edu_menu));
                             catListNewEn.add("Educational");
+                          //  break;
                         }
                     }
                 }

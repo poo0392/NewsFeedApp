@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My News Article</string>
+    <string name="app_name">Apna News</string>
 
     <string name="next_text">Next</string>
     <string-array name="language_arr">
