@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="C:\Users\POOJA\.android\build-cache\f1b87eba4b82fa2f204b50855e4599c7e7398169\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="31f17126b81fb1f10482aada466c274c39054cda">
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_fbf1a740c97bb61c2f551b1858e4f348a0dfa4ef.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\POOJA\.android\build-cache\c3083dfca4a74704d522812b30342b2f546c9e9c\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="2cd4b982617e544728de0782d718a58ce1b06e3f">
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_b1b093480b79b6f2f8347b95f635c5030a05f7ed.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\POOJA\.gradle\caches\modules-2\files-2.1\com.jakewharton\disklrucache\2.0.2\93b399470e72c0bc8cb52379943b63c9aa586cd8\disklrucache-2.0.2.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="93b399470e72c0bc8cb52379943b63c9aa586cd8">
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\disklrucache-2.0.2_cbd4646a1ee220b7be4e2e147916c335e491d157.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\POOJA\.android\build-cache\d3806f826f00847709ef89e8464989156caf00fe\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="b2060eb3e2df84e3941c5c8077d908acc2b4ff85">
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_f6a314bb06235f92e48ca008b26c553499cfe225.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\POOJA\.android\build-cache\1aa53316e3524db7ac09f87652e84ef17a45d655\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="3cef25b344d6893e5e2d9b1ae38d180955e9d3ef">
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_899b79d980c1640b0e365c5e96d7ea113185363a.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\POOJA\.android\build-cache\fdd7d864a68eb59679f4d34bcd3afad087adbd55\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="34b76399c07c17008e6259df556439fbd3dd6b3d">
+        <dex dex="D:\Studio workspace\NewsFeedApp\app\build\intermediates\pre-dexed\debug\classes_21e1cfe6918c0931b06ad60959742c869637d57b.jar" />
+    </item>
+
+</items>

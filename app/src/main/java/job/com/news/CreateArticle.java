@@ -50,6 +50,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1339,8 +1340,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             Toast.makeText(mContext,
                     mContext.getResources().getString(R.string.toast_msg_charges_validations), Toast.LENGTH_SHORT).show();
             return valid;
-        }
-        else {
+        } else {
             valid = true;
         }
         return valid;
@@ -1396,25 +1396,104 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 try {
                     // bimatp factory
                     BitmapFactory.Options options = new BitmapFactory.Options();
-
+                    int MAX_BYTES = 5000000;
                     // downsizing image as it throws OutOfMemory Exception for larger
                     // images
-                    options.inSampleSize = 2;
+                   /* options.inSampleSize = 2;
 
                     Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
                     Bitmap originalSize = BitmapFactory.decodeFile(mediaPath);
                     Log.v("onSelectFromGallery ", " originalSize " + originalSize.getByteCount());
+                    float fileSize = getFileSize();// size in mb
+                    int sizeInBytes = 0;
 
+                    sizeInBytes = originalSize.getByteCount();
+
+                    Log.v("onSelectFromGallery ", " sizeInBytes " + sizeInBytes);
                     Log.v("onSelectFromGallery ", " compressedSize " + compressedBitmap.getByteCount());
-                    try {
-                        if (compressedBitmap.getByteCount() > 25000000) {
+
+
+                    InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                    Bitmap chosenImage = BitmapFactory.decodeStream(inputStream);
+                    Bitmap image=null;
+                    // attempt to resize the image if necessary
+                    chosenImage = compressImageToMax(chosenImage, MAX_BYTES);*/
+
+                    /*if (chosenImage == null) {
+                        image = null;
+                      //  updateImage();
+                    } else if (chosenImage.getByteCount() <= MAX_BYTES) {
+                        image = chosenImage;
+                       // updateImage();
+                    }*/
+
+
+                    // options.inSampleSize = calculateInSampleSize(options, 500,500);
+                   // Bitmap.compres
+                  /*  options.inSampleSize = 2;
+                    options.inJustDecodeBounds = false;
+                    Bitmap smallBitmap = BitmapFactory.decodeFile(mediaPath, options);
+                    //   Bitmap smallBitmap = BitmapFactory.decodeResource(getResources(), mediaPath, options);
+
+                    Log.v("onSelectFromGallery ", " smallBitmap " + smallBitmap.getByteCount());
+                    Bitmap scaled = Bitmap.createScaledBitmap(smallBitmap, 500, 500, true);
+                    Log.v("onSelectFromGallery ", " scaled " + scaled.getByteCount());
+*/
+                  /*  InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                    options.inSampleSize = 2;
+                    options.inJustDecodeBounds = false;
+                    Bitmap outputImg=BitmapFactory.decodeStream(inputStream, null , options);
+                    Log.v("onSelectFromGallery ", " outputImg " + outputImg.getByteCount());*/
+
+                    Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
+                    Bitmap originalSize = BitmapFactory.decodeFile(mediaPath);
+                    Log.v("onSelectFromGallery ", " originalSize " + originalSize.getByteCount());
+                    float fileSize = getFileSize();// size in mb
+                    int sizeInBytes = 0;
+
+                    sizeInBytes = originalSize.getByteCount();
+                    if (fileSize > 5) {// size in mb
+                        Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
+                    } else {
+
+
+                    /*if (outputImg.getByteCount() > MAX_BYTES) {// size in mb
+                        Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
+                    } else {*/
+                        if (currentImageView == 1) {
+                            mArticleImage1.setBackgroundResource(0);
+                            mArticleImage1.setImageBitmap(compressedBitmap);
+                            // mArticleImage1.setImageBitmap(decoded);
+
+                            //   base64Image1 = getStringImage(bmp);
+                            //  newsPic.add(base64Image1);
+                            filePaths.add(mediaPath);
+
+                        } else if (currentImageView == 2) {
+                            mArticleImage2.setBackgroundResource(0);
+                            mArticleImage2.setImageBitmap(compressedBitmap);
+                            // mArticleImage2.setImageBitmap(decoded);
+                            // base64Image2 = getStringImage(bmp);
+                            // newsPic.add(base64Image2);
+                            filePaths.add(mediaPath);
+                        }
+                    }
+
+                  /*  try {
+                        if (chosenImage.getByteCount() >= MAX_BYTES) {
+                       // if (sizeInBytes > MAX_BYTES) {
+                            // If the image is higher than max number of bytes, start all over again.
                             Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
                         } else {
-                            //create file which we want to send to server.
-                            File imageFIle = new File(String.valueOf(realUri));
+
+                       *//* }
+
+                        if (fileSize > 5) {// size in mb
+                            Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
+                        } else {*//*
 
                             // Set the Image in ImageView for Previewing the Media
-                            if (currentImageView == 1) {
+                           *//* if (currentImageView == 1) {
                                 mArticleImage1.setBackgroundResource(0);
                                 mArticleImage1.setImageBitmap(compressedBitmap);
                                 // mArticleImage1.setImageBitmap(decoded);
@@ -1430,25 +1509,45 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                                 // base64Image2 = getStringImage(bmp);
                                 // newsPic.add(base64Image2);
                                 filePaths.add(mediaPath);
-                            }
+                            }*//*
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
-
-
-
-
-            } catch (Exception e) {
+                    }*/
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
-        } else {
-            imageSelected = 0;
-            //  Toast.makeText(getApplicationContext(),"Please Select atleast one image",Toast.LENGTH_SHORT).show();
+
+
+        } catch(Exception e){
+            e.printStackTrace();
         }
+    } else
+
+    {
+        imageSelected = 0;
+        //  Toast.makeText(getApplicationContext(),"Please Select atleast one image",Toast.LENGTH_SHORT).show();
+    }
+
+}
+
+    private float getFileSize() {
+        realUri = Uri.parse(mediaPath);
+        //create file which we want to send to server.
+        File imageFIle = new File(String.valueOf(realUri));
+        Log.v("", "length " + imageFIle.length());
+
+        float fileSizeInBytes = imageFIle.length();
+        float fileSizeInKB = fileSizeInBytes / 1024;
+        Log.v("", "fileSizeInKB " + fileSizeInKB);
+        // Convert the KB to MegaBytes (1 MB = 1024 KBytes)
+        float fileSizeInMB = fileSizeInKB / 1024;
+
+        //String calString=Float.toString(fileSizeInMB);
+        // String calString=Float.toString(fileSizeInMB);
+        // int size = (int) fileSizeInMB;
+        // Log.v("", "size " + size);
+        return fileSizeInMB;
     }
 
     private String getPathFromURI(Uri selectedImage) {
@@ -1499,6 +1598,30 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         }
 
         return inSampleSize;
+    }
+
+    public static Bitmap compressImageToMax(Bitmap image, int maxBytes) {
+        int oldSize = image.getByteCount();
+
+        // attempt to resize the image as much as possible while valid
+        while (image != null && image.getByteCount() > maxBytes) {
+
+            // Prevent image from becoming too small
+            if (image.getWidth() <= 20 || image.getHeight() <= 20)
+                return null;
+
+            // scale down the image by a factor of 2
+            image = Bitmap.createScaledBitmap(image, image.getWidth() / 2, image.getHeight() / 2, false);
+
+            // the byte count did not change for some reason, can not be made any smaller
+            if (image.getByteCount() == oldSize)
+                return null;
+
+            oldSize = image.getByteCount();
+            Log.v("compressImageToMax ", " oldSize " + oldSize);
+        }
+
+        return image;
     }
 
     public String getStringImage(Bitmap bmp) {
