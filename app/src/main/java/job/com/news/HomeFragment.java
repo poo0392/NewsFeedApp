@@ -205,7 +205,7 @@ public class HomeFragment extends Fragment {
 
         mDynAdapter = new DynamicFragmentAdapter(getFragmentManager(), catListNew, categoryIDList, categoryId, subCategoryIDList, "");
         //     Log.v("11", " catListNew " + catListNew);
-       // Collections.reverse(catListNew);
+        // Collections.reverse(catListNew);
         for (int i = 0; i < catListNew.size(); i++) {
 
             addTab(catListNew.get(i));
@@ -236,16 +236,16 @@ public class HomeFragment extends Fragment {
         if (newsFeedList != null) {
             for (int k = 0; k < newsFeedList.size(); k++) {
                 catDupList.add(newsFeedList.get(k).getCategory());
-                categoryIDList.add(Integer.valueOf(newsFeedList.get(k).getCategory_id()));
+                // categoryIDList.add(Integer.valueOf(newsFeedList.get(k).getCategory_id()));
                 if (newsFeedList.get(k).getSub_category_id() != null) {
                     subCatDupList.add(newsFeedList.get(k).getSub_category());
 
                 }
-                if (newsFeedList.get(k).getSub_category() == null) {
+               /* if (newsFeedList.get(k).getSub_category() == null) {
                     subCategoryIDList.add(0);
                 } else {
                     subCategoryIDList.add(Integer.valueOf(newsFeedList.get(k).getSub_category_id()));
-                }
+                }*/
             }
             Log.v(TAG + " loadCategoryList ", "subCategoryIDList " + subCategoryIDList);
 
@@ -253,95 +253,156 @@ public class HomeFragment extends Fragment {
             categoryList.addAll(new LinkedHashSet<>(catDupList));
             subCategoryList.addAll(new LinkedHashSet<>(subCatDupList));
 
+          /*  for (Integer category:categoryIDList) {
+
+                if(category==10){
+
+                }
+
+            }*/
 
             for (int i = 0; i < categoryList.size(); i++) {
                 //   for (int l = 0; l < subCategoryList.size(); l++) {
                 categoryId = categoryMasterTable.getCategoryIdByName(categoryList.get(i).toString());
+                // if (!catListNew.contains(categoryList.get(i))) {
+
 
                 if (categoryList.get(i).equals("National and International")) {
                     catListNew.add(mContext.getResources().getString(R.string.national_inter_menu));
                     catListNewEn.add("National and International");
+                    categoryIDList.add(1);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Government News")) {
                     catListNew.add(mContext.getResources().getString(R.string.gov_news_menu));
                     catListNewEn.add("Government News");
+                    categoryIDList.add(2);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Social and Related News") || categoryList.get(i).equals("Social News")) {
                     catListNew.add(mContext.getResources().getString(R.string.soc_rel_menu));
                     catListNewEn.add("Social and Related News");
+                    categoryIDList.add(3);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Sports")) {
                     catListNew.add(mContext.getResources().getString(R.string.sports_menu));
                     catListNewEn.add("Sports");
+                    categoryIDList.add(4);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Science and Technology")) {
                     catListNew.add(mContext.getResources().getString(R.string.sci_tech_menu));
                     catListNewEn.add("Science and Technology");
+                    categoryIDList.add(5);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Economical News")) {
                     catListNew.add(mContext.getResources().getString(R.string.eco_news_menu));
                     catListNewEn.add("Economical News");
+                    subCategoryIDList.add(0);
+                    categoryIDList.add(14);
                 } else if (categoryList.get(i).equals("Health Related") || categoryList.get(i).equals("Health")) {
                     catListNew.add(mContext.getResources().getString(R.string.health_rel_menu));
                     catListNewEn.add("Health Related");
+                    categoryIDList.add(6);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Business News") || categoryList.get(i).equals("Business")) {
                     catListNew.add(mContext.getResources().getString(R.string.business_news_menu));
                     catListNewEn.add("Business News");
+                    categoryIDList.add(7);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Agricultural News")) {
                     catListNew.add(mContext.getResources().getString(R.string.agri_news_menu));
                     catListNewEn.add("Agricultural News");
+                    categoryIDList.add(8);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Cinema Related") || categoryList.get(i).equals("Cinema")) {
                     catListNew.add(mContext.getResources().getString(R.string.cinema_menu));
                     catListNewEn.add("Cinema Related");
+                    categoryIDList.add(9);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Small Classifieds")) {
-                    for (int m = 0; m < subCategoryList.size(); m++) {
+
+                    for (int l = 0; l < subCategoryList.size(); l++) {
                         //catListNew.add(mContext.getResources().getString(R.string.small_class_menu));
                         //catListNewEn.add("Small Classifieds");
-                        if (subCategoryList.get(m).equals("Property")) {
+
+                        if (subCategoryList.get(l).equals("Property")) {
                             catListNew.add(mContext.getResources().getString(R.string.property_menu));
                             catListNewEn.add("Property");
-                           // break;
-                        } else if (subCategoryList.get(m).equals("Birthday ads")) {
+                            // break;
+                            subCategoryIDList.add(1);
+                            categoryIDList.add(10);
+                        } else if (subCategoryList.get(l).equals("Birthday ads")) {
                             catListNew.add(mContext.getResources().getString(R.string.birth_menu));
                             catListNewEn.add("Birthday ads");
-                        } else if (subCategoryList.get(m).equals("App Related Ads")) {
+                            subCategoryIDList.add(2);
+                            categoryIDList.add(10);
+                        } else if (subCategoryList.get(l).equals("App Related Ads")) {
                             catListNew.add(mContext.getResources().getString(R.string.app_rel_menu));
                             catListNewEn.add("App Related Ads");
-                        } else if (subCategoryList.get(m).equals("Buy and Sell")) {
+                            subCategoryIDList.add(3);
+                            categoryIDList.add(10);
+                        } else if (subCategoryList.get(l).equals("Buy and Sell")) {
                             catListNew.add(mContext.getResources().getString(R.string.buy_sell_menu));
                             catListNewEn.add("Buy and Sell");
-                        } else if (subCategoryList.get(m).equals("Services")) {
+                            subCategoryIDList.add(4);
+                            categoryIDList.add(10);
+                        } else if (subCategoryList.get(l).equals("Services")) {
                             catListNew.add(mContext.getResources().getString(R.string.services_menu));
                             catListNewEn.add("Services");
-                        } else if (subCategoryList.get(m).equals("Loan related")) {
+                            subCategoryIDList.add(5);
+                            categoryIDList.add(10);
+                        } else if (subCategoryList.get(l).equals("Loan related")) {
                             catListNew.add(mContext.getResources().getString(R.string.loan_rel_menu));
                             catListNewEn.add("Loan related");
-                        } else if (subCategoryList.get(m).equals("Matrimony related") || subCategoryList.get(m).equals("Matrimony")) {
+                            subCategoryIDList.add(6);
+                            categoryIDList.add(10);
+                        } else if (subCategoryList.get(l).equals("Matrimony related") || subCategoryList.get(l).equals("Matrimony")) {
                             catListNew.add(mContext.getResources().getString(R.string.mat_rel_menu));
                             catListNewEn.add("Matrimony related");
-                         //   break;
-                        } else if (subCategoryList.get(m).equals("Books and Literature")) {
+                            subCategoryIDList.add(7);
+                            categoryIDList.add(10);
+                            //   break;
+                        } else if (subCategoryList.get(l).equals("Books and Literature")) {
                             catListNew.add(mContext.getResources().getString(R.string.book_lit_menu));
                             catListNewEn.add("Books and Literature");
+                            subCategoryIDList.add(8);
+                            categoryIDList.add(10);
                         }
                     }
                 } else if (categoryList.get(i).equals("Other and Uncategorized News")) {
                     catListNew.add(mContext.getResources().getString(R.string.other_uncat_menu));
                     catListNewEn.add("Other and Uncategorized News");
+                    categoryIDList.add(11);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Entertainment News") || categoryList.get(i).equals("Entertainment")) {
                     catListNew.add(mContext.getResources().getString(R.string.ent_news_menu));
                     catListNewEn.add("Entertainment News");
+                    categoryIDList.add(12);
+                    subCategoryIDList.add(0);
                 } else if (categoryList.get(i).equals("Career Related") || categoryList.get(i).equals("Career")) {
-                    for (int m = 0; m < subCategoryList.size(); m++) {
+
+                    for (int l = 0; l < subCategoryList.size(); l++) {
                         // catListNew.add(mContext.getResources().getString(R.string.career_rel_menu));
                         //  catListNewEn.add("Career Related");
-                        if (subCategoryList.get(m).equals("Job")) {
+
+                        if (subCategoryList.get(l).equals("Job")) {
+
                             catListNew.add(mContext.getResources().getString(R.string.job_menu));
                             catListNewEn.add("Job");
-                        } else if (subCategoryList.get(m).equals("Business")) {
+                            subCategoryIDList.add(9);
+                            categoryIDList.add(13);
+                        } else if (subCategoryList.get(l).equals("Business")) {
                             catListNew.add(mContext.getResources().getString(R.string.business_menu));
                             catListNewEn.add("Business");
-                          //  break;
-                        } else if (subCategoryList.get(m).equals("Educational")) {
+                            //  break;
+                            subCategoryIDList.add(10);
+                            categoryIDList.add(13);
+                        } else if (subCategoryList.get(l).equals("Educational")) {
                             catListNew.add(mContext.getResources().getString(R.string.edu_menu));
                             catListNewEn.add("Educational");
-                          //  break;
+                            //  break;
+                            subCategoryIDList.add(11);
+                            categoryIDList.add(13);
                         }
+                        //}
                     }
                 }
 

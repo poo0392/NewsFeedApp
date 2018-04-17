@@ -80,7 +80,8 @@ public class NewsFeedFragment extends Fragment {
     private boolean fragmentOnCreated = false;
 
     //changes reflect to be 26/03
-    public RecyclerView mRecyclerView;private ImageAdapter adapter;
+    public RecyclerView mRecyclerView;
+    private ImageAdapter adapter;
 
     private NewsFeedApplication newsFeedApplication;
     LinearLayoutManager layoutManager;
@@ -110,7 +111,7 @@ public class NewsFeedFragment extends Fragment {
     ArrayList<String> categoryL = new ArrayList<>();
     ArrayList<String> subCategoryListLang;
     ArrayList<String> subCategoryList;
-    int memberId,categoryId;
+    int memberId, categoryId;
     int pos;
     String category;
     ProgressDialog mProgressDialog;
@@ -132,10 +133,10 @@ public class NewsFeedFragment extends Fragment {
         NewsFeedFragment fragment = new NewsFeedFragment();
         Bundle args = new Bundle();
         args.putInt("position", position);
-        args.putStringArrayList("categories",catListLang);
+        args.putStringArrayList("categories", catListLang);
         // Log.v("newInstance ", " categories" + catListNewEn.toString());
         args.putInt("categoryId", categoryId);
-       // args.putStringArrayList("subcatIdList", subCatList);
+        // args.putStringArrayList("subcatIdList", subCatList);
         args.putIntegerArrayList("subcatIdList", subCategoryIDList);
         args.putIntegerArrayList("catIdList", categoryIDList);
         fragment.setArguments(args);
@@ -147,7 +148,7 @@ public class NewsFeedFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.v(TAG+" onCreateView ", " Called ");
+        Log.v(TAG + " onCreateView ", " Called ");
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         setHasOptionsMenu(true);
         newsFeedApplication = NewsFeedApplication.getApp();
@@ -187,13 +188,13 @@ public class NewsFeedFragment extends Fragment {
 
             ll_frag_nestedtabs.setVisibility(View.VISIBLE);
 
-           // subCategoryList.addAll(subCategoryTable.getSubCatByCatId(categoryId));
-           // subCategoryList.addAll(subCategoryTable.getSubCatIdByCatId(categoryId));
+            // subCategoryList.addAll(subCategoryTable.getSubCatByCatId(categoryId));
+            // subCategoryList.addAll(subCategoryTable.getSubCatIdByCatId(categoryId));
             Log.v("getBundleData ", " subCategoryList" + subCategoryList.toString());
             Log.v("", "subCategoryListLang " + subCategoryListLang.size());
 
 
-          //  setupViewPager(viewPager,categoryId);
+            //  setupViewPager(viewPager,categoryId);
 
         }
     }
@@ -398,25 +399,25 @@ public class NewsFeedFragment extends Fragment {
         catDupList = new ArrayList<>();
 
 
-       // newsFeedListAll.addAll(newsListTable.getAllNewsRecords());
+        // newsFeedListAll.addAll(newsListTable.getAllNewsRecords());
     }
 
     @SuppressLint("LongLogTag")
     private void getBundleData() {
-        Log.v(TAG+" getBundleData ", " Called ");
+        Log.v(TAG + " getBundleData ", " Called ");
         pos = getArguments().getInt("position");
         Log.v("getBundleData ", "Fragpos " + pos);
         //  Toast.makeText(getActivity(), "Position is: " + pos, Toast.LENGTH_SHORT).show();
-      //  categoryListAll = getArguments().getStringArrayList("categories");
-      //  Log.v("getBundleData ", " categoryListAll" + categoryListAll.toString());
-       // Log.v("getBundleData ", " categoryListByPos " + categoryListAll.get(pos).toString());
+        //  categoryListAll = getArguments().getStringArrayList("categories");
+        //  Log.v("getBundleData ", " categoryListAll" + categoryListAll.toString());
+        // Log.v("getBundleData ", " categoryListByPos " + categoryListAll.get(pos).toString());
 
         subCatIdList = getArguments().getIntegerArrayList("subcatIdList");
         Log.v("getBundleData ", " subCatIdList" + subCatIdList);
 
-      //  int categoryId = categoryTable.getCategoryIdByName(categoryListAll.get(pos).toString());
-       List<Integer> categoryIdList=new ArrayList<>(getArguments().getIntegerArrayList("catIdList"));
-        int categoryId=categoryIdList.get(pos);
+        //  int categoryId = categoryTable.getCategoryIdByName(categoryListAll.get(pos).toString());
+        List<Integer> categoryIdList = new ArrayList<>(getArguments().getIntegerArrayList("catIdList"));
+        int categoryId = categoryIdList.get(pos);
         Log.v("getBundleData ", " categoryId" + categoryId);
 
         int subCategory = subCatIdList.get(pos);
@@ -427,9 +428,9 @@ public class NewsFeedFragment extends Fragment {
        /* if (categoryId == 10 || categoryId == 13) {
             setDataSubCat(categoryId,pos);
         } else {*/
-            loadDatatoList(categoryId,subCategory);
-            //  loadData(categoryListAll.get(pos).toString());
-       // }
+        loadDatatoList(categoryId, subCategory);
+        //  loadData(categoryListAll.get(pos).toString());
+        // }
     }
 
     @Override
@@ -586,7 +587,7 @@ public class NewsFeedFragment extends Fragment {
     }
 
     private void setupViewPager(ViewPager viewPager, int categoryId) {
-       // DynamicFragmentAdapter = new DynamicFragmentAdapter(getFragmentManager(), subCategoryListLang,subCategoryList, categoryId, subCategoryIDList, "sub_cat");
+        // DynamicFragmentAdapter = new DynamicFragmentAdapter(getFragmentManager(), subCategoryListLang,subCategoryList, categoryId, subCategoryIDList, "sub_cat");
         for (int i = 0; i < subCategoryListLang.size(); i++) {
             addTab(subCategoryListLang.get(i));
 
@@ -702,18 +703,18 @@ public class NewsFeedFragment extends Fragment {
 
     @SuppressLint("LongLogTag")
     public void loadDatatoList(int categoryId, int subCategory) {
-        Log.v(TAG+" loadDatatoList ", " Called ");
+        Log.v(TAG + " loadDatatoList ", " Called ");
 
 
-      //  newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList));
+        //  newsFeedList.addAll(newsListTable.getNewsRecordsByCategory(categoryList));
 
         if (newsFeedList != null || !newsFeedList.isEmpty()) {
             newsFeedList.clear();
         }
-      //  for(int k=0;k<subCategory.size();k++) {
+       // for (int k = 0; k < subCategory.size(); k++) {
             //newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(cat, subCat));
             newsFeedList.addAll(newsListTable.getNewsRecordsByCategoryAndSubCat(categoryId, subCategory));
-    //    }
+      //  }
         Log.v("loadDatatoList ", "newsFeedList " + newsFeedList.size());
 
         Log.v("", "getNewsFeedList " + newsFeedList.toString());

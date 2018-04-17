@@ -140,6 +140,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     String responseGson;
     List<MultipartBody.Part> photosToUploadList;
     String nWords = "";
+    int imageSelected;
+    File file;
 
     //Indonesia
 
@@ -531,6 +533,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
     private class EditTextListener implements TextWatcher {
         boolean mToggle = false;
+
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -577,7 +580,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
 
         }
-    };
+    }
+
+    ;
 
 
     public String value(String s, int numOfWords) {
@@ -1015,7 +1020,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-              //  if (validateFields()) {
+                if (validateFields()) {
                /* */
 //
 //                    // memberList = db.getMember();
@@ -1028,7 +1033,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     intent.putExtra("Price",1);
                     startActivity(intent);
                     finish();*/
-            //    }
+                }
 
                 break;
             case R.id.article_image1:
@@ -1072,7 +1077,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mProgressDialog = new ProgressDialog(CreateArticle.this);
         mProgressDialog.setMessage("Loading...");
         mProgressDialog.show();
-        File file = null;
 
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -1094,10 +1098,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
        /* for (int i = 0; i < filePaths.size(); i++) {
             file = new File(filePaths.get(i));
         }*/
+
         realUri = Uri.parse(mediaPath);
-        file = new File(String.valueOf(realUri));
-
-
+        if (realUri != null) {
+            file = new File(String.valueOf(realUri));
+        }
         //request body is used to attach file.
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
 
@@ -1109,6 +1114,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             MultipartBody.Part filePart = MultipartBody.Part.createFormData("news_images[]", file.getName(), requestBodyy);
             photosToUploadList.add(filePart);
         }
+        // }
 
         String countryId = "1";
 
@@ -1123,16 +1129,16 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         RequestBody paramNewsDesc = RequestBody.create(MediaType.parse("text/plain"), "" + newsDesc);
         //  RequestBody paramNewsPic = RequestBody.create(MediaType.parse("text/plain"), "" + newsPic);
 
-        mapValuesFinal.put("member_token",membertoken);
+        mapValuesFinal.put("member_token", membertoken);
         mapValuesFinal.put("member_id", String.valueOf(memberid));
-        mapValuesFinal.put("category_id",categoryId);
+        mapValuesFinal.put("category_id", categoryId);
         mapValuesFinal.put("sub_category_id", String.valueOf(sub_category_id));
-        mapValuesFinal.put("country_id",countryId);
-        mapValuesFinal.put("state_id",stateId);
-        mapValuesFinal.put("city_id",cityId);
-        mapValuesFinal.put("news_title",newsTitle);
-        mapValuesFinal.put("news_desc",newsDesc);
-       // mapValuesFinal.put("news_images", String.valueOf(newsPic));
+        mapValuesFinal.put("country_id", countryId);
+        mapValuesFinal.put("state_id", stateId);
+        mapValuesFinal.put("city_id", cityId);
+        mapValuesFinal.put("news_title", newsTitle);
+        mapValuesFinal.put("news_desc", newsDesc);
+        // mapValuesFinal.put("news_images", String.valueOf(newsPic));
 
     /*    Log.v("postNewsAPI ", "membertoken " + membertoken);
         Log.v("postNewsAPI ", "memberid " + memberid);
@@ -1161,8 +1167,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         //    Call<NewsFeedModelResponse> serverResponse = webService.post_news(mapValuesFinal);
 
         String reqParam = bodyToString(serverResponse.request().body());
-       /// Log.v("postNewsAPI ", "reqParam : " + reqParam);
-       // Log.v("postNewsAPI ", "LoginParameters : " + serverResponse.request().body().toString());
+        /// Log.v("postNewsAPI ", "reqParam : " + reqParam);
+        // Log.v("postNewsAPI ", "LoginParameters : " + serverResponse.request().body().toString());
         Log.v("postNewsAPI ", "postNewsAPI req : " + serverResponse.request().toString());
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
@@ -1324,11 +1330,16 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     mContext.getResources().getString(R.string.toast_msg_title_validations), Toast.LENGTH_SHORT).show();
             return valid;
         }
-       /* if (charges == 0) {
+        if (imageSelected == 0) {
+            Toast.makeText(mContext,
+                    "Please select atleast one image", Toast.LENGTH_SHORT).show();
+            return valid;
+        }
+        if (charges == 0) {
             Toast.makeText(mContext,
                     mContext.getResources().getString(R.string.toast_msg_charges_validations), Toast.LENGTH_SHORT).show();
             return valid;
-        } */
+        }
         else {
             valid = true;
         }
@@ -1371,64 +1382,72 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void onSelectFromGalleryResult(Intent data) {
+        if (data != null) {
+            imageSelected = 1;
 
-
-        try {
-
-            Uri selectedImage = data.getData();
-            mediaPath = getPathFromURI(selectedImage);
-            Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
-
-
-            String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
             try {
-                // bimatp factory
-                BitmapFactory.Options options = new BitmapFactory.Options();
 
-                // downsizing image as it throws OutOfMemory Exception for larger
-                // images
-                options.inSampleSize = 2;
+                Uri selectedImage = data.getData();
+                mediaPath = getPathFromURI(selectedImage);
+                Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
 
-                Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
-                Bitmap originalSize = BitmapFactory.decodeFile(mediaPath);
-                Log.v("onSelectFromGallery ", " originalSize " + originalSize.getByteCount());
 
-                Log.v("onSelectFromGallery ", " compressedSize " + compressedBitmap.getByteCount());
+                String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
                 try {
-                    if (compressedBitmap.getByteCount() > 5000000) {
-                        Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        //create file which we want to send to server.
-                        File imageFIle = new File(String.valueOf(realUri));
+                    // bimatp factory
+                    BitmapFactory.Options options = new BitmapFactory.Options();
 
-                        // Set the Image in ImageView for Previewing the Media
-                        if (currentImageView == 1) {
-                            mArticleImage1.setBackgroundResource(0);
-                            mArticleImage1.setImageBitmap(compressedBitmap);
-                            // mArticleImage1.setImageBitmap(decoded);
+                    // downsizing image as it throws OutOfMemory Exception for larger
+                    // images
+                    options.inSampleSize = 2;
 
-                            //   base64Image1 = getStringImage(bmp);
-                            //  newsPic.add(base64Image1);
-                            filePaths.add(mediaPath);
+                    Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
+                    Bitmap originalSize = BitmapFactory.decodeFile(mediaPath);
+                    Log.v("onSelectFromGallery ", " originalSize " + originalSize.getByteCount());
 
-                        } else if (currentImageView == 2) {
-                            mArticleImage2.setBackgroundResource(0);
-                            mArticleImage2.setImageBitmap(compressedBitmap);
-                            // mArticleImage2.setImageBitmap(decoded);
-                            // base64Image2 = getStringImage(bmp);
-                            // newsPic.add(base64Image2);
-                            filePaths.add(mediaPath);
+                    Log.v("onSelectFromGallery ", " compressedSize " + compressedBitmap.getByteCount());
+                    try {
+                        if (compressedBitmap.getByteCount() > 25000000) {
+                            Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            //create file which we want to send to server.
+                            File imageFIle = new File(String.valueOf(realUri));
+
+                            // Set the Image in ImageView for Previewing the Media
+                            if (currentImageView == 1) {
+                                mArticleImage1.setBackgroundResource(0);
+                                mArticleImage1.setImageBitmap(compressedBitmap);
+                                // mArticleImage1.setImageBitmap(decoded);
+
+                                //   base64Image1 = getStringImage(bmp);
+                                //  newsPic.add(base64Image1);
+                                filePaths.add(mediaPath);
+
+                            } else if (currentImageView == 2) {
+                                mArticleImage2.setBackgroundResource(0);
+                                mArticleImage2.setImageBitmap(compressedBitmap);
+                                // mArticleImage2.setImageBitmap(decoded);
+                                // base64Image2 = getStringImage(bmp);
+                                // newsPic.add(base64Image2);
+                                filePaths.add(mediaPath);
+                            }
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
-            } catch (NullPointerException e) {
+
+
+
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            imageSelected = 0;
+            //  Toast.makeText(getApplicationContext(),"Please Select atleast one image",Toast.LENGTH_SHORT).show();
         }
     }
 
