@@ -50,7 +50,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,6 +75,7 @@ import job.com.news.helper.NoConnectivityException;
 import job.com.news.helper.TimeoutException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.payU.PayUPnPActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -141,7 +141,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     String responseGson;
     List<MultipartBody.Part> photosToUploadList;
     String nWords = "";
-    int imageSelected;
+    int imageSelected=0;
     File file;
 
     //Indonesia
@@ -1021,7 +1021,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-                if (validateFields()) {
+              //  if (validateFields()) {
                /* */
 //
 //                    // memberList = db.getMember();
@@ -1029,24 +1029,27 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                    postNewsAPI();
-                   /* Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                   // postNewsAPI();
+               // Log.v("00 ","charges "+charges);
+                    Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
                     intent.putExtra("Price",1);
                     startActivity(intent);
-                    finish();*/
-                }
+                    finish();
+               // }
 
                 break;
             case R.id.article_image1:
-                if (v instanceof ImageView)
-                    currentImageView = 1;
+               // if (v instanceof ImageView)
+
                 if (v instanceof ImageView) {
+                    currentImageView = 1;
                     getImageFromGallery();
                 }
                 break;
             case R.id.article_image2:
-                currentImageView = 2;
+
                 if (v instanceof ImageView) {
+                    currentImageView = 2;
                     getImageFromGallery();
                 }
                 break;
@@ -1331,11 +1334,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     mContext.getResources().getString(R.string.toast_msg_title_validations), Toast.LENGTH_SHORT).show();
             return valid;
         }
-        if (imageSelected == 0) {
+        /*if (imageSelected == 0) {
             Toast.makeText(mContext,
                     "Please select atleast one image", Toast.LENGTH_SHORT).show();
             return valid;
-        }
+        }*/
         if (charges == 0) {
             Toast.makeText(mContext,
                     mContext.getResources().getString(R.string.toast_msg_charges_validations), Toast.LENGTH_SHORT).show();
@@ -1348,7 +1351,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
     private void getImageFromGallery() {
         try {
-            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);//Intent.ACTION_GET_CONTENT//ACTION_PICK
             photoPickerIntent.setType("image/*");
             startActivityForResult(photoPickerIntent, SELECT_FILE);
         } catch (Exception e) {
@@ -1380,86 +1383,43 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         }
     }
-
     private void onSelectFromGalleryResult(Intent data) {
-        if (data != null) {
-            imageSelected = 1;
 
+
+        try {
+
+            Uri selectedImage = data.getData();
+            mediaPath = getPathFromURI(selectedImage);
+            Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
+
+
+         /*   String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
             try {
+             *//*   Bitmap a = (BitmapFactory.decodeFile(mediaPath));
+                Bitmap photo = compressImageToMax(a,5000000);*//*
+               // imageView.setImageBitmap(photo);
 
-                Uri selectedImage = data.getData();
-                mediaPath = getPathFromURI(selectedImage);
-                Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
-
-
-                String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
+                // bimatp factory
+                File imageFIle = new File(mediaPath);
+                Log.v("onSelectFromGallery ", " imageFIle.length() " + imageFIle.length());
                 try {
-                    // bimatp factory
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    int MAX_BYTES = 5000000;
-                    // downsizing image as it throws OutOfMemory Exception for larger
-                    // images
-                   /* options.inSampleSize = 2;
-
-                    Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
-                    Bitmap originalSize = BitmapFactory.decodeFile(mediaPath);
-                    Log.v("onSelectFromGallery ", " originalSize " + originalSize.getByteCount());
-                    float fileSize = getFileSize();// size in mb
-                    int sizeInBytes = 0;
-
-                    sizeInBytes = originalSize.getByteCount();
-
-                    Log.v("onSelectFromGallery ", " sizeInBytes " + sizeInBytes);
-                    Log.v("onSelectFromGallery ", " compressedSize " + compressedBitmap.getByteCount());
-
-
-                    InputStream inputStream = getContentResolver().openInputStream(data.getData());
-                    Bitmap chosenImage = BitmapFactory.decodeStream(inputStream);
-                    Bitmap image=null;
-                    // attempt to resize the image if necessary
-                    chosenImage = compressImageToMax(chosenImage, MAX_BYTES);*/
-
-                    /*if (chosenImage == null) {
-                        image = null;
-                      //  updateImage();
-                    } else if (chosenImage.getByteCount() <= MAX_BYTES) {
-                        image = chosenImage;
-                       // updateImage();
-                    }*/
-
-
-                    // options.inSampleSize = calculateInSampleSize(options, 500,500);
-                   // Bitmap.compres
-                  /*  options.inSampleSize = 2;
-                    options.inJustDecodeBounds = false;
-                    Bitmap smallBitmap = BitmapFactory.decodeFile(mediaPath, options);
-                    //   Bitmap smallBitmap = BitmapFactory.decodeResource(getResources(), mediaPath, options);
-
-                    Log.v("onSelectFromGallery ", " smallBitmap " + smallBitmap.getByteCount());
-                    Bitmap scaled = Bitmap.createScaledBitmap(smallBitmap, 500, 500, true);
-                    Log.v("onSelectFromGallery ", " scaled " + scaled.getByteCount());
-*/
-                  /*  InputStream inputStream = getContentResolver().openInputStream(data.getData());
-                    options.inSampleSize = 2;
-                    options.inJustDecodeBounds = false;
-                    Bitmap outputImg=BitmapFactory.decodeStream(inputStream, null , options);
-                    Log.v("onSelectFromGallery ", " outputImg " + outputImg.getByteCount());*/
-
-                    Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
-                    Bitmap originalSize = BitmapFactory.decodeFile(mediaPath);
-                    Log.v("onSelectFromGallery ", " originalSize " + originalSize.getByteCount());
-                    float fileSize = getFileSize();// size in mb
-                    int sizeInBytes = 0;
-
-                    sizeInBytes = originalSize.getByteCount();
-                    if (fileSize > 5) {// size in mb
+                    if (imageFIle.length() > 5000000) {
                         Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
-                    } else {
+                    } else {*//*
 
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        // downsizing image as it throws OutOfMemory Exception for larger
+                        // images
+                        options.inSampleSize = 2;
 
-                    /*if (outputImg.getByteCount() > MAX_BYTES) {// size in mb
-                        Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
-                    } else {*/
+                        Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
+                        Bitmap originalSize = BitmapFactory.decodeFile(mediaPath);
+                        Log.v("onSelectFromGallery ", " originalSize " + originalSize.getByteCount());
+
+                        Log.v("onSelectFromGallery ", " compressedSize " + compressedBitmap.getByteCount());
+                        //create file which we want to send to server.
+
+                        // Set the Image in ImageView for Previewing the Media
                         if (currentImageView == 1) {
                             mArticleImage1.setBackgroundResource(0);
                             mArticleImage1.setImageBitmap(compressedBitmap);
@@ -1476,65 +1436,37 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                             // base64Image2 = getStringImage(bmp);
                             // newsPic.add(base64Image2);
                             filePaths.add(mediaPath);
-                        }
+                        }*//*
                     }
-
-                  /*  try {
-                        if (chosenImage.getByteCount() >= MAX_BYTES) {
-                       // if (sizeInBytes > MAX_BYTES) {
-                            // If the image is higher than max number of bytes, start all over again.
-                            Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
-                        } else {
-
-                       *//* }
-
-                        if (fileSize > 5) {// size in mb
-                            Toast.makeText(CreateArticle.this, "Too Large Image, Please Select another.", Toast.LENGTH_SHORT).show();
-                        } else {*//*
-
-                            // Set the Image in ImageView for Previewing the Media
-                           *//* if (currentImageView == 1) {
-                                mArticleImage1.setBackgroundResource(0);
-                                mArticleImage1.setImageBitmap(compressedBitmap);
-                                // mArticleImage1.setImageBitmap(decoded);
-
-                                //   base64Image1 = getStringImage(bmp);
-                                //  newsPic.add(base64Image1);
-                                filePaths.add(mediaPath);
-
-                            } else if (currentImageView == 2) {
-                                mArticleImage2.setBackgroundResource(0);
-                                mArticleImage2.setImageBitmap(compressedBitmap);
-                                // mArticleImage2.setImageBitmap(decoded);
-                                // base64Image2 = getStringImage(bmp);
-                                // newsPic.add(base64Image2);
-                                filePaths.add(mediaPath);
-                            }*//*
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }*/
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } catch (NullPointerException e) {
                 e.printStackTrace();
-            }
+            }*/
 
-
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-    } else
-
-    {
-        imageSelected = 0;
-        //  Toast.makeText(getApplicationContext(),"Please Select atleast one image",Toast.LENGTH_SHORT).show();
     }
 
-}
+
+    public boolean MaxSizeImage(String imagePath) {
+        boolean temp = false;
+        File file = new File(imagePath);
+        long length = file.length();
+        Log.v("MaxSizeImage ", "length " + length);
+
+        if (length < 5000000) // 5 mb
+            temp = true;
+
+        return temp;
+    }
 
     private float getFileSize() {
-        realUri = Uri.parse(mediaPath);
+        //  realUri = Uri.parse(mediaPath);
         //create file which we want to send to server.
-        File imageFIle = new File(String.valueOf(realUri));
+        File imageFIle = new File(mediaPath);
         Log.v("", "length " + imageFIle.length());
 
         float fileSizeInBytes = imageFIle.length();

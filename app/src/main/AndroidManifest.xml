@@ -36,6 +36,10 @@
         <activity
             android:name=".SignUpActivity"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".payU.PayUPnPActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
@@ -56,7 +60,6 @@
         <activity android:name=".forgotpassword.ForgotPassword" />
         <activity android:name=".changepassword.ChangePassword" />
         <activity android:name=".payU.MerchantCheckoutActivity" />
-        <activity android:name=".payU.PayUPnPActivity" />
 
         <service android:name=".service.BackgroundService" />
 

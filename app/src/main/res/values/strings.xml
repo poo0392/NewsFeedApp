@@ -173,6 +173,7 @@
 
     <string name="home_toolbar_title">News Feed</string>
     <string name="profile_toolbar_title">Profile</string>
+    <string name="about_toolbar_title">About App</string>
     <string name="button_ok">Ok</string>
 
     <string name="title_activity_base">BaseActivity</string>
@@ -209,6 +210,9 @@
         <item>90 days</item>
         <item>120 days</item>
     </string-array>
+
+    <string name="app_desc">APNA NEWS App enables user to post news in multiple language. It also allows to view news posted by user.
+    It helps user to post their news article. It also provides latest news in simple and easy manner.</string>
 
     <string name="use_live_key_in_production_environment">Please use your live merchant key in production environment</string>
     <string name="could_not_receive_data">Could not receive data</string>

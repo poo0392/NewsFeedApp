@@ -604,6 +604,10 @@ public class HomeActivity extends AppCompatActivity
                     fragment = new ProfileFragment();
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                     drawer.closeDrawer(GravityCompat.START);
+                }else if(group.equals("About Us")){
+                    fragment = new AboutUsFragment();
+                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    drawer.closeDrawer(GravityCompat.START);
                 }
                 //replacing the fragment
                 if (fragment != null) {

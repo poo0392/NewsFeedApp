@@ -49,26 +49,27 @@ import job.com.news.sharedpref.MyPreferences;
  */
 
 public class PayUPnPActivity extends AppCompatActivity {
-    private static final String TAG="PayUPnPActivity";
+    private static final String TAG = "PayUPnPActivity";
     MyPreferences getPref;
     Context context;
-    String emailID,mobileNo,productInfo,first_name;
+    String emailID, mobileNo, productInfo, first_name,mRsSymbol;
     int amountPref;
     Button payNowButton;
     TextView amountTextView;
     private RadioGroup radioGroup_select_env;
     private SharedPreferences.Editor editor;
     private SharedPreferences settings;
-    AppCompatRadioButton radio_btn_sandbox,radio_btn_production;
+    AppCompatRadioButton radio_btn_sandbox, radio_btn_production;
     private PayUmoneySdkInitializer.PaymentParam mPaymentParams;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.payu_home);
-        context=this;
+        context = this;
         setAppToolbar();
-        getPref=MyPreferences.getMyAppPref(context);
+
+        getPref = MyPreferences.getMyAppPref(context);
         settings = getSharedPreferences("settings", MODE_PRIVATE);
         getPref.setOverrideResultScreen(true);
         MyPreferences.selectedTheme = -1;
@@ -86,11 +87,14 @@ public class PayUPnPActivity extends AppCompatActivity {
     }
 
     private void setUpUserDetails() {
-        emailID="pooja130192@gmail.com";
-        mobileNo="8600700392";
-        amountPref=getIntent().getIntExtra("Price", 0);
-        productInfo="product_info";
-        first_name="pooja";
+        amountPref = getIntent().getIntExtra("Price", 0);
+      //  Log.v("PayUAct", "amountPref " + amountPref);
+        mRsSymbol = getResources().getString(R.string.Rs);
+        emailID = "pooja130192@gmail.com";
+        mobileNo = "8600700392";
+        productInfo = "product_info";
+        first_name = "pooja";
+        amountTextView.setText(mRsSymbol+" "+String.valueOf(amountPref));
     }
 
     private void initListeners() {
@@ -220,12 +224,14 @@ public class PayUPnPActivity extends AppCompatActivity {
     }
 
     private void attachViews() {
+
+
         payNowButton = (Button) findViewById(R.id.pay_now_button);
-        amountTextView=(TextView)findViewById(R.id.txt_amount);
+        amountTextView = (TextView) findViewById(R.id.txt_amount);
         radio_btn_sandbox = (AppCompatRadioButton) findViewById(R.id.radio_btn_sandbox);
         radio_btn_production = (AppCompatRadioButton) findViewById(R.id.radio_btn_production);
         radioGroup_select_env = (RadioGroup) findViewById(R.id.radio_grp_env);
-       // payNowButton.setOnClickListener(this);
+        // payNowButton.setOnClickListener(this);
 
     }
 
@@ -255,12 +261,13 @@ public class PayUPnPActivity extends AppCompatActivity {
         }*/
         setupCitrusConfigs();
     }
+
     private void setupCitrusConfigs() {
         AppEnvironment appEnvironment = ((NewsFeedApplication) getApplication()).getAppEnvironment();
         if (appEnvironment == AppEnvironment.PRODUCTION) {
-           // Toast.makeText(PayUPnPActivity.this, "Environment Set to Production", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(PayUPnPActivity.this, "Environment Set to Production", Toast.LENGTH_SHORT).show();
         } else {
-           // Toast.makeText(PayUPnPActivity.this, "Environment Set to SandBox", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(PayUPnPActivity.this, "Environment Set to SandBox", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -289,11 +296,12 @@ public class PayUPnPActivity extends AppCompatActivity {
         postParamsBuffer.append(concatParams(PayUmoneyConstants.UDF5, params.get(PayUmoneyConstants.UDF5)));
 
         String postParams = postParamsBuffer.charAt(postParamsBuffer.length() - 1) == '&' ? postParamsBuffer.substring(0, postParamsBuffer.length() - 1).toString() : postParamsBuffer.toString();
-        Log.v("","postParams "+postParams);
+        Log.v("", "postParams " + postParams);
         // lets make an api call
         GetHashesFromServerTask getHashesFromServerTask = new GetHashesFromServerTask();
         getHashesFromServerTask.execute(postParams);
     }
+
     protected String concatParams(String key, String value) {
         return key + "=" + value + "&";
     }
@@ -372,7 +380,7 @@ public class PayUPnPActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String merchantHash) {
             super.onPostExecute(merchantHash);
-            Log.v("","merchantHash "+merchantHash);
+            Log.v("", "merchantHash " + merchantHash);
             progressDialog.dismiss();
             payNowButton.setEnabled(true);
 
@@ -413,10 +421,10 @@ public class PayUPnPActivity extends AppCompatActivity {
 
                 // Response from Payumoney
                 String payuResponse = transactionResponse.getPayuResponse();
-
+                Log.v("Final ", "payuResponse " + payuResponse);
                 // Response from SURl and FURL
                 String merchantResponse = transactionResponse.getTransactionDetails();
-
+                Log.v("Final ", "merchantResponse " + merchantResponse);
                 new AlertDialog.Builder(this)
                         .setCancelable(false)
                         .setMessage("Payu's Data : " + payuResponse + "\n\n\n Merchant's Data: " + merchantResponse)
