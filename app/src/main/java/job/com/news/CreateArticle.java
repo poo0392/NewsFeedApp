@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -49,7 +50,9 @@ import com.weiwangcn.betterspinner.library.BetterSpinner;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,7 +78,6 @@ import job.com.news.helper.NoConnectivityException;
 import job.com.news.helper.TimeoutException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
-import job.com.news.payU.PayUPnPActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -110,7 +112,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private String mRsSymbol;
     private String mArticleCode, categoryId, subCategoryId, stateId, cityId;
     private ImageView mArticleImage1, mArticleImage2, iv_info_desc, iv_info_title;
-    private int REQUEST_CAMERA = 0, SELECT_FILE = 1, spaceCount;
+    private int REQUEST_CAMERA = 0, SELECT_FILE = 1, spaceCount, PICK_FROM_GALLERY = 2;
     private String mediaPath;
     private int currentImageView = 0, words, radioGroupDaysID, wordsCount = 0, charLength;
     private Button btn_submit;
@@ -141,8 +143,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     String responseGson;
     List<MultipartBody.Part> photosToUploadList;
     String nWords = "";
-    int imageSelected=0;
+    int imageSelected = 0;
     File file;
+    long fileSizeInBytes;
 
     //Indonesia
 
@@ -1021,7 +1024,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-              //  if (validateFields()) {
+                if (validateFields()) {
                /* */
 //
 //                    // memberList = db.getMember();
@@ -1029,17 +1032,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                   // postNewsAPI();
-               // Log.v("00 ","charges "+charges);
-                    Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
-                    intent.putExtra("Price",1);
-                    startActivity(intent);
-                    finish();
-               // }
+                    postNewsAPI();
+                    // Log.v("00 ","charges "+charges);
+               /* Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                intent.putExtra("Price", 1);
+                startActivity(intent);
+                finish();*/
+                }
 
                 break;
             case R.id.article_image1:
-               // if (v instanceof ImageView)
+                // if (v instanceof ImageView)
 
                 if (v instanceof ImageView) {
                     currentImageView = 1;
@@ -1234,8 +1237,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                         Intent i = new Intent(CreateArticle.this, HomeActivity.class);
                         startActivity(i);
                         finish();
-                      /*  Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
-                        intent.putExtra("Price",charges);
+                       /* Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                        intent.putExtra("Price",1);
                         startActivity(intent);
                         finish();*/
                     }
@@ -1334,11 +1337,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     mContext.getResources().getString(R.string.toast_msg_title_validations), Toast.LENGTH_SHORT).show();
             return valid;
         }
-        /*if (imageSelected == 0) {
+        if (imageSelected == 0) {
             Toast.makeText(mContext,
                     "Please select atleast one image", Toast.LENGTH_SHORT).show();
             return valid;
-        }*/
+        }
         if (charges == 0) {
             Toast.makeText(mContext,
                     mContext.getResources().getString(R.string.toast_msg_charges_validations), Toast.LENGTH_SHORT).show();
@@ -1350,48 +1353,61 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void getImageFromGallery() {
-        try {
-            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);//Intent.ACTION_GET_CONTENT//ACTION_PICK
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            // photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
             photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, PICK_FROM_GALLERY);
+        } else {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, SELECT_FILE);
+        }
+        /*try {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);//Intent.ACTION_GET_CONTENT//ACTION_PICK
+            photoPickerIntent.setType("image*//*");
             startActivityForResult(photoPickerIntent, SELECT_FILE);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_FILE) {
+        if (requestCode == SELECT_FILE || requestCode == PICK_FROM_GALLERY) {
+            if (resultCode == Activity.RESULT_OK) {
                 onSelectFromGalleryResult(data);
-                /*mUri = data.getData();
-                ImageCropFunction();*/
-            } /*else if (requestCode == REQUEST_CAMERA) {
-                onCaptureImageResult(data);
-            } else if (requestCode == 2) {
-                if (data != null) {
-                    Bundle bundle = data.getExtras();
-                    Bitmap bitmap = (Bitmap) bundle.getParcelable("data");
-                    Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-                    //imgfriend.setImageBitmap(thumbnail);
-                    String profImage = getStringImage(bitmap);
-                    sendProfileImage(profImage);
-                }
-            }*/
-
+            }
         }
     }
+
     private void onSelectFromGalleryResult(Intent data) {
+        if (data != null) {
+            imageSelected = 1;
+            try {
 
+                Uri selectedImage = data.getData();
+                mediaPath = getPathFromURI(selectedImage);
+                Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
 
-        try {
+                File imageFIle = new File(mediaPath);
+                fileSizeInBytes = imageFIle.length();
+                Log.v("onSelectFromGallery ", "get size " + fileSizeInBytes);
 
-            Uri selectedImage = data.getData();
-            mediaPath = getPathFromURI(selectedImage);
-            Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
+                // Convert the bytes to Kilobytes (1 KB = 1024 Bytes)
+                float fileSizeInKB = fileSizeInBytes / 1024;
+                // Convert the KB to MegaBytes (1 MB = 1024 KBytes)
+                float fileSizeInMB = fileSizeInKB / 1024;
 
+                if (fileSizeInMB < 5) {
+                    // doCrop();
+                    resizeImage(selectedImage);
+                } else {
+                    Toast.makeText(this, "Image size too large, please selct image less than 5mb.", Toast.LENGTH_LONG).show();
+                }
 
          /*   String filename = mediaPath.substring(mediaPath.lastIndexOf("/") + 1);
             try {
@@ -1445,7 +1461,47 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 e.printStackTrace();
             }*/
 
-        } catch (Exception e) {
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            imageSelected = 0;
+        }
+    }
+
+    private void resizeImage(Uri selectedImage) {
+        InputStream imageStream = null;
+        try {
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 3;
+            Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
+            //imageView.setImageBitmap(bm);
+            imageStream = getContentResolver().openInputStream(selectedImage);
+           // Bitmap selected = BitmapFactory.decodeStream(imageStream);
+            compressedBitmap = getResizedBitmap(compressedBitmap, 300);// 400 is for example, replace with desired size
+
+            // imageView.setImageBitmap(selected);
+
+            // Set the Image in ImageView for Previewing the Media
+            if (currentImageView == 1) {
+                mArticleImage1.setBackgroundResource(0);
+                mArticleImage1.setImageBitmap(compressedBitmap);
+                // mArticleImage1.setImageBitmap(decoded);
+
+                //   base64Image1 = getStringImage(bmp);
+                //  newsPic.add(base64Image1);
+                filePaths.add(mediaPath);
+
+            } else if (currentImageView == 2) {
+                mArticleImage2.setBackgroundResource(0);
+                mArticleImage2.setImageBitmap(compressedBitmap);
+                // mArticleImage2.setImageBitmap(decoded);
+                // base64Image2 = getStringImage(bmp);
+                // newsPic.add(base64Image2);
+                filePaths.add(mediaPath);
+            }
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -1461,6 +1517,21 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             temp = true;
 
         return temp;
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     private float getFileSize() {
@@ -1490,6 +1561,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         cursor.moveToFirst();
 
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        // fileSizeInBytes = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
         String path = cursor.getString(columnIndex);
         cursor.close();
         return path;
@@ -1583,3 +1655,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         super.onBackPressed();
     }
 }
+/*mUri = data.getData();
+                ImageCropFunction();*/
+             /*else if (requestCode == REQUEST_CAMERA) {
+                onCaptureImageResult(data);
+            } else if (requestCode == 2) {
+                if (data != null) {
+                    Bundle bundle = data.getExtras();
+                    Bitmap bitmap = (Bitmap) bundle.getParcelable("data");
+                    Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+                    //imgfriend.setImageBitmap(thumbnail);
+                    String profImage = getStringImage(bitmap);
+                    sendProfileImage(profImage);
+                }
+            }*/

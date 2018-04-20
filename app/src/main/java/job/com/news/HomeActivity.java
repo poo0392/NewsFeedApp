@@ -58,6 +58,7 @@ import job.com.news.db.MemberTable;
 import job.com.news.db.NewsImagesTable;
 import job.com.news.db.NewsListTable;
 import job.com.news.db.SubCategoryTable;
+import job.com.news.globals.Globals;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.FragmentFromAdapter;
@@ -81,6 +82,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static job.com.news.globals.Globals.back_press_screen;
 
 //changes added on //changes 16_03.
 public class HomeActivity extends AppCompatActivity
@@ -133,6 +135,7 @@ public class HomeActivity extends AppCompatActivity
         langSelection = new SessionManager(mContext);
         newsListTable = new NewsListTable(mContext);
         ll_linBase = (LinearLayout) findViewById(R.id.ll_linBase);
+        back_press_screen=2;
         //DBHelper.getInstance(getApplicationContext());
         scheduleAlarm();
         getPrefData();
@@ -352,7 +355,8 @@ public class HomeActivity extends AppCompatActivity
                                     RegisterMember member = new RegisterMember();
                                     List<NewsImages> imagesList = new ArrayList<>();
                                     NewsImages imagesModel = new NewsImages();
-                                    for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
+                                    int n=serverResponse.getNewsFeedList().size();
+                                    for (int i = n-1; i < n; i--) {
                                         if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
 
 
@@ -391,7 +395,8 @@ public class HomeActivity extends AppCompatActivity
                                             // }
                                             //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
                                             if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
-                                                for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getNews_images().size(); j++) {
+                                              int p=serverResponse.getNewsFeedList().get(i).getNews_images().size();
+                                                for (int j = p-1; j < p; j++) {
                                                     imagesModel.setId(model.getNews_images().get(j).getId());
                                                     imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
                                                     imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
@@ -710,6 +715,7 @@ public class HomeActivity extends AppCompatActivity
 
 
         List<String> newsChild = new ArrayList<String>();
+       // newsChild.add("Latest News");
         newsChild.add("National and International");
         newsChild.add("Government News");
         newsChild.add("Social and Related News");
@@ -957,8 +963,20 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            closeApplication();
+          //  closeApplication();
             // super.onBackPressed();
+            if (back_press_screen == 1) {
+                callHomeFragment();
+            } else if (back_press_screen == 2) {
+               /* FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+                NewFeaturesFragment fragmentB = NewFeaturesFragment.newInstance("Services");
+                tx.replace(R.id.content_frame, fragmentB);
+                //  tx.addToBackStack(null);
+                tx.commit();
+            } else {*/
+                //  this.finish();
+                closeApplication();
+            }
         }
     }
 
@@ -1041,6 +1059,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void setFragment(String childName, int childPosition) {
+        Log.v("setFragment ","childName "+childName);
         myPreferences = MyPreferences.getMyAppPref(mContext);
         myPreferences.setExpandPosition(childPosition);
         myPreferences.setExpandChildName(childName);

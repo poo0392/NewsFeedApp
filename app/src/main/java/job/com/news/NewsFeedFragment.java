@@ -49,6 +49,7 @@ import job.com.news.db.NewsListTable;
 import job.com.news.db.SubCategoryTable;
 import job.com.news.db.SubCategoryTableHi;
 import job.com.news.db.SubCategoryTableMr;
+import job.com.news.globals.Globals;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.OnLoadMoreListener;
@@ -127,6 +128,7 @@ public class NewsFeedFragment extends Fragment {
     ArrayList<Integer> subCatIdList;
     ProgressBar itemProgressBar;
     SessionManager langSelection;
+    SearchView searchView;
 
 
     public static Fragment newInstance(int position, ArrayList<String> catListLang, int categoryId, ArrayList<Integer> categoryIDList, ArrayList<Integer> subCategoryIDList) {
@@ -152,7 +154,7 @@ public class NewsFeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         setHasOptionsMenu(true);
         newsFeedApplication = NewsFeedApplication.getApp();
-
+        Globals.back_press_screen=2;
         mContext = getActivity();
         langSelection = new SessionManager(mContext);
         ConnectivityChangeReciever.enableReceiver(mContext);
@@ -214,7 +216,7 @@ public class NewsFeedFragment extends Fragment {
 
     public void setSearchViewMenu(final Menu menu) {
         final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setQueryHint("Search by state and city");
         SearchManager searchManager = (SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE);
         if (searchItem != null) {

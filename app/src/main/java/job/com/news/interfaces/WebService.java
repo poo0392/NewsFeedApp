@@ -39,7 +39,7 @@ public interface WebService {
     Call<City> getCityList(@Path("id") int state_id);
     // Call<City> getCityList();
 
-    //http://thanehousingfederation.com/abhi/api/member/register
+
     //register
     @Multipart
     @POST("register")

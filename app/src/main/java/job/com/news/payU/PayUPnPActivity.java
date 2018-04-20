@@ -415,8 +415,10 @@ public class PayUPnPActivity extends AppCompatActivity {
             if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
                 if (transactionResponse.getTransactionStatus().equals(TransactionResponse.TransactionStatus.SUCCESSFUL)) {
                     //Success Transaction
+                    Log.v("","Transaction Status"+" Success");
                 } else {
                     //Failure Transaction
+                    Log.v("","Transaction Status"+" Fsiled");
                 }
 
                 // Response from Payumoney
@@ -431,6 +433,7 @@ public class PayUPnPActivity extends AppCompatActivity {
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 //dialog.dismiss();
+                               // Toast.makeText(getApplicationContext(),"Payment ")
                                 Intent i = new Intent(PayUPnPActivity.this, HomeActivity.class);
                                 startActivity(i);
                                 finish();

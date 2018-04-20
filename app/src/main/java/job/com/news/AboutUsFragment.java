@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import job.com.news.globals.Globals;
+
 /**
  * Created by Zafar.Hussain on 19/04/2018.
  */
@@ -32,7 +34,7 @@ public class AboutUsFragment extends Fragment {
         setHasOptionsMenu(true);
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle(getResources().getString(R.string.about_toolbar_title));
-
+        Globals.back_press_screen=1;
         attachViews(view);
         getPackageDetails();
         setData();

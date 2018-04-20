@@ -234,15 +234,17 @@ public class NewsListTable {
     }
 
 
-    public List<NewsFeedList> getNewsRecordsByCategoryAndSubCat(int category_id,int sub_cat_id) {
-      //  int subCatId= Integer.parseInt(sub_cat_id);
-        String query1="";
+    public List<NewsFeedList> getNewsRecordsByCategoryAndSubCat(int category_id, int sub_cat_id) {
+        //  int subCatId= Integer.parseInt(sub_cat_id);
+        String query1 = "";
         db = dbHelper.getWritableDatabase();
         List<NewsFeedList> listAll = new ArrayList<NewsFeedList>();
         NewsFeedList model;
-        if(sub_cat_id!=0) {
+        if (sub_cat_id != 0) {
             query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY_ID + " = " + category_id + " AND " + NewsListTable.SUB_CATEGORY_ID + " = " + sub_cat_id + " ";
-        }else{
+        } else if (category_id == 0) {
+            query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " LIMIT 5";
+        } else {
             query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY_ID + " = " + category_id /*+ " AND " + NewsListTable.SUB_CATEGORY_ID + " = " + sub_cat_id + " "*/;
         }
         Log.v("", "query1 " + query1);
@@ -275,6 +277,7 @@ public class NewsListTable {
         db.close();
         return listAll;
     }
+
     public long getLastId() {//SELECT last_insert_rowid();
         db = dbHelper.getWritableDatabase();
         String query1 = "select seq from sqlite_sequence where name = '" + NewsListTable.NEWS_LIST_TABLE_NAME + "'";

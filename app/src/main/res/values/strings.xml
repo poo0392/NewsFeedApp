@@ -32,6 +32,7 @@
     <string name="toast_msg_desc_select">Please select Description details (in words)</string>
 
 
+
     <!--Sign Up-->
     <string name="prompt_first_name">First Name</string>
     <string name="prompt_last_name">Last Name</string>

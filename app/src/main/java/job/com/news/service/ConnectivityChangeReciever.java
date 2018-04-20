@@ -31,6 +31,7 @@ import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedList;
 import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.models.NewsImages;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import okhttp3.MediaType;
@@ -63,6 +64,7 @@ public class ConnectivityChangeReciever extends BroadcastReceiver {
         newsListTable = new NewsListTable(context);
         newsImagesTable = new NewsImagesTable(context);
         memberTable = new MemberTable(context);
+        newsImagesTable = new NewsImagesTable(context);
         newsFeedList=new ArrayList<>();
         long last_id = newsListTable.getLastId();
         HomeActivity activity =new HomeActivity();
@@ -125,7 +127,10 @@ public class ConnectivityChangeReciever extends BroadcastReceiver {
                             NewsFeedList model;
                             try {
                                 RegisterMember member = new RegisterMember();
-                                for (int i = 0; i < serverResponse.getNewsFeedList().size(); i++) {
+                                List<NewsImages> imagesList = new ArrayList<>();
+                                NewsImages imagesModel = new NewsImages();
+                                int n=serverResponse.getNewsFeedList().size();
+                                for (int i = n-1; i < n; i--) {
                                     if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
                                         model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
                                                 serverResponse.getNewsFeedList().get(i).getNews_uuid(),
@@ -160,7 +165,23 @@ public class ConnectivityChangeReciever extends BroadcastReceiver {
 
                                         }
                                         // }
+                                        if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
+                                            int p=serverResponse.getNewsFeedList().get(i).getNews_images().size();
+                                            for (int j = p-1; j < p; j++) {
+                                                imagesModel.setId(model.getNews_images().get(j).getId());
+                                                imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
+                                                imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
+                                                imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
+                                                imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
+
+                                                imagesList.add(imagesModel);
+
+                                                newsImagesTable.insertNewsImages(imagesModel);
+                                            }
+                                        }
+
                                         newsListTable.insertNewsList(model);
+
 
                                     }
                                 }

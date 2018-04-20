@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import job.com.news.globals.Globals;
 import job.com.news.sharedpref.MyPreferences;
 
 /**
@@ -35,7 +36,7 @@ public class ProfileFragment extends Fragment {
         setHasOptionsMenu(true);
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle(getResources().getString(R.string.profile_toolbar_title));
-
+        Globals.back_press_screen=1;
         getPreferenceData();
         attachViews(view);
         return view;

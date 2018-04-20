@@ -108,6 +108,7 @@ public class NewsDetailScreen extends AppCompatActivity {
             // Hide progress bar on successful load
             Picasso.with(this).load(load_image)
                     .placeholder(R.drawable.default_no_image)
+                    .resize(1000,1000)
                     .into(ivBackground/*, new com.squareup.picasso.Callback() {
                     @Override
                     public void onSuccess() {

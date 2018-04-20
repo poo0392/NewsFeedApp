@@ -36,6 +36,7 @@
     <string name="toast_msg_desc_validations">कृपया विवरण दर्ज करें</string>
     <string name="toast_msg_charges_validations">कृपया पोस्ट की अवधि का चयन करें</string>
     <string name="toast_msg_desc_select">कृपया विवरण विवरण चुनें (शब्दों में)</string>
+    <string name="toast_msg_image_select">कृपया कम से कम एक छवि का चयन करें</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">ईमेल</string>

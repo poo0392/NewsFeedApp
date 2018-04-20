@@ -36,6 +36,7 @@
     <string name="toast_msg_desc_validations">कृपया वर्णन प्रविष्ट करा</string>
     <string name="toast_msg_charges_validations">कृपया किती दिवस प्रकाशन निवडा</string>
     <string name="toast_msg_desc_select">कृपया वर्णन तपशील निवडा (शब्दात)</string>
+    <string name="toast_msg_image_select">कृपया किमान एक प्रतिमा निवडा</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">ईमेल</string>

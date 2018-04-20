@@ -145,7 +145,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void setClickListeners() {
-        Collections.reverse(catListNewEn);
+     //   Collections.reverse(catListNewEn);
         try {
 
 
@@ -249,7 +249,7 @@ public class HomeFragment extends Fragment {
             }
             Log.v(TAG + " loadCategoryList ", "subCategoryIDList " + subCategoryIDList);
 
-
+          //  categoryList.add(0, "Latest News");
             categoryList.addAll(new LinkedHashSet<>(catDupList));
             subCategoryList.addAll(new LinkedHashSet<>(subCatDupList));
 
@@ -260,7 +260,6 @@ public class HomeFragment extends Fragment {
                 }
 
             }*/
-
             for (int i = 0; i < categoryList.size(); i++) {
                 //   for (int l = 0; l < subCategoryList.size(); l++) {
                 categoryId = categoryMasterTable.getCategoryIdByName(categoryList.get(i).toString());
@@ -404,7 +403,12 @@ public class HomeFragment extends Fragment {
                         }
                         //}
                     }
-                }
+                } /*else if (categoryList.get(i).equals("Latest News")) {
+                    catListNew.add(mContext.getResources().getString(R.string.recent_news));//recent_news
+                    catListNewEn.add("Latest News");
+                    categoryIDList.add(0);
+                    subCategoryIDList.add(0);
+                }*/
 
 
 /*

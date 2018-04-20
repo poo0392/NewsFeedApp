@@ -138,9 +138,9 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
                 public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                     String childName = childData.get(groupPosition).get(childPosition);
                  //   Log.v("onChildClick ", " childPosition " + childPosition + " groupPosition " + groupPosition);
-                  //  Log.v("onChildClick ", "00 " + childName);
+                    Log.v("onChildClick ", "00 " + childName);
                     int cp = (int) secondAdapter.getChildId(groupPosition, childPosition);
-                 //   Log.v("onChildClick ", "11 " + cp);
+                   Log.v("onChildClick ", "11 " + cp);
 
                     callback.setFragment(childName, cp);
                    // myPreferences.setExpandPosition(cp);

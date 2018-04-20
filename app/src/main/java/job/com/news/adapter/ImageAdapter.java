@@ -130,9 +130,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.v("", "CreateViewH " + "called");
+     //   Log.v("", "CreateViewH " + "called");
         if (viewType == VIEW_ITEM) {
-            Log.v("", "CreateViewH " + "VIEW_ITEM");
+         //   Log.v("", "CreateViewH " + "VIEW_ITEM");
             View view = LayoutInflater.from(mContext).inflate(R.layout.news_feed_item, parent, false);
             return new ImageViewHolder(view);
         } /*else if (viewType == VIEW_PROG) {
@@ -163,7 +163,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 } else if (from[1].equals("rejected")) {
 
                     comment = newsFeedList.get(position).getComment();
-                    Log.v("Adapter ", "comment " + comment);
+                    //Log.v("Adapter ", "comment " + comment);
 
                     if (comment == null) {
                         imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
@@ -266,6 +266,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 // Hide progress bar on successful load
                 Picasso.with(mContext).load(load_image)
                         .placeholder(R.drawable.default_no_image)
+                        .resize(1000,1000)
                         .into(imageViewHolder.imageView/*, new com.squareup.picasso.Callback() {
                             @Override
                             public void onSuccess() {

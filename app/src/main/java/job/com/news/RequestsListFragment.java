@@ -34,11 +34,13 @@ import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import job.com.news.adapter.ImageAdapter;
+import job.com.news.globals.Globals;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.ItemClickListener;
@@ -95,6 +97,7 @@ public class RequestsListFragment extends Fragment {
         setHasOptionsMenu(true);
         mContext = getActivity();
         //    SM = (SendMessage) mContext;
+        Globals.back_press_screen=1;
         attachViews(view);
         getPrefData();
         getBundleData();
@@ -195,7 +198,10 @@ public class RequestsListFragment extends Fragment {
                         try {
 
                             try {
-                                newsFeedList = serverResponse.getNewsFeedList();
+
+                                newsFeedList =serverResponse.getNewsFeedList() ;
+                              //  Collections.sort(newsFeedList, Collections.reverseOrder());
+
                                 if(newsFeedList!=null || !newsFeedList.isEmpty()) {
                                     loadDatatoList(newsFeedList, "response");
                                 }
