@@ -58,7 +58,6 @@ import job.com.news.db.MemberTable;
 import job.com.news.db.NewsImagesTable;
 import job.com.news.db.NewsListTable;
 import job.com.news.db.SubCategoryTable;
-import job.com.news.globals.Globals;
 import job.com.news.helper.ConnectivityInterceptor;
 import job.com.news.helper.NoConnectivityException;
 import job.com.news.interfaces.FragmentFromAdapter;
@@ -583,7 +582,7 @@ public class HomeActivity extends AppCompatActivity
         expListView = (ExpandableListView) findViewById(R.id.left_drawer);
         expListView.setIndicatorBounds(expListView.getRight() - 40, expListView.getWidth());
         prepareListData(listDataHeader, listDataChild, listThirdLevelChild);
-        Log.v("enableExpandableList ", "" + listThirdLevelChild);
+      //  Log.v("enableExpandableList ", "" + listThirdLevelChild);
         //   ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, listDataHeader, listDataChild, data);
         // set adapter
         // expListView.setAdapter( threeLevelListAdapterAdapter );

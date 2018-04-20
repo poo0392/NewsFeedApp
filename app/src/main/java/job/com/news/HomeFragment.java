@@ -21,7 +21,6 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -145,23 +144,11 @@ public class HomeFragment extends Fragment {
     }
 
     private void setClickListeners() {
-     //   Collections.reverse(catListNewEn);
+        //   Collections.reverse(catListNewEn);
         try {
 
 
             if (!childName.equals("null")) {
-            /*else if (fromStatus.equals("rejected")) {
-            mViewPager.setCurrentItem(2);
-        } else {
-            mViewPager.setCurrentItem(0);
-        }*/
-                //childName= Health Related
-                // catListNewEn.get(0)= Health Related
-
-
-                // if(childName==catListNewEn.get(0))
-
-
                 for (int i = 0; i < catListNewEn.size(); i++) {
                     if (childName.equals(catListNewEn.get(i))) {
                         // i++;
@@ -176,7 +163,7 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
         Log.v("", "status " + status);
-        if (status == -1 && status == 0) {
+        if (status == -1 || status == 0) {
             Log.v("", "No data available");
             Toast.makeText(mContext, "No data available", Toast.LENGTH_SHORT).show();
         } else {
@@ -249,7 +236,7 @@ public class HomeFragment extends Fragment {
             }
             Log.v(TAG + " loadCategoryList ", "subCategoryIDList " + subCategoryIDList);
 
-          //  categoryList.add(0, "Latest News");
+            categoryList.add(0, "Latest News");
             categoryList.addAll(new LinkedHashSet<>(catDupList));
             subCategoryList.addAll(new LinkedHashSet<>(subCatDupList));
 
@@ -403,12 +390,12 @@ public class HomeFragment extends Fragment {
                         }
                         //}
                     }
-                } /*else if (categoryList.get(i).equals("Latest News")) {
+                } else if (categoryList.get(i).equals("Latest News")) {
                     catListNew.add(mContext.getResources().getString(R.string.recent_news));//recent_news
                     catListNewEn.add("Latest News");
                     categoryIDList.add(0);
                     subCategoryIDList.add(0);
-                }*/
+                }
 
 
 /*

@@ -182,7 +182,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 //        getBaseContext().getResources().updateConfiguration(config,
 //                getBaseContext().getResources().getDisplayMetrics());
 
-
+        // bsStateSpinner.setFocusableInTouchMode(false);
         loadStateApi();
 
     }
@@ -844,6 +844,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                         List list = state.getStates();
 
                         displayStateData((ArrayList) state.getStates());
+                    } else {
+                        Toast.makeText(CreateArticle.this, "Server Error", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -854,8 +856,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     if (t instanceof NoConnectivityException) {
                         // No internet connection
                         Toast.makeText(mContext, "Please connect to Internet", Toast.LENGTH_SHORT).show();
+                    } else {
+                        bsStateSpinner.setFocusableInTouchMode(false);
+                        Toast.makeText(mContext, "Server Error", Toast.LENGTH_SHORT).show();
                     }
-
                 }
             });
 
@@ -869,16 +873,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         try {
             ArrayList<String> list = new ArrayList();
             mapState = new HashMap<>();
-            for (int i = 0; i < stateList.size(); i++) {
-                State_Name stateData = stateList.get(i);
-                list.add(stateData.getStateName());
-                mapState.put(stateData.getStateName().trim(), stateData.getId());
-            }
+            if (stateList.size() != 0 || !stateList.isEmpty()) {
+                for (int i = 0; i < stateList.size(); i++) {
+                    State_Name stateData = stateList.get(i);
+                    list.add(stateData.getStateName());
+                    mapState.put(stateData.getStateName().trim(), stateData.getId());
+                }
 
 
-            state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
-            //mStateSpinner.setAdapter(adapter);
-            bsStateSpinner.setAdapter(state_adapter); //changed from mStateSpinner to bsStateSpinner
+                state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
+                //mStateSpinner.setAdapter(adapter);
+                bsStateSpinner.setAdapter(state_adapter); //changed from mStateSpinner to bsStateSpinner
 
            /* bsStateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -898,23 +903,26 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 }
             });*/
 
-            bsStateSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    // selectedState = parent.getSelectedItem().toString();
-                    selectedState = parent.getItemAtPosition(position).toString();
-                    // stateId = String.valueOf(position + 1);
+                bsStateSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        // selectedState = parent.getSelectedItem().toString();
+                        selectedState = parent.getItemAtPosition(position).toString();
+                        // stateId = String.valueOf(position + 1);
 
-                    Integer state_id = mapState.get(selectedState);
-                    stateId = String.valueOf(state_id);
-                    System.out.println("State : " + selectedState + " stateId :" + state_id);
-                    Log.v("ItemClickListener ", "selectedState " + selectedState);
-                    // Toast.makeText(getApplicationContext(),selectedState,Toast.LENGTH_SHORT).show();
-                    bsCitySpinner.setHint("Select City");
-                    bsCitySpinner.setText("");
-                    loadCity(state_id);
-                }
-            });
+                        Integer state_id = mapState.get(selectedState);
+                        stateId = String.valueOf(state_id);
+                        System.out.println("State : " + selectedState + " stateId :" + state_id);
+                        Log.v("ItemClickListener ", "selectedState " + selectedState);
+                        // Toast.makeText(getApplicationContext(),selectedState,Toast.LENGTH_SHORT).show();
+                        bsCitySpinner.setHint("Select City");
+                        bsCitySpinner.setText("");
+                        loadCity(state_id);
+                    }
+                });
+            } else {
+                Toast.makeText(CreateArticle.this, "No data available", Toast.LENGTH_SHORT).show();
+            }
 
 
         } catch (Exception e) {
@@ -937,7 +945,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
-            RequestBody bodyStateId = RequestBody.create(MediaType.parse("text/plain"), stateId + "");
+            //RequestBody bodyStateId = RequestBody.create(MediaType.parse("text/plain"), stateId + "");
 
 
             WebService webService = retrofit.create(WebService.class);
@@ -956,6 +964,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
                         displayCityData((ArrayList) city.getCities());
 
+                    } else {
+                        Toast.makeText(CreateArticle.this, "Server Error", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -982,15 +992,16 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         try {
             ArrayList<String> list = new ArrayList();
             cityMap = new HashMap<>();
-            for (int i = 0; i < cityList.size(); i++) {
-                City_Name cityName = cityList.get(i);
-                list.add(cityName.getCity());
-                cityMap.put(cityName.getCity().trim(), cityName.getId());
-            }
-            bsCitySpinner.setFocusableInTouchMode(true);
-            city_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
-            // mCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
-            bsCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
+            if (cityList.size() != 0 || !cityList.isEmpty()) {
+                for (int i = 0; i < cityList.size(); i++) {
+                    City_Name cityName = cityList.get(i);
+                    list.add(cityName.getCity());
+                    cityMap.put(cityName.getCity().trim(), cityName.getId());
+                }
+                bsCitySpinner.setFocusableInTouchMode(true);
+                city_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
+                // mCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
+                bsCitySpinner.setAdapter(city_adapter);// change mCitySpinner to bsCitySpinner
 
            /* bsCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -1004,14 +1015,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 }
             });*/
 
-            bsCitySpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    selectedCity = parent.getItemAtPosition(position).toString();
-                    cityId = String.valueOf(cityMap.get(selectedCity));
-                    Log.v("bsCityItemClick ", "selectedCity " + selectedCity + " cityId " + cityId);
-                }
-            });
+                bsCitySpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        selectedCity = parent.getItemAtPosition(position).toString();
+                        cityId = String.valueOf(cityMap.get(selectedCity));
+                        Log.v("bsCityItemClick ", "selectedCity " + selectedCity + " cityId " + cityId);
+                    }
+                });
+            } else {
+                Toast.makeText(CreateArticle.this, "No data available", Toast.LENGTH_SHORT).show();
+            }
 
 
         } catch (Exception e) {
@@ -1355,11 +1369,16 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private void getImageFromGallery() {
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            // photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            //  photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
             photoPickerIntent.setType("image/*");
             startActivityForResult(photoPickerIntent, PICK_FROM_GALLERY);
+               /* Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                Uri photoUri = FileProvider.getUriForFile(CreateArticle.this, BuildConfig.APPLICATION_ID + ".provider", );
+                intent.setData(photoUri);
+                startActivity(intent);*/
         } else {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
@@ -1386,14 +1405,24 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
     private void onSelectFromGalleryResult(Intent data) {
         if (data != null) {
+            File imageFIle = null;
+            Uri selectedImage = null;
             imageSelected = 1;
             try {
-
-                Uri selectedImage = data.getData();
+                selectedImage = data.getData();
                 mediaPath = getPathFromURI(selectedImage);
+                imageFIle = new File(mediaPath);
                 Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
 
-                File imageFIle = new File(mediaPath);
+               /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    imageFIle = new File();
+                    selectedImage = FileProvider.getUriForFile(CreateArticle.this,
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            imageFIle);
+                }else{
+
+                }*/
+
                 fileSizeInBytes = imageFIle.length();
                 Log.v("onSelectFromGallery ", "get size " + fileSizeInBytes);
 
@@ -1478,7 +1507,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             Bitmap compressedBitmap = BitmapFactory.decodeFile(mediaPath, options);
             //imageView.setImageBitmap(bm);
             imageStream = getContentResolver().openInputStream(selectedImage);
-           // Bitmap selected = BitmapFactory.decodeStream(imageStream);
+            // Bitmap selected = BitmapFactory.decodeStream(imageStream);
             compressedBitmap = getResizedBitmap(compressedBitmap, 300);// 400 is for example, replace with desired size
 
             // imageView.setImageBitmap(selected);
