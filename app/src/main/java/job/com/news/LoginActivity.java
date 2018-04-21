@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import job.com.news.db.MemberTable;
 import job.com.news.db.PersonalDetails;
@@ -219,6 +220,8 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.show();
 
             OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(30000, TimeUnit.MILLISECONDS)
+                    .readTimeout(30000, TimeUnit.MILLISECONDS)
                     .addInterceptor(new ConnectivityInterceptor(LoginActivity.this))
                     .build();
 

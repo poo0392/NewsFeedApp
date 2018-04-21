@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -78,6 +79,7 @@ import job.com.news.helper.NoConnectivityException;
 import job.com.news.helper.TimeoutException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.payU.PayUPnPActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 import job.com.news.sharedpref.SessionManager;
@@ -94,6 +96,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 //changes added on 26/03
 public class CreateArticle extends AppCompatActivity implements View.OnClickListener {
+    private int GET_PAYMENT_STATUS = 2;
     private Spinner mStateSpinner, mCitySpinner, mArticleSpinner;
     private EditText mTitleEdit, mDescEdit;
     private TextView article_state_text, article_city_text, article_type_text, article_date_text, title_text, desc_text, total_charges_text;
@@ -103,7 +106,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private LinkedHashMap<String, String> mapValuesFinal;
     private HashMap<String, Integer> mapState, cityMap;//changes done
     boolean validWords = false;
-    int status = 0;
+    int status = 0, moreWords;
     boolean mToggle = false;
 
     private ArrayList<HashMap<String, String>> stateList;
@@ -480,6 +483,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         });
 
         mDescEdit.addTextChangedListener(new EditTextListener());
+        if (moreWords == 1) {
+            Toast.makeText(getApplicationContext(), "You cannot add more than " + numOfWords + " words", Toast.LENGTH_SHORT).show();
+        }
         /*mDescEdit.addTextChangedListener(new TextWatcher() {
             boolean mToggle = false;
             @Override
@@ -558,11 +564,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             if (numOfWords != 400) {
                 if (wordsCount <= numOfWords) {
                     validWords = true;
+                    moreWords = 0;
+                   // mDescEdit.setText(value(mDescEdit.getText().toString(), numOfWords));
                 } else {
-
                     mDescEdit.setText(value(mDescEdit.getText().toString(), numOfWords));
 
-                    Toast.makeText(getApplicationContext(), "You cannot add more than " + numOfWords, Toast.LENGTH_SHORT).show();
+                    moreWords = 1;
+
                     //  mToggle=true;
                     //hideKeyboard();
                     //
@@ -582,11 +590,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
             mToggle = !mToggle;*/
 
-
         }
     }
 
-    ;
 
 
     public String value(String s, int numOfWords) {
@@ -1046,12 +1052,25 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     // memberId = String.valueOf(memberList.get(0).getMemberId());
                     // memberToken = memberList.get(0).getMemberToken();
                     // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                    postNewsAPI();
+                    //   postNewsAPI();
                     // Log.v("00 ","charges "+charges);
-               /* Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
-                intent.putExtra("Price", 1);
-                startActivity(intent);
-                finish();*/
+                    mProgressDialog = new ProgressDialog(mContext);
+                    mProgressDialog.setMessage("Proceeding for payment..");
+                    mProgressDialog.show();
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                            intent.putExtra("Price", 1);
+                            startActivityForResult(intent, GET_PAYMENT_STATUS);
+                            mProgressDialog.dismiss();
+                        }
+                    }, 3000);
+
+
                 }
 
                 break;
@@ -1210,7 +1229,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     if (serverResponse.getStatus() == 0) {
                         //Log.v("PostNewsAPI ", "response " + new Gson().toJson(response.body()));
 
-                        showSuccessAlertDialog(CreateArticle.this, "Success", "Your article created succesfully");
+                        showSuccessAlertDialog(CreateArticle.this, "Success", "Your article created succesfully\n Proceeding for payment");
                     } else {
                         Log.v("PostNewsAPI ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
                         setFailedAlertDialog(CreateArticle.this, serverResponse.getStatus().toString(), "Failure");
@@ -1248,13 +1267,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Intent i = new Intent(CreateArticle.this, HomeActivity.class);
+                      /*  Intent i = new Intent(CreateArticle.this, HomeActivity.class);
                         startActivity(i);
-                        finish();
-                       /* Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
-                        intent.putExtra("Price",1);
-                        startActivity(intent);
                         finish();*/
+                        Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                        intent.putExtra("Price", 1);
+                        startActivity(intent);
+                        finish();
                     }
                 })
                 .show();
@@ -1340,17 +1359,18 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     mContext.getResources().getString(R.string.toast_msg_article_validations), Toast.LENGTH_SHORT).show();
             return valid;
         }
+        if (mTitleEdit.getText().toString().trim().equals("")) {
+            Toast.makeText(mContext,
+                    mContext.getResources().getString(R.string.toast_msg_title_validations), Toast.LENGTH_SHORT).show();
+            return valid;
+        }
         if (mDescEdit.getText().toString().trim().equals("")) {
             Toast.makeText(mContext,
                     mContext.getResources().getString(R.string.toast_msg_desc_validations), Toast.LENGTH_SHORT).show();
             return valid;
 
         }
-        if (mTitleEdit.getText().toString().trim().equals("")) {
-            Toast.makeText(mContext,
-                    mContext.getResources().getString(R.string.toast_msg_title_validations), Toast.LENGTH_SHORT).show();
-            return valid;
-        }
+
         if (imageSelected == 0) {
             Toast.makeText(mContext,
                     "Please select atleast one image", Toast.LENGTH_SHORT).show();
@@ -1370,15 +1390,21 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            //  photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
-            photoPickerIntent.setType("image/*");
-            startActivityForResult(photoPickerIntent, PICK_FROM_GALLERY);
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                startActivityForResult(intent, PICK_FROM_GALLERY);
+            } else {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                //  photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, PICK_FROM_GALLERY);
                /* Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
                 Uri photoUri = FileProvider.getUriForFile(CreateArticle.this, BuildConfig.APPLICATION_ID + ".provider", );
                 intent.setData(photoUri);
                 startActivity(intent);*/
+            }
         } else {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
@@ -1396,11 +1422,21 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SELECT_FILE || requestCode == PICK_FROM_GALLERY) {
-            if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == SELECT_FILE || requestCode == PICK_FROM_GALLERY) {
+
                 onSelectFromGalleryResult(data);
+            } else if (requestCode == GET_PAYMENT_STATUS) {
+                // fetch the message String
+                String status = data.getStringExtra("status");
+                // Set the message string in textView
+                // textViewMessage.setText(message);
+                if (status.equals("Success")) {
+                    postNewsAPI();
+                }
             }
         }
+
     }
 
     private void onSelectFromGalleryResult(Intent data) {
@@ -1413,6 +1449,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 mediaPath = getPathFromURI(selectedImage);
                 imageFIle = new File(mediaPath);
                 Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
+                Log.v("onSelectFromGallery ", " selectedImage " + selectedImage.toString());
 
                /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     imageFIle = new File();

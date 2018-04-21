@@ -129,5 +129,23 @@ public interface WebService {
 
 //http://thanehousingfederation.com/newsapp/storage/app/public/upload/news
 
+    //http://thanehousingfederation.com/newsapp/api/member/add_payment_record
+    @POST("add_payment_record")
+    Call<NewsFeedModelResponse> postPaymentDeatails(@Part("member_token") RequestBody member_token,
+                                                    @Part("member_id") RequestBody member_id,
+                                                    @Part("payment_id") String payment_id,
+                                                    @Part("field9") String field9,
+                                                    @Part("status") String status,
+                                                    @Part("txtkey") String txtkey,
+                                                    @Part("txnid") String txnid,
+                                                    @Part("amount") String amount,
+                                                    @Part("product_info") String product_info,
+                                                    @Part("payment_date") String payment_date,
+                                                    @Part("bank_code") String bank_code,
+                                                    @Part("error") String error,
+                                                    @Part("error_msg") String error_msg
+
+
+    );
 
 }

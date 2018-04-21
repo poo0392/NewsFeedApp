@@ -1,14 +1,13 @@
 package job.com.news.payU;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRadioButton;
@@ -20,6 +19,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.payumoney.core.PayUmoneyConfig;
 import com.payumoney.core.PayUmoneyConstants;
 import com.payumoney.core.PayUmoneySdkInitializer;
@@ -50,9 +53,10 @@ import job.com.news.sharedpref.MyPreferences;
 
 public class PayUPnPActivity extends AppCompatActivity {
     private static final String TAG = "PayUPnPActivity";
+    private int GET_PAYMENT_STATUS = 2;
     MyPreferences getPref;
     Context context;
-    String emailID, mobileNo, productInfo, first_name,mRsSymbol;
+    String emailID, mobileNo, productInfo, first_name, mRsSymbol;
     int amountPref;
     Button payNowButton;
     TextView amountTextView;
@@ -88,13 +92,13 @@ public class PayUPnPActivity extends AppCompatActivity {
 
     private void setUpUserDetails() {
         amountPref = getIntent().getIntExtra("Price", 0);
-      //  Log.v("PayUAct", "amountPref " + amountPref);
+        //  Log.v("PayUAct", "amountPref " + amountPref);
         mRsSymbol = getResources().getString(R.string.Rs);
         emailID = "pooja130192@gmail.com";
         mobileNo = "8600700392";
         productInfo = "product_info";
         first_name = "pooja";
-        amountTextView.setText(mRsSymbol+" "+String.valueOf(amountPref));
+        amountTextView.setText(mRsSymbol + " " + String.valueOf(amountPref));
     }
 
     private void initListeners() {
@@ -413,15 +417,18 @@ public class PayUPnPActivity extends AppCompatActivity {
 
             // Check which object is non-null
             if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
+                String payuResponse = transactionResponse.getPayuResponse();
                 if (transactionResponse.getTransactionStatus().equals(TransactionResponse.TransactionStatus.SUCCESSFUL)) {
                     //Success Transaction
-                    Log.v("","Transaction Status"+" Success");
+                    Log.v("", "Transaction Status" + " Success");
+                    showStatusDialog("Success", "Transaction Completed");
                 } else {
                     //Failure Transaction
-                    Log.v("","Transaction Status"+" Fsiled");
+                    Log.v("", "Transaction Status" + " Failed");
+                    showStatusDialog("Failed", "Transaction Failed");
                 }
 
-                // Response from Payumoney
+              /*  // Response from Payumoney
                 String payuResponse = transactionResponse.getPayuResponse();
                 Log.v("Final ", "payuResponse " + payuResponse);
                 // Response from SURl and FURL
@@ -438,7 +445,7 @@ public class PayUPnPActivity extends AppCompatActivity {
                                 startActivity(i);
                                 finish();
                             }
-                        }).show();
+                        }).show();*/
 
             } else if (resultModel != null && resultModel.getError() != null) {
                 Log.d(TAG, "Error response : " + resultModel.getError().getTransactionResponse());
@@ -446,5 +453,33 @@ public class PayUPnPActivity extends AppCompatActivity {
                 Log.d(TAG, "Both objects are null!");
             }
         }
+    }
+
+    private void showStatusDialog(String title, String desc) {
+        final String status=title;
+        MaterialStyledDialog.Builder dialog = new MaterialStyledDialog.Builder(context);
+        dialog.setTitle(title)
+                .setDescription(desc)
+                .setStyle(Style.HEADER_WITH_ICON);
+
+        if (title.equals("Success")) {
+            dialog.setIcon(R.mipmap.ic_success);
+
+        } else {
+            dialog.setIcon(R.mipmap.ic_failed);
+            dialog.setPositiveText(R.string.button_ok)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            Intent i = new Intent(PayUPnPActivity.this, HomeActivity.class);
+                            startActivity(i);
+                            i.putExtra("status",status);
+                            setResult(GET_PAYMENT_STATUS,i);
+                            finish();
+                        }
+                    });
+        }
+
+        dialog.show();
     }
 }

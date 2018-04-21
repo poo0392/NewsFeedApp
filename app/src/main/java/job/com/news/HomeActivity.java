@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -157,87 +158,6 @@ public class HomeActivity extends AppCompatActivity
         initialializeComponents();
         callHomeFragment();
         callNewsListAPI(memberToken, memberId);
-
-        LinearLayout mMenuLayout = (LinearLayout) findViewById(R.id.main_menu_layout);
-
-        mSmallClassiLayout = (LinearLayout) findViewById(R.id.small_classi_layout);
-        mCareerLayout = (LinearLayout) findViewById(R.id.career_layout);
-
-        TextView menuNationalInter = (TextView) findViewById(R.id.menu_nat_inter_text);
-        menuNationalInter.setOnClickListener(this);
-
-        TextView menuGov = (TextView) findViewById(R.id.menu_gov);
-        menuGov.setOnClickListener(this);
-
-        TextView menuSocRel = (TextView) findViewById(R.id.menu_soc_rel);
-        menuSocRel.setOnClickListener(this);
-
-        TextView menuSports = (TextView) findViewById(R.id.menu_sports);
-        menuSports.setOnClickListener(this);
-
-        TextView menuSciTech = (TextView) findViewById(R.id.menu_sci_tech);
-        menuSciTech.setOnClickListener(this);
-
-        TextView menuEco = (TextView) findViewById(R.id.menu_eco);
-        menuEco.setOnClickListener(this);
-
-        TextView menuHealth = (TextView) findViewById(R.id.menu_health);
-        menuHealth.setOnClickListener(this);
-
-        TextView menuBusinessNews = (TextView) findViewById(R.id.menu_business_news);
-        menuBusinessNews.setOnClickListener(this);
-
-        TextView menuAgri = (TextView) findViewById(R.id.menu_agri);
-        menuAgri.setOnClickListener(this);
-
-        TextView menuCinema = (TextView) findViewById(R.id.menu_cinema);
-        menuCinema.setOnClickListener(this);
-
-        menuSmallClassi = (TextView) findViewById(R.id.menu_small_classi);
-        menuSmallClassi.setOnClickListener(this);
-
-        TextView menuProperty = (TextView) findViewById(R.id.menu_property);
-        menuProperty.setOnClickListener(this);
-
-        TextView menuBirthday = (TextView) findViewById(R.id.menu_birthday);
-        menuBirthday.setOnClickListener(this);
-
-        TextView menuAppRel = (TextView) findViewById(R.id.menu_app_rel);
-        menuAppRel.setOnClickListener(this);
-
-        TextView menuBuySell = (TextView) findViewById(R.id.menu_buy_sell);
-        menuBuySell.setOnClickListener(this);
-
-        TextView menuServices = (TextView) findViewById(R.id.menu_services);
-        menuServices.setOnClickListener(this);
-
-        TextView menuLoanRel = (TextView) findViewById(R.id.menu_loan_rel);
-        menuLoanRel.setOnClickListener(this);
-
-        TextView menuMatRel = (TextView) findViewById(R.id.menu_mat_rel);
-        menuMatRel.setOnClickListener(this);
-
-        TextView menuBooksLit = (TextView) findViewById(R.id.menu_books_lit);
-        menuBooksLit.setOnClickListener(this);
-
-        TextView menuOther = (TextView) findViewById(R.id.menu_other);
-        menuOther.setOnClickListener(this);
-
-        TextView menuEnt = (TextView) findViewById(R.id.menu_ent);
-        menuEnt.setOnClickListener(this);
-
-        menuCareer = (TextView) findViewById(R.id.menu_career);
-        menuCareer.setOnClickListener(this);
-
-        TextView menuJob = (TextView) findViewById(R.id.menu_job);
-        menuJob.setOnClickListener(this);
-
-        TextView menuBusiness = (TextView) findViewById(R.id.menu_business);
-        menuBusiness.setOnClickListener(this);
-
-        TextView menuEdu = (TextView) findViewById(R.id.menu_edu);
-        menuEdu.setOnClickListener(this);
-
 
     }
 
@@ -601,6 +521,12 @@ public class HomeActivity extends AppCompatActivity
                 String group = listDataHeader.get(groupPosition);
                 //Log.v(""," group "+group);
                 if (group.equals("Home")) {
+                  /*  SharedPreferences preferences = getSharedPreferences("newsFeedPref", 0);
+                   // preferences.edit().remove("childName").commit();
+                    preferences.edit().remove("expandpos").commit();*/
+
+                    myPreferences.setExpandChildName("null");
+                    myPreferences.setExpandPosition(0);
                     fragment = new HomeFragment();
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                     drawer.closeDrawer(GravityCompat.START);

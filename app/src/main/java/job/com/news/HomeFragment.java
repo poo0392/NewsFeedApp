@@ -82,7 +82,7 @@ public class HomeFragment extends Fragment {
     //Title List
     private final List<String> mFragmentTitleList = new ArrayList<>();
     DynamicFragmentAdapter mDynAdapter;
-    int i = 0, status = -1;
+    int i = 0, status;
 
     @Nullable
     @Override
@@ -144,26 +144,35 @@ public class HomeFragment extends Fragment {
     }
 
     private void setClickListeners() {
+
+        setpagerItemByListItem();
+
+    }
+
+    private void setpagerItemByListItem() {
         //   Collections.reverse(catListNewEn);
         try {
-
-
             if (!childName.equals("null")) {
                 for (int i = 0; i < catListNewEn.size(); i++) {
                     if (childName.equals(catListNewEn.get(i))) {
                         // i++;
                         status = i;
+                        break;
+                    } else{
+                        status=0;
                     }
                 }
             } else {
-                status = 0;
+                status = -1;
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         Log.v("", "status " + status);
-        if (status == -1 || status == 0) {
+        if (status == -1) {
+            Log.v("", "Childname null");
+        } else if (/*  && */status == 0) {
             Log.v("", "No data available");
             Toast.makeText(mContext, "No data available", Toast.LENGTH_SHORT).show();
         } else {
