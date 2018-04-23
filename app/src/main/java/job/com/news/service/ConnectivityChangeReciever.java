@@ -61,21 +61,25 @@ public class ConnectivityChangeReciever extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        newsListTable = new NewsListTable(context);
-        newsImagesTable = new NewsImagesTable(context);
-        memberTable = new MemberTable(context);
-        newsImagesTable = new NewsImagesTable(context);
-        newsFeedList=new ArrayList<>();
-        long last_id = newsListTable.getLastId();
-        HomeActivity activity =new HomeActivity();
-        if (intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")) {
-            if (isNetworkAvail(context)) {
-                getPrefData(context);
+        try {
+            newsListTable = new NewsListTable(context);
+            newsImagesTable = new NewsImagesTable(context);
+            memberTable = new MemberTable(context);
+            newsImagesTable = new NewsImagesTable(context);
+            newsFeedList = new ArrayList<>();
+            long last_id = newsListTable.getLastId();
+            HomeActivity activity = new HomeActivity();
+            if (intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")) {
+                if (isNetworkAvail(context)) {
+                    getPrefData(context);
 
-               callNewsListAPI(context, memberToken, memberId, last_id, news_status);
-               // activity.callNewsListAPI(memberToken,memberId);
-               // disableReceiver(context);
+                    callNewsListAPI(context, memberToken, memberId, last_id, news_status);
+                    // activity.callNewsListAPI(memberToken,memberId);
+                    // disableReceiver(context);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -129,8 +133,8 @@ public class ConnectivityChangeReciever extends BroadcastReceiver {
                                 RegisterMember member = new RegisterMember();
                                 List<NewsImages> imagesList = new ArrayList<>();
                                 NewsImages imagesModel = new NewsImages();
-                                int n=serverResponse.getNewsFeedList().size();
-                                for (int i = n-1; i < n; i--) {
+                                int n = serverResponse.getNewsFeedList().size();
+                                for (int i = n - 1; i < n; i--) {
                                     if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
                                         model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
                                                 serverResponse.getNewsFeedList().get(i).getNews_uuid(),
@@ -166,8 +170,8 @@ public class ConnectivityChangeReciever extends BroadcastReceiver {
                                         }
                                         // }
                                         if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
-                                            int p=serverResponse.getNewsFeedList().get(i).getNews_images().size();
-                                            for (int j = p-1; j < p; j++) {
+                                            int p = serverResponse.getNewsFeedList().get(i).getNews_images().size();
+                                            for (int j = p - 1; j < p; j++) {
                                                 imagesModel.setId(model.getNews_images().get(j).getId());
                                                 imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
                                                 imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
@@ -227,10 +231,16 @@ public class ConnectivityChangeReciever extends BroadcastReceiver {
                 })
                 .show();
     }
+
     private void getPrefData(Context context) {
         myPreferences = MyPreferences.getMyAppPref(context);
-        memberId = myPreferences.getMemberId();
-        memberToken = myPreferences.getMemberToken().trim();
+
+        try {
+            memberId = myPreferences.getMemberId();
+            memberToken = myPreferences.getMemberToken().trim();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isNetworkAvail(Context mContext) {
@@ -251,8 +261,7 @@ public class ConnectivityChangeReciever extends BroadcastReceiver {
         }
     }
 
-    public static void enableReceiver(Context context)
-    {
+    public static void enableReceiver(Context context) {
 
         Log.v(TAG, "In enableReceiver");
         ComponentName component = new ComponentName(context, ConnectivityChangeReciever.class);
@@ -266,8 +275,7 @@ public class ConnectivityChangeReciever extends BroadcastReceiver {
      *
      * @param context
      */
-    public static void disableReceiver(Context context)
-    {
+    public static void disableReceiver(Context context) {
         Log.v(TAG, "In disableReceiver");
         ComponentName component = new ComponentName(context, ConnectivityChangeReciever.class);
 

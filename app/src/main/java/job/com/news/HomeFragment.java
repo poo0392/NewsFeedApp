@@ -157,7 +157,7 @@ public class HomeFragment extends Fragment {
                     if (childName.equals(catListNewEn.get(i))) {
                         // i++;
                         status = i;
-                        break;
+                       // break;
                     } else{
                         status=0;
                     }

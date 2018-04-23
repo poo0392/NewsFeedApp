@@ -483,9 +483,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         });
 
         mDescEdit.addTextChangedListener(new EditTextListener());
-        if (moreWords == 1) {
+        /*if (moreWords == 1) {
+
             Toast.makeText(getApplicationContext(), "You cannot add more than " + numOfWords + " words", Toast.LENGTH_SHORT).show();
-        }
+        }*/
         /*mDescEdit.addTextChangedListener(new TextWatcher() {
             boolean mToggle = false;
             @Override
@@ -542,11 +543,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private class EditTextListener implements TextWatcher {
-        boolean mToggle = false;
+
 
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+            mToggle = false;
 
         }
 
@@ -559,29 +560,38 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             Log.v("mDescEdit ", "length " + s.toString().length());
             int count = getSpaces(mDescEdit.getText().toString());
             Log.v("getSpaces ", "count " + count);
-            // if (mToggle) {
+
 
             if (numOfWords != 400) {
-                if (wordsCount <= numOfWords) {
+
+                if (wordsCount <= numOfWords) {//99
                     validWords = true;
                     moreWords = 0;
-                   // mDescEdit.setText(value(mDescEdit.getText().toString(), numOfWords));
+
+                    // mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(charLength)});
                 } else {
                     mDescEdit.setText(value(mDescEdit.getText().toString(), numOfWords));
+                    mDescEdit.setSelection(mDescEdit.getText().length());
+                    if (!mToggle) {
+                        mToggle = true;
+                        Toast.makeText(getApplicationContext(), "You cannot add more than " + numOfWords + " words", Toast.LENGTH_SHORT).show();
 
-                    moreWords = 1;
-
-                    //  mToggle=true;
-                    //hideKeyboard();
-                    //
+                        // mDescEdit.setText(value(mDescEdit.getText().toString(), numOfWords));
+                        //mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(numOfWords)});
+                        moreWords = 1;
+                        //mDescEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter()});
+                        //  mToggle=true;
+                        //hideKeyboard();
+                        //
+                    }
                 }
             }
-            //  }
 
         }
 
         @Override
         public void afterTextChanged(Editable editable) {
+            //    mToggle = false;
             /*String s=editable.toString();
                //
 
@@ -592,7 +602,6 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         }
     }
-
 
 
     public String value(String s, int numOfWords) {
@@ -971,6 +980,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                         displayCityData((ArrayList) city.getCities());
 
                     } else {
+                        //  displayCityData();
                         Toast.makeText(CreateArticle.this, "Server Error", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -1030,6 +1040,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     }
                 });
             } else {
+                cityList.clear();
+                cityMap.clear();
+                city_adapter.clear();
                 Toast.makeText(CreateArticle.this, "No data available", Toast.LENGTH_SHORT).show();
             }
 
@@ -1389,27 +1402,27 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private void getImageFromGallery() {
 
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                startActivityForResult(intent, PICK_FROM_GALLERY);
-            } else {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                //  photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, PICK_FROM_GALLERY);
+        //if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            startActivityForResult(intent, PICK_FROM_GALLERY);
+        } else {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, SELECT_FILE);
                /* Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
                 Uri photoUri = FileProvider.getUriForFile(CreateArticle.this, BuildConfig.APPLICATION_ID + ".provider", );
                 intent.setData(photoUri);
                 startActivity(intent);*/
-            }
-        } else {
-            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-            photoPickerIntent.setType("image/*");
-            startActivityForResult(photoPickerIntent, SELECT_FILE);
         }
+        /*} else {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image*//*");
+            startActivityForResult(photoPickerIntent, SELECT_FILE);
+        }*/
         /*try {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);//Intent.ACTION_GET_CONTENT//ACTION_PICK
             photoPickerIntent.setType("image*//*");
@@ -1449,6 +1462,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 mediaPath = getPathFromURI(selectedImage);
                 imageFIle = new File(mediaPath);
                 Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
+                Toast.makeText(getApplicationContext(), "Image Path: " + mediaPath + "\nUri Path: " + selectedImage.toString(), Toast.LENGTH_SHORT).show();
                 Log.v("onSelectFromGallery ", " selectedImage " + selectedImage.toString());
 
                /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
