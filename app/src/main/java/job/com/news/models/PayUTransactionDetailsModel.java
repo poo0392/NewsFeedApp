@@ -16,10 +16,20 @@ public class PayUTransactionDetailsModel {
     @SerializedName("message")
     @Expose
     private String message;
+    /*@SerializedName("result")
+    @Expose
+    private List<ResultList> result;*/
     @SerializedName("result")
     @Expose
-    private List<ResultList> result;
+    private ResultList result;
 
+    public ResultList getResult() {
+        return result;
+    }
+
+    public void setResult(ResultList result) {
+        this.result = result;
+    }
 
     public String getStatus() {
         return status;
@@ -37,15 +47,18 @@ public class PayUTransactionDetailsModel {
         this.message = message;
     }
 
-    public List<ResultList> getResult() {
+   /* public List<ResultList> getResult() {
         return result;
     }
 
     public void setResult(List<ResultList> result) {
         this.result = result;
-    }
 
-    private class ResultList {
+
+
+    }*/
+
+    public static class ResultList {
 
         @SerializedName("firstname")
         @Expose
@@ -200,6 +213,26 @@ public class PayUTransactionDetailsModel {
 
         public void setTransaction_message(String transaction_message) {
             this.transaction_message = transaction_message;
+        }
+
+        @Override
+        public String toString() {
+            return "ResultList{" +
+                    "firstname='" + firstname + '\'' +
+                    ", paymentId='" + paymentId + '\'' +
+                    ", productinfo='" + productinfo + '\'' +
+                    ", status='" + status + '\'' +
+                    ", key='" + key + '\'' +
+                    ", txnid='" + txnid + '\'' +
+                    ", amount='" + amount + '\'' +
+                    ", email='" + email + '\'' +
+                    ", phone='" + phone + '\'' +
+                    ", payment_date='" + payment_date + '\'' +
+                    ", bankcode='" + bankcode + '\'' +
+                    ", error='" + error + '\'' +
+                    ", error_Message='" + error_Message + '\'' +
+                    ", transaction_message='" + transaction_message + '\'' +
+                    '}';
         }
     }
 

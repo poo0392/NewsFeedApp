@@ -43,6 +43,8 @@ import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -163,15 +165,16 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void checkPayuResp() {
-        Log.v("", "checkPayuResp");
+       /* Log.v("", "checkPayuResp");
         String payuResponse = "{\"status\":0,\"message\":\"payment status for :187564009\",\"result\":{\"postBackParamId\":141260502,\"mihpayid\":\"6927137143\",\"paymentId\":187564009,\"mode\":\"DC\",\"status\":\"success\",\"unmappedstatus\":\"captured\",\"key\":\"WiCZgZAf\",\"txnid\":\"1524198711375\",\"amount\":\"1.0\",\"additionalCharges\":\"\",\"addedon\":\"2018-04-20 10:08:26\",\"createdOn\":1524199150000,\"productinfo\":\"product_info\",\"firstname\":\"pooja\",\"lastname\":\"\",\"address1\":\"\",\"address2\":\"\",\"city\":\"\",\"state\":\"\",\"country\":\"\",\"zipcode\":\"\",\"email\":\"pooja130192@gmail.com\",\"phone\":\"7666175151\",\"udf1\":\"\",\"udf2\":\"\",\"udf3\":\"\",\"udf4\":\"\",\"udf5\":\"\",\"udf6\":\"\",\"udf7\":\"\",\"udf8\":\"\",\"udf9\":\"\",\"udf10\":\"\",\"hash\":\"56888449c8e27b29dd33c82b8ddb29b8bd77301e9a94bc6c309d71f30022c7db6d657de881e6f68b12e45aabbab8b4b252812a210bc70d639eea7bc2cb1cbc41\",\"field1\":\"5241991432776575103049\",\"field2\":\"018489\",\"field3\":\"1.00\",\"field4\":\"6927137143\",\"field5\":\"100\",\"field6\":\"05\",\"field7\":\"6927137143\",\"field8\":\"\",\"field9\":\"Transaction is Successful\",\"bank_ref_num\":\"5241991432776575103049\",\"bankcode\":\"VISA\",\"error\":\"E000\",\"error_Message\":\"No Error\",\"cardToken\":\"345e622d2a2a229e49c3c\",\"offer_key\":\"\",\"offer_type\":\"\",\"offer_availed\":\"\",\"pg_ref_no\":\"\",\"offer_failure_reason\":\"\",\"name_on_card\":\"payu\",\"cardnum\":\"408849XXXXXX8716\",\"cardhash\":\"This field is no longer supported in postback params.\",\"card_type\":\"\",\"card_merchant_param\":null,\"version\":\"\",\"postUrl\":\"https:\\/\\/www.payumoney.com\\/mobileapp\\/payumoney\\/success.php\",\"calledStatus\":false,\"additional_param\":\"\",\"amount_split\":\"{\\\"PAYU\\\":\\\"1.0\\\"}\",\"discount\":\"0.00\",\"net_amount_debit\":\"1\",\"fetchAPI\":null,\"paisa_mecode\":\"\",\"meCode\":\"{\\\"MID\\\":\\\"hdfc_89050047\\\"}\",\"payuMoneyId\":\"187564009\",\"encryptedPaymentId\":null,\"id\":null,\"surl\":null,\"furl\":null,\"baseUrl\":null,\"retryCount\":0,\"pg_TYPE\":\"HdfcCYBER\"},\"errorCode\":null,\"responseCode\":null}\n" +
                 "\n";
         Object obj = null;
         Log.v("", "Transaction Status" + " Success");
         List<PayUTransactionDetailsModel> paymentDetails = new ArrayList<>();
+
         PayUTransactionDetailsModel model = new PayUTransactionDetailsModel();
         //  PayUTransactionDetailsModel
-        /*try {
+        try {
             JSONArray jsonArr = new JSONArray("["+payuResponse+"]");
            // List<Data> dataList = new ArrayList<>();
             for (int i = 0; i < jsonArr.length(); i++) {
@@ -179,20 +182,23 @@ public class HomeActivity extends AppCompatActivity
                 JSONObject jsonObj = jsonArr.getJSONObject(i);
                 //Data data = new Data();
 
-                model.setResult(jsonObj.getString("value"));
+                model.setResult(jsonObj.getString("result"));
 
-                dataList.add(data);
+                paymentDetails.add(model);
+                Log.v("checkPayuResp ", "paymentDetails " + paymentDetails.toString());
             }
 
-            JSONObject jsonObj = new JSONObject(payuResponse);
+          *//*  JSONObject jsonObj = new JSONObject(payuResponse);
             //paymentDetails.addAll(jsonObj.get("result"));
-            model.setResult(jsonObj.get("result"));
+            model.setResult(jsonObj.get("result"));*//*
             // obj=jsonObj;
 
-            obj = (Object) payuResponse;
+            //obj = (Object) payuResponse;
+           // paymentD.add(obj);
+           // model.setResult(obj);
          //   Log.v("", "paymentDetails " + paymentDetails);
-            Log.v("checkPayuResp ", "obj " + obj);
-            Log.v("checkPayuResp ", "jsonObj " + jsonObj);
+           // Log.v("checkPayuResp ", "obj " + obj);
+
 
             //  paymentDetails=transactionResponse.getPayuResponse();
         } catch (JSONException e) {

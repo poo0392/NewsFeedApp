@@ -7,6 +7,7 @@ import job.com.news.article.City;
 import job.com.news.article.State;
 import job.com.news.forgotpassword.ForgotPasswordResp;
 import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.models.PayUTransactionDetailsModel;
 import job.com.news.register.LoginRegisterResponse;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -131,19 +132,19 @@ public interface WebService {
 
     //http://thanehousingfederation.com/newsapp/api/member/add_payment_record
     @POST("add_payment_record")
-    Call<NewsFeedModelResponse> postPaymentDeatails(@Part("member_token") RequestBody member_token,
-                                                    @Part("member_id") RequestBody member_id,
-                                                    @Part("payment_id") String payment_id,
-                                                    @Part("field9") String field9,
-                                                    @Part("status") String status,
-                                                    @Part("txtkey") String txtkey,
-                                                    @Part("txnid") String txnid,
-                                                    @Part("amount") String amount,
-                                                    @Part("product_info") String product_info,
-                                                    @Part("payment_date") String payment_date,
-                                                    @Part("bank_code") String bank_code,
-                                                    @Part("error") String error,
-                                                    @Part("error_msg") String error_msg
+    Call<PayUTransactionDetailsModel> postPaymentDetails(@Part("member_token") RequestBody member_token,
+                                                         @Part("member_id") RequestBody member_id,
+                                                         @Part("payment_id") RequestBody payment_id,
+                                                         @Part("transaction_message") RequestBody field9,
+                                                         @Part("status") RequestBody status,
+                                                         @Part("txtkey") RequestBody txtkey,
+                                                         @Part("txnid") RequestBody txnid,
+                                                         @Part("amount") RequestBody amount,
+                                                         @Part("product_info") RequestBody product_info,
+                                                         @Part("payment_date") RequestBody payment_date,
+                                                         @Part("bank_code") RequestBody bank_code,
+                                                         @Part("error") RequestBody error,
+                                                         @Part("error_msg") RequestBody error_msg
 
 
     );

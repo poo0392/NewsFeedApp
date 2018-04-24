@@ -1283,10 +1283,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                       /*  Intent i = new Intent(CreateArticle.this, HomeActivity.class);
                         startActivity(i);
                         finish();*/
-                       /* Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                       Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
                         intent.putExtra("Price", 1);
                         startActivity(intent);
-                        finish();*/
+                        finish();
                     }
                 })
                 .show();
@@ -1462,7 +1462,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 mediaPath = getPathFromURI(selectedImage);
                 imageFIle = new File(mediaPath);
             //    Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
-                Toast.makeText(getApplicationContext(), "Image Path: " + mediaPath + "\nUri Path: " + selectedImage.toString(), Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(), "Image Path: " + mediaPath + "\nUri Path: " + selectedImage.toString(), Toast.LENGTH_SHORT).show();
               //  Log.v("onSelectFromGallery ", " selectedImage " + selectedImage.toString());
 
                /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

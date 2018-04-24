@@ -44,13 +44,25 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import job.com.news.Constant;
 import job.com.news.HomeActivity;
 import job.com.news.NewsFeedApplication;
 import job.com.news.R;
 import job.com.news.db.MemberTable;
+import job.com.news.helper.ConnectivityInterceptor;
+import job.com.news.helper.NoConnectivityException;
+import job.com.news.interfaces.WebService;
 import job.com.news.models.PayUTransactionDetailsModel;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Zafar.Hussain on 10/04/2018.
@@ -72,6 +84,7 @@ public class PayUPnPActivity extends AppCompatActivity {
     AppCompatRadioButton radio_btn_sandbox, radio_btn_production;
     private PayUmoneySdkInitializer.PaymentParam mPaymentParams;
     List<RegisterMember> membersList;
+    ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,16 +120,12 @@ public class PayUPnPActivity extends AppCompatActivity {
 
         Log.v("getPrefData ", "memberid " + memberid);
 
-        if (settings.getBoolean("is_prod_env", false)) {
-            ((NewsFeedApplication) getApplication()).setAppEnvironment(AppEnvironment.PRODUCTION);
-            radio_btn_production.setChecked(true);
-        } else {
-            ((NewsFeedApplication) getApplication()).setAppEnvironment(AppEnvironment.SANDBOX);
-            radio_btn_sandbox.setChecked(true);
-        }
+
     }
 
     private void setUpUserDetails() {
+
+
         amountPref = getIntent().getIntExtra("Price", 0);
         //  Log.v("PayUAct", "amountPref " + amountPref);
         mRsSymbol = getResources().getString(R.string.Rs);
@@ -266,6 +275,13 @@ public class PayUPnPActivity extends AppCompatActivity {
         radioGroup_select_env = (RadioGroup) findViewById(R.id.radio_grp_env);
         // payNowButton.setOnClickListener(this);
 
+        if (settings.getBoolean("is_prod_env", false)) {
+            ((NewsFeedApplication) getApplication()).setAppEnvironment(AppEnvironment.PRODUCTION);
+            radio_btn_production.setChecked(true);
+        } else {
+            ((NewsFeedApplication) getApplication()).setAppEnvironment(AppEnvironment.SANDBOX);
+            radio_btn_sandbox.setChecked(true);
+        }
     }
 
     private void setAppToolbar() {
@@ -447,31 +463,70 @@ public class PayUPnPActivity extends AppCompatActivity {
             // Check which object is non-null
             if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
                 String payuResponse = transactionResponse.getPayuResponse();
-                Object obj = null;
+                List<PayUTransactionDetailsModel.ResultList> paymentDetails = new ArrayList<>();
+                PayUTransactionDetailsModel.ResultList results = new PayUTransactionDetailsModel.ResultList();
+                try {
+                    JSONObject result = (new JSONObject(payuResponse)).getJSONObject("result");
+                    // JSONObject jsonObj = new JSONObject(payuResponse);
+                    // obj=jsonObj;
+                    Log.v("", "paymentDetails " + paymentDetails);
+                    // obj = (Object)payuResponse;
+                    // JSONArray jsonArr = new JSONArray("[" + payuResponse + "]");
+                    // List<Data> dataList = new ArrayList<>();
+                    //  for (int i = 0; i < jsonArr.length(); i++) {
+
+                    //  JSONObject jsonObj = jsonArr.getJSONObject(i);
+                    //Data data = new Data();
+
+                    //model.setResult(result.getString(""));
+                    results.setPaymentId(result.getString("paymentId"));
+                    results.setStatus(result.getString("status"));
+                    results.setKey(result.getString("key"));
+                    results.setTxnid(result.getString("txnid"));
+                    results.setAmount(result.getString("amount"));
+                    results.setPayment_date(result.getString("addedon"));
+                    results.setProductinfo(result.getString("productinfo"));
+                    results.setTransaction_message(result.getString("field9"));
+                    results.setBankcode(result.getString("bankcode"));
+                    results.setError(result.getString("error"));
+                    results.setError_Message(result.getString("error_Message"));
+
+                    paymentDetails.add(results);
+                    // result.
+                    // paymentDetails.add(new Res);
+                    Log.v("checkPayuResp ", "paymentDetails " + paymentDetails.toString());
+                    //  }
+
+          /*  JSONObject jsonObj = new JSONObject(payuResponse);
+            //paymentDetails.addAll(jsonObj.get("result"));
+            model.setResult(jsonObj.get("result"));*/
+                    // obj=jsonObj;
+
+                    //obj = (Object) payuResponse;
+                    // paymentD.add(obj);
+                    // model.setResult(obj);
+                    //   Log.v("", "paymentDetails " + paymentDetails);
+                    // Log.v("checkPayuResp ", "obj " + obj);
+
+
+                    //  paymentDetails=transactionResponse.getPayuResponse();
+
+
+                    //  paymentDetails=transactionResponse.getPayuResponse();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 if (transactionResponse.getTransactionStatus().equals(TransactionResponse.TransactionStatus.SUCCESSFUL)) {
                     //Success Transaction
                     Log.v("", "Transaction Status" + " Success");
-                    List<TransactionResponse> paymentDetails=new ArrayList<>();
-                    PayUTransactionDetailsModel model=new PayUTransactionDetailsModel();
-                  //  PayUTransactionDetailsModel
-                    try {
-                        JSONObject jsonObj = new JSONObject(payuResponse);
-                       // obj=jsonObj;
-                        Log.v("", "paymentDetails " + paymentDetails);
-                        obj = (Object)payuResponse;
-
-                      //  paymentDetails=transactionResponse.getPayuResponse();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
                     showStatusDialog("Success", "Transaction Completed");
-                 //   postPaymentStatus();
+                    postPaymentStatus(1);
                 } else {
                     //Failure Transaction
                     Log.v("", "Transaction Status" + " Failed");
                     showStatusDialog("Failed", "Transaction Failed");
+                    postPaymentStatus(0);
                 }
 
               /*  // Response from Payumoney
@@ -501,10 +556,13 @@ public class PayUPnPActivity extends AppCompatActivity {
         }
     }
 
-  /*  private void postPaymentStatus() {
+    private void postPaymentStatus(final int status) {
+       /* mProgressDialog = new ProgressDialog(PayUPnPActivity.this);
+        mProgressDialog.setMessage("Please Wait...");
+        mProgressDialog.show();*/
         OkHttpClient client = new OkHttpClient.Builder()
-               *//* .connectTimeout(0000, TimeUnit.MILLISECONDS)
-                .readTimeout(600000, TimeUnit.MILLISECONDS)*//*
+               /* .connectTimeout(0000, TimeUnit.MILLISECONDS)
+                .readTimeout(600000, TimeUnit.MILLISECONDS)*/
                 .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
                 .build();
 
@@ -515,17 +573,81 @@ public class PayUPnPActivity extends AppCompatActivity {
                 .build();
 
         WebService webService = retrofit.create(WebService.class);
+        PayUTransactionDetailsModel.ResultList results = new PayUTransactionDetailsModel.ResultList();
+        String paymentId=results.getPaymentId();
+        String Status=results.getStatus();
+        String Key=results.getKey();
+        String Txnid=results.getTxnid();
+        String Amount=results.getAmount();
+        String Payment_date=results.getPayment_date();
+        String Productinfo=results.getProductinfo();
+        String Transaction_message=results.getTransaction_message();
+        String Bankcode=results.getBankcode();
+        String Error=results.getError();
+        String Error_Message=results.getError_Message();
 
-        RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), membertoken);
-        RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberid);
-        RequestBody paramCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + categoryId);
-        RequestBody paramSubCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + sub_category_id);
-        RequestBody paramCountryId = RequestBody.create(MediaType.parse("text/plain"), "" + countryId);
-        RequestBody paramStateId = RequestBody.create(MediaType.parse("text/plain"), "" + stateId);
-        RequestBody paramCityId = RequestBody.create(MediaType.parse("text/plain"), "" + cityId);
-        RequestBody paramNewsTitle = RequestBody.create(MediaType.parse("text/plain"), "" + newsTitle);
-        RequestBody paramNewsDesc = RequestBody.create(MediaType.parse("text/plain"), "" + newsDesc);
-    }*/
+        RequestBody pMemberToken = RequestBody.create(MediaType.parse("text/plain"), membertoken);
+        RequestBody pMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberid);
+        RequestBody pPaymentId = RequestBody.create(MediaType.parse("text/plain"), paymentId);
+        RequestBody pStatus = RequestBody.create(MediaType.parse("text/plain"), Status);
+        RequestBody pKey = RequestBody.create(MediaType.parse("text/plain"), Key);
+        RequestBody pTxnid = RequestBody.create(MediaType.parse("text/plain"), Txnid);
+        RequestBody pAmount = RequestBody.create(MediaType.parse("text/plain"),Amount);
+        RequestBody pPayment_date = RequestBody.create(MediaType.parse("text/plain"), Payment_date);
+        RequestBody pProductinfo = RequestBody.create(MediaType.parse("text/plain"),Productinfo);
+        RequestBody pTransaction_message = RequestBody.create(MediaType.parse("text/plain"),Transaction_message);
+        RequestBody pBankcode = RequestBody.create(MediaType.parse("text/plain"),Bankcode);
+        RequestBody pError = RequestBody.create(MediaType.parse("text/plain"),Error);
+        RequestBody pError_Message = RequestBody.create(MediaType.parse("text/plain"),Error_Message);
+
+
+        Call<PayUTransactionDetailsModel> serverResponse = webService.postPaymentDetails(pMemberToken, pMemberId,
+                pPaymentId, pTransaction_message, pStatus, pKey, pTxnid, pAmount, pProductinfo, pPayment_date, pBankcode,
+                pError,pError_Message);
+
+
+        serverResponse.enqueue(new Callback<PayUTransactionDetailsModel>() {
+            @Override
+            public void onResponse(Call<PayUTransactionDetailsModel> call, Response<PayUTransactionDetailsModel> response) {
+              //  mProgressDialog.dismiss();
+
+                if (response.isSuccessful()) {
+
+                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
+                    }.getType();
+                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
+                            .fromJson(String.valueOf(response.body()), collectionType);*/
+
+                    PayUTransactionDetailsModel serverResponse = response.body();
+
+                    if (serverResponse.getStatus().equals("0")) {
+
+                        Log.v("PostPaymentdetails ", "status " + serverResponse.getStatus());
+                        if(status==1){
+
+                        }else{
+
+                        }
+                     //   showSuccessAlertDialog(CreateArticle.this, "Success", "Your article created succesfully\n Proceeding for payment");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PayUTransactionDetailsModel> call, Throwable t) {
+              // mProgressDialog.dismiss();
+                t.printStackTrace();
+                Log.v("PostPaymentdetails ", "Failure " + t.getMessage());
+                //Toast.makeText(mContext, "Failure", Toast.LENGTH_SHORT).show();
+                if (t instanceof NoConnectivityException) {
+                    // No internet connection
+                    Toast.makeText(PayUPnPActivity.this, "Please connect to Internet", Toast.LENGTH_SHORT).show();
+                    // setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
+                }
+            }
+        });
+
+    }
 
     private void showStatusDialog(String title, String desc) {
         final String status = title;
