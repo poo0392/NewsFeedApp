@@ -39,12 +39,17 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import job.com.news.HomeActivity;
 import job.com.news.NewsFeedApplication;
 import job.com.news.R;
+import job.com.news.db.MemberTable;
+import job.com.news.models.PayUTransactionDetailsModel;
+import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
 
 /**
@@ -56,8 +61,9 @@ public class PayUPnPActivity extends AppCompatActivity {
     private int GET_PAYMENT_STATUS = 2;
     MyPreferences getPref;
     Context context;
-    String emailID, mobileNo, productInfo, first_name, mRsSymbol;
-    int amountPref;
+    String emailID, mobileNo, productInfo, first_name, mRsSymbol, membertoken;
+    int amountPref, memberid;
+    MemberTable memberTable;
     Button payNowButton;
     TextView amountTextView;
     private RadioGroup radioGroup_select_env;
@@ -65,6 +71,7 @@ public class PayUPnPActivity extends AppCompatActivity {
     private SharedPreferences settings;
     AppCompatRadioButton radio_btn_sandbox, radio_btn_production;
     private PayUmoneySdkInitializer.PaymentParam mPaymentParams;
+    List<RegisterMember> membersList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,15 +79,34 @@ public class PayUPnPActivity extends AppCompatActivity {
         setContentView(R.layout.payu_home);
         context = this;
         setAppToolbar();
+        memberTable = new MemberTable(context);
 
+        getPrefData();
+        getDbData();
+        attachViews();
+        initListeners();
+        setUpUserDetails();
+
+    }
+
+    private void getDbData() {
+        membersList = new ArrayList<>();
+        membersList.addAll(memberTable.getMemberListByMemberId(memberid));
+    }
+
+    private void getPrefData() {
         getPref = MyPreferences.getMyAppPref(context);
         settings = getSharedPreferences("settings", MODE_PRIVATE);
         getPref.setOverrideResultScreen(true);
         MyPreferences.selectedTheme = -1;
 
-        attachViews();
-        initListeners();
-        setUpUserDetails();
+
+        getPref = MyPreferences.getMyAppPref(this);
+        memberid = getPref.getMemberId();
+        membertoken = getPref.getMemberToken().trim();
+
+        Log.v("getPrefData ", "memberid " + memberid);
+
         if (settings.getBoolean("is_prod_env", false)) {
             ((NewsFeedApplication) getApplication()).setAppEnvironment(AppEnvironment.PRODUCTION);
             radio_btn_production.setChecked(true);
@@ -94,10 +120,13 @@ public class PayUPnPActivity extends AppCompatActivity {
         amountPref = getIntent().getIntExtra("Price", 0);
         //  Log.v("PayUAct", "amountPref " + amountPref);
         mRsSymbol = getResources().getString(R.string.Rs);
-        emailID = "pooja130192@gmail.com";
-        mobileNo = "8600700392";
+        //emailID = "pooja130192@gmail.com";
+        emailID = membersList.get(0).getEmailId();
+        //mobileNo = "8600700392";
+        mobileNo = membersList.get(0).getMobile();
         productInfo = "product_info";
-        first_name = "pooja";
+        //first_name = "pooja";
+        first_name = membersList.get(0).getFirstName();
         amountTextView.setText(mRsSymbol + " " + String.valueOf(amountPref));
     }
 
@@ -418,10 +447,27 @@ public class PayUPnPActivity extends AppCompatActivity {
             // Check which object is non-null
             if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
                 String payuResponse = transactionResponse.getPayuResponse();
+                Object obj = null;
                 if (transactionResponse.getTransactionStatus().equals(TransactionResponse.TransactionStatus.SUCCESSFUL)) {
                     //Success Transaction
                     Log.v("", "Transaction Status" + " Success");
+                    List<TransactionResponse> paymentDetails=new ArrayList<>();
+                    PayUTransactionDetailsModel model=new PayUTransactionDetailsModel();
+                  //  PayUTransactionDetailsModel
+                    try {
+                        JSONObject jsonObj = new JSONObject(payuResponse);
+                       // obj=jsonObj;
+                        Log.v("", "paymentDetails " + paymentDetails);
+                        obj = (Object)payuResponse;
+
+                      //  paymentDetails=transactionResponse.getPayuResponse();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
                     showStatusDialog("Success", "Transaction Completed");
+                 //   postPaymentStatus();
                 } else {
                     //Failure Transaction
                     Log.v("", "Transaction Status" + " Failed");
@@ -455,8 +501,34 @@ public class PayUPnPActivity extends AppCompatActivity {
         }
     }
 
+  /*  private void postPaymentStatus() {
+        OkHttpClient client = new OkHttpClient.Builder()
+               *//* .connectTimeout(0000, TimeUnit.MILLISECONDS)
+                .readTimeout(600000, TimeUnit.MILLISECONDS)*//*
+                .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        WebService webService = retrofit.create(WebService.class);
+
+        RequestBody paramMemberToken = RequestBody.create(MediaType.parse("text/plain"), membertoken);
+        RequestBody paramMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberid);
+        RequestBody paramCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + categoryId);
+        RequestBody paramSubCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + sub_category_id);
+        RequestBody paramCountryId = RequestBody.create(MediaType.parse("text/plain"), "" + countryId);
+        RequestBody paramStateId = RequestBody.create(MediaType.parse("text/plain"), "" + stateId);
+        RequestBody paramCityId = RequestBody.create(MediaType.parse("text/plain"), "" + cityId);
+        RequestBody paramNewsTitle = RequestBody.create(MediaType.parse("text/plain"), "" + newsTitle);
+        RequestBody paramNewsDesc = RequestBody.create(MediaType.parse("text/plain"), "" + newsDesc);
+    }*/
+
     private void showStatusDialog(String title, String desc) {
-        final String status=title;
+        final String status = title;
         MaterialStyledDialog.Builder dialog = new MaterialStyledDialog.Builder(context);
         dialog.setTitle(title)
                 .setDescription(desc)
@@ -473,8 +545,8 @@ public class PayUPnPActivity extends AppCompatActivity {
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                             Intent i = new Intent(PayUPnPActivity.this, HomeActivity.class);
                             startActivity(i);
-                            i.putExtra("status",status);
-                            setResult(GET_PAYMENT_STATUS,i);
+                            i.putExtra("status", status);
+                            setResult(GET_PAYMENT_STATUS, i);
                             finish();
                         }
                     });

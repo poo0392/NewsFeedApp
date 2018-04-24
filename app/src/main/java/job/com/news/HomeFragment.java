@@ -152,16 +152,25 @@ public class HomeFragment extends Fragment {
     private void setpagerItemByListItem() {
         //   Collections.reverse(catListNewEn);
         try {
-            if (!childName.equals("null")) {
+            if (!childName.equals("null") /*|| !childName.equals(null)*/) {
+               // int i=0;
+                //while(i<catListNewEn.size()){
                 for (int i = 0; i < catListNewEn.size(); i++) {
-                    if (childName.equals(catListNewEn.get(i))) {
+                    if (!childName.equals(catListNewEn.get(i))) {
+                        status=0;
+                    } else {
                         // i++;
                         status = i;
-                       // break;
-                    } else{
-                        status=0;
+                        break;
                     }
+                    // i++;
+
+                    /*else{
+                        status=0;
+                    }*/
+                  //  break;
                 }
+
             } else {
                 status = -1;
             }
@@ -171,7 +180,7 @@ public class HomeFragment extends Fragment {
         }
         Log.v("", "status " + status);
         if (status == -1) {
-            Log.v("", "Childname null");
+            Log.v("", "Childname is null");
         } else if (/*  && */status == 0) {
             Log.v("", "No data available");
             Toast.makeText(mContext, "No data available", Toast.LENGTH_SHORT).show();

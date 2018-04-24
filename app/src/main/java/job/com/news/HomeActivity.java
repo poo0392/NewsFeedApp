@@ -66,6 +66,7 @@ import job.com.news.models.NewsFeedList;
 import job.com.news.models.NewsFeedListParcable;
 import job.com.news.models.NewsFeedModelResponse;
 import job.com.news.models.NewsImages;
+import job.com.news.models.PayUTransactionDetailsModel;
 import job.com.news.register.RegisterMember;
 import job.com.news.service.AlarmReceiver;
 import job.com.news.sharedpref.MyPreferences;
@@ -134,8 +135,9 @@ public class HomeActivity extends AppCompatActivity
         langSelection = new SessionManager(mContext);
         newsListTable = new NewsListTable(mContext);
         ll_linBase = (LinearLayout) findViewById(R.id.ll_linBase);
-        back_press_screen=2;
+        back_press_screen = 2;
         //DBHelper.getInstance(getApplicationContext());
+        checkPayuResp();
         scheduleAlarm();
         getPrefData();
 
@@ -158,6 +160,44 @@ public class HomeActivity extends AppCompatActivity
         callHomeFragment();
         callNewsListAPI(memberToken, memberId);
 
+    }
+
+    private void checkPayuResp() {
+        Log.v("", "checkPayuResp");
+        String payuResponse = "{\"status\":0,\"message\":\"payment status for :187564009\",\"result\":{\"postBackParamId\":141260502,\"mihpayid\":\"6927137143\",\"paymentId\":187564009,\"mode\":\"DC\",\"status\":\"success\",\"unmappedstatus\":\"captured\",\"key\":\"WiCZgZAf\",\"txnid\":\"1524198711375\",\"amount\":\"1.0\",\"additionalCharges\":\"\",\"addedon\":\"2018-04-20 10:08:26\",\"createdOn\":1524199150000,\"productinfo\":\"product_info\",\"firstname\":\"pooja\",\"lastname\":\"\",\"address1\":\"\",\"address2\":\"\",\"city\":\"\",\"state\":\"\",\"country\":\"\",\"zipcode\":\"\",\"email\":\"pooja130192@gmail.com\",\"phone\":\"7666175151\",\"udf1\":\"\",\"udf2\":\"\",\"udf3\":\"\",\"udf4\":\"\",\"udf5\":\"\",\"udf6\":\"\",\"udf7\":\"\",\"udf8\":\"\",\"udf9\":\"\",\"udf10\":\"\",\"hash\":\"56888449c8e27b29dd33c82b8ddb29b8bd77301e9a94bc6c309d71f30022c7db6d657de881e6f68b12e45aabbab8b4b252812a210bc70d639eea7bc2cb1cbc41\",\"field1\":\"5241991432776575103049\",\"field2\":\"018489\",\"field3\":\"1.00\",\"field4\":\"6927137143\",\"field5\":\"100\",\"field6\":\"05\",\"field7\":\"6927137143\",\"field8\":\"\",\"field9\":\"Transaction is Successful\",\"bank_ref_num\":\"5241991432776575103049\",\"bankcode\":\"VISA\",\"error\":\"E000\",\"error_Message\":\"No Error\",\"cardToken\":\"345e622d2a2a229e49c3c\",\"offer_key\":\"\",\"offer_type\":\"\",\"offer_availed\":\"\",\"pg_ref_no\":\"\",\"offer_failure_reason\":\"\",\"name_on_card\":\"payu\",\"cardnum\":\"408849XXXXXX8716\",\"cardhash\":\"This field is no longer supported in postback params.\",\"card_type\":\"\",\"card_merchant_param\":null,\"version\":\"\",\"postUrl\":\"https:\\/\\/www.payumoney.com\\/mobileapp\\/payumoney\\/success.php\",\"calledStatus\":false,\"additional_param\":\"\",\"amount_split\":\"{\\\"PAYU\\\":\\\"1.0\\\"}\",\"discount\":\"0.00\",\"net_amount_debit\":\"1\",\"fetchAPI\":null,\"paisa_mecode\":\"\",\"meCode\":\"{\\\"MID\\\":\\\"hdfc_89050047\\\"}\",\"payuMoneyId\":\"187564009\",\"encryptedPaymentId\":null,\"id\":null,\"surl\":null,\"furl\":null,\"baseUrl\":null,\"retryCount\":0,\"pg_TYPE\":\"HdfcCYBER\"},\"errorCode\":null,\"responseCode\":null}\n" +
+                "\n";
+        Object obj = null;
+        Log.v("", "Transaction Status" + " Success");
+        List<PayUTransactionDetailsModel> paymentDetails = new ArrayList<>();
+        PayUTransactionDetailsModel model = new PayUTransactionDetailsModel();
+        //  PayUTransactionDetailsModel
+        /*try {
+            JSONArray jsonArr = new JSONArray("["+payuResponse+"]");
+           // List<Data> dataList = new ArrayList<>();
+            for (int i = 0; i < jsonArr.length(); i++) {
+
+                JSONObject jsonObj = jsonArr.getJSONObject(i);
+                //Data data = new Data();
+
+                model.setResult(jsonObj.getString("value"));
+
+                dataList.add(data);
+            }
+
+            JSONObject jsonObj = new JSONObject(payuResponse);
+            //paymentDetails.addAll(jsonObj.get("result"));
+            model.setResult(jsonObj.get("result"));
+            // obj=jsonObj;
+
+            obj = (Object) payuResponse;
+         //   Log.v("", "paymentDetails " + paymentDetails);
+            Log.v("checkPayuResp ", "obj " + obj);
+            Log.v("checkPayuResp ", "jsonObj " + jsonObj);
+
+            //  paymentDetails=transactionResponse.getPayuResponse();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }*/
     }
 
     private void callRequestStatusHomeFragment() {
@@ -273,8 +313,8 @@ public class HomeActivity extends AppCompatActivity
                                     RegisterMember member = new RegisterMember();
                                     List<NewsImages> imagesList = new ArrayList<>();
                                     NewsImages imagesModel = new NewsImages();
-                                    int n=serverResponse.getNewsFeedList().size();
-                                    for (int i = n-1; i < n; i--) {
+                                    int n = serverResponse.getNewsFeedList().size();
+                                    for (int i = n - 1; i < n; i--) {
                                         if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
 
 
@@ -313,8 +353,8 @@ public class HomeActivity extends AppCompatActivity
                                             // }
                                             //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
                                             if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
-                                              int p=serverResponse.getNewsFeedList().get(i).getNews_images().size();
-                                                for (int j = p-1; j < p; j++) {
+                                                int p = serverResponse.getNewsFeedList().get(i).getNews_images().size();
+                                                for (int j = p - 1; j < p; j++) {
                                                     imagesModel.setId(model.getNews_images().get(j).getId());
                                                     imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
                                                     imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
@@ -468,7 +508,7 @@ public class HomeActivity extends AppCompatActivity
         emailId = myPreferences.getEmailId().trim();
         fullName = myPreferences.getFirstName().trim() + " " + myPreferences.getLastName().trim();
         String childName = myPreferences.getExpandChildName();
-        if (childName != null) {
+        if (childName == null || childName != null) {
             myPreferences.setExpandChildName("null");
         }
     }
@@ -501,7 +541,7 @@ public class HomeActivity extends AppCompatActivity
         expListView = (ExpandableListView) findViewById(R.id.left_drawer);
         expListView.setIndicatorBounds(expListView.getRight() - 40, expListView.getWidth());
         prepareListData(listDataHeader, listDataChild, listThirdLevelChild);
-      //  Log.v("enableExpandableList ", "" + listThirdLevelChild);
+        //  Log.v("enableExpandableList ", "" + listThirdLevelChild);
         //   ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, listDataHeader, listDataChild, data);
         // set adapter
         // expListView.setAdapter( threeLevelListAdapterAdapter );
@@ -523,7 +563,7 @@ public class HomeActivity extends AppCompatActivity
                   /*  SharedPreferences preferences = getSharedPreferences("newsFeedPref", 0);
                    // preferences.edit().remove("childName").commit();
                     preferences.edit().remove("expandpos").commit();*/
-
+                    myPreferences = MyPreferences.getMyAppPref(mContext);
                     myPreferences.setExpandChildName("null");
                     myPreferences.setExpandPosition(0);
                     fragment = new HomeFragment();
@@ -533,7 +573,7 @@ public class HomeActivity extends AppCompatActivity
                     fragment = new ProfileFragment();
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                     drawer.closeDrawer(GravityCompat.START);
-                }else if(group.equals("About Us")){
+                } else if (group.equals("About Us")) {
                     fragment = new AboutUsFragment();
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                     drawer.closeDrawer(GravityCompat.START);
@@ -635,11 +675,11 @@ public class HomeActivity extends AppCompatActivity
 
         List<String> requestsChild = new ArrayList<String>();
         requestsChild.add("Pending Request");
-       // requestsChild.add("Request Status");
+        // requestsChild.add("Request Status");
 
 
         List<String> newsChild = new ArrayList<String>();
-       // newsChild.add("Latest News");
+        // newsChild.add("Latest News");
         newsChild.add("National and International");
         newsChild.add("Government News");
         newsChild.add("Social and Related News");
@@ -887,9 +927,10 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-          //  closeApplication();
+            //  closeApplication();
             // super.onBackPressed();
             if (back_press_screen == 1) {
+
                 callHomeFragment();
             } else if (back_press_screen == 2) {
                /* FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
@@ -983,7 +1024,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void setFragment(String childName, int childPosition) {
-        Log.v("setFragment ","childName "+childName);
+        Log.v("setFragment ", "childName " + childName);
         myPreferences = MyPreferences.getMyAppPref(mContext);
         myPreferences.setExpandPosition(childPosition);
         myPreferences.setExpandChildName(childName);

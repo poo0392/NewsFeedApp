@@ -1283,10 +1283,10 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                       /*  Intent i = new Intent(CreateArticle.this, HomeActivity.class);
                         startActivity(i);
                         finish();*/
-                        Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                       /* Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
                         intent.putExtra("Price", 1);
                         startActivity(intent);
-                        finish();
+                        finish();*/
                     }
                 })
                 .show();
@@ -1409,7 +1409,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             startActivityForResult(intent, PICK_FROM_GALLERY);
         } else {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-            photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
+          //  photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
             photoPickerIntent.setType("image/*");
             startActivityForResult(photoPickerIntent, SELECT_FILE);
                /* Intent intent = new Intent();
@@ -1461,9 +1461,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 selectedImage = data.getData();
                 mediaPath = getPathFromURI(selectedImage);
                 imageFIle = new File(mediaPath);
-                Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
+            //    Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
                 Toast.makeText(getApplicationContext(), "Image Path: " + mediaPath + "\nUri Path: " + selectedImage.toString(), Toast.LENGTH_SHORT).show();
-                Log.v("onSelectFromGallery ", " selectedImage " + selectedImage.toString());
+              //  Log.v("onSelectFromGallery ", " selectedImage " + selectedImage.toString());
 
                /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     imageFIle = new File();
