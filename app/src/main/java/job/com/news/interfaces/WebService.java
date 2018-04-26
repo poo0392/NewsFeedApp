@@ -131,6 +131,7 @@ public interface WebService {
 //http://thanehousingfederation.com/newsapp/storage/app/public/upload/news
 
     //http://thanehousingfederation.com/newsapp/api/member/add_payment_record
+    @Multipart
     @POST("add_payment_record")
     Call<PayUTransactionDetailsModel> postPaymentDetails(@Part("member_token") RequestBody member_token,
                                                          @Part("member_id") RequestBody member_id,

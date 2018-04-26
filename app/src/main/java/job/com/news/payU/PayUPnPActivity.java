@@ -1,5 +1,6 @@
 package job.com.news.payU;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -44,25 +45,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import job.com.news.Constant;
+import job.com.news.CreateArticle;
 import job.com.news.HomeActivity;
+import job.com.news.MainActivity;
 import job.com.news.NewsFeedApplication;
 import job.com.news.R;
 import job.com.news.db.MemberTable;
-import job.com.news.helper.ConnectivityInterceptor;
-import job.com.news.helper.NoConnectivityException;
-import job.com.news.interfaces.WebService;
 import job.com.news.models.PayUTransactionDetailsModel;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+
+import static job.com.news.globals.Globals.paymentDetails;
 
 /**
  * Created by Zafar.Hussain on 10/04/2018.
@@ -70,7 +63,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PayUPnPActivity extends AppCompatActivity {
     private static final String TAG = "PayUPnPActivity";
-    private int GET_PAYMENT_STATUS = 2;
+    private int GET_PAYMENT_STATUS = 3;
     MyPreferences getPref;
     Context context;
     String emailID, mobileNo, productInfo, first_name, mRsSymbol, membertoken;
@@ -85,6 +78,8 @@ public class PayUPnPActivity extends AppCompatActivity {
     private PayUmoneySdkInitializer.PaymentParam mPaymentParams;
     List<RegisterMember> membersList;
     ProgressDialog mProgressDialog;
+    PayUTransactionDetailsModel.ResultList results;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -364,9 +359,9 @@ public class PayUPnPActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(PayUPnPActivity.this);
+            /*progressDialog = new ProgressDialog(PayUPnPActivity.this);
             progressDialog.setMessage("Please wait...");
-            progressDialog.show();
+            progressDialog.show();*/
         }
 
         @Override
@@ -430,7 +425,7 @@ public class PayUPnPActivity extends AppCompatActivity {
         protected void onPostExecute(String merchantHash) {
             super.onPostExecute(merchantHash);
             Log.v("", "merchantHash " + merchantHash);
-            progressDialog.dismiss();
+            //progressDialog.dismiss();
             payNowButton.setEnabled(true);
 
             if (merchantHash.isEmpty() || merchantHash.equals("")) {
@@ -452,7 +447,7 @@ public class PayUPnPActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result Code is -1 send from Payumoney activity
-        Log.d("MainActivity", "request code " + requestCode + " resultcode " + resultCode);
+        Log.d("Payu ", "request code " + requestCode + " resultcode " + resultCode);
         if (requestCode == PayUmoneyFlowManager.REQUEST_CODE_PAYMENT && resultCode == RESULT_OK && data !=
                 null) {
             TransactionResponse transactionResponse = data.getParcelableExtra(PayUmoneyFlowManager
@@ -463,8 +458,8 @@ public class PayUPnPActivity extends AppCompatActivity {
             // Check which object is non-null
             if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
                 String payuResponse = transactionResponse.getPayuResponse();
-                List<PayUTransactionDetailsModel.ResultList> paymentDetails = new ArrayList<>();
-                PayUTransactionDetailsModel.ResultList results = new PayUTransactionDetailsModel.ResultList();
+
+                results = new PayUTransactionDetailsModel.ResultList();
                 try {
                     JSONObject result = (new JSONObject(payuResponse)).getJSONObject("result");
                     // JSONObject jsonObj = new JSONObject(payuResponse);
@@ -519,14 +514,18 @@ public class PayUPnPActivity extends AppCompatActivity {
 
                 if (transactionResponse.getTransactionStatus().equals(TransactionResponse.TransactionStatus.SUCCESSFUL)) {
                     //Success Transaction
-                    Log.v("", "Transaction Status" + " Success");
+                    Log.v("transactionResponse ", "Transaction Status" + " Success");
                     showStatusDialog("Success", "Transaction Completed");
-                    postPaymentStatus(1);
+                    //postPaymentStatus(1);
                 } else {
                     //Failure Transaction
-                    Log.v("", "Transaction Status" + " Failed");
-                    showStatusDialog("Failed", "Transaction Failed");
-                    postPaymentStatus(0);
+                    Log.v("transactionResponse ", "Transaction Status" + " Failed");
+                   showStatusDialog("Failed", "Transaction Failed");
+                    // postPaymentStatus(0);
+
+
+                  //  startActivityForResult(i, GET_PAYMENT_STATUS);
+                    //finish();
                 }
 
               /*  // Response from Payumoney
@@ -553,123 +552,61 @@ public class PayUPnPActivity extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Both objects are null!");
             }
+        }else if(resultCode==GET_PAYMENT_STATUS && requestCode==RESULT_OK){
+            String status = null;
+            if (data != null) {
+                status = data.getStringExtra("post_status");
+                Log.v("onActivityResult ", "post_status " + status);
+            }
+
+           // showStatusDialog("Failed", "Transaction Failed");
         }
     }
 
-    private void postPaymentStatus(final int status) {
-       /* mProgressDialog = new ProgressDialog(PayUPnPActivity.this);
-        mProgressDialog.setMessage("Please Wait...");
-        mProgressDialog.show();*/
-        OkHttpClient client = new OkHttpClient.Builder()
-               /* .connectTimeout(0000, TimeUnit.MILLISECONDS)
-                .readTimeout(600000, TimeUnit.MILLISECONDS)*/
-                .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        WebService webService = retrofit.create(WebService.class);
-        PayUTransactionDetailsModel.ResultList results = new PayUTransactionDetailsModel.ResultList();
-        String paymentId=results.getPaymentId();
-        String Status=results.getStatus();
-        String Key=results.getKey();
-        String Txnid=results.getTxnid();
-        String Amount=results.getAmount();
-        String Payment_date=results.getPayment_date();
-        String Productinfo=results.getProductinfo();
-        String Transaction_message=results.getTransaction_message();
-        String Bankcode=results.getBankcode();
-        String Error=results.getError();
-        String Error_Message=results.getError_Message();
-
-        RequestBody pMemberToken = RequestBody.create(MediaType.parse("text/plain"), membertoken);
-        RequestBody pMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberid);
-        RequestBody pPaymentId = RequestBody.create(MediaType.parse("text/plain"), paymentId);
-        RequestBody pStatus = RequestBody.create(MediaType.parse("text/plain"), Status);
-        RequestBody pKey = RequestBody.create(MediaType.parse("text/plain"), Key);
-        RequestBody pTxnid = RequestBody.create(MediaType.parse("text/plain"), Txnid);
-        RequestBody pAmount = RequestBody.create(MediaType.parse("text/plain"),Amount);
-        RequestBody pPayment_date = RequestBody.create(MediaType.parse("text/plain"), Payment_date);
-        RequestBody pProductinfo = RequestBody.create(MediaType.parse("text/plain"),Productinfo);
-        RequestBody pTransaction_message = RequestBody.create(MediaType.parse("text/plain"),Transaction_message);
-        RequestBody pBankcode = RequestBody.create(MediaType.parse("text/plain"),Bankcode);
-        RequestBody pError = RequestBody.create(MediaType.parse("text/plain"),Error);
-        RequestBody pError_Message = RequestBody.create(MediaType.parse("text/plain"),Error_Message);
-
-
-        Call<PayUTransactionDetailsModel> serverResponse = webService.postPaymentDetails(pMemberToken, pMemberId,
-                pPaymentId, pTransaction_message, pStatus, pKey, pTxnid, pAmount, pProductinfo, pPayment_date, pBankcode,
-                pError,pError_Message);
-
-
-        serverResponse.enqueue(new Callback<PayUTransactionDetailsModel>() {
-            @Override
-            public void onResponse(Call<PayUTransactionDetailsModel> call, Response<PayUTransactionDetailsModel> response) {
-              //  mProgressDialog.dismiss();
-
-                if (response.isSuccessful()) {
-
-                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
-                    }.getType();
-                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
-                            .fromJson(String.valueOf(response.body()), collectionType);*/
-
-                    PayUTransactionDetailsModel serverResponse = response.body();
-
-                    if (serverResponse.getStatus().equals("0")) {
-
-                        Log.v("PostPaymentdetails ", "status " + serverResponse.getStatus());
-                        if(status==1){
-
-                        }else{
-
-                        }
-                     //   showSuccessAlertDialog(CreateArticle.this, "Success", "Your article created succesfully\n Proceeding for payment");
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PayUTransactionDetailsModel> call, Throwable t) {
-              // mProgressDialog.dismiss();
-                t.printStackTrace();
-                Log.v("PostPaymentdetails ", "Failure " + t.getMessage());
-                //Toast.makeText(mContext, "Failure", Toast.LENGTH_SHORT).show();
-                if (t instanceof NoConnectivityException) {
-                    // No internet connection
-                    Toast.makeText(PayUPnPActivity.this, "Please connect to Internet", Toast.LENGTH_SHORT).show();
-                    // setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
-                }
-            }
-        });
-
-    }
 
     private void showStatusDialog(String title, String desc) {
         final String status = title;
         MaterialStyledDialog.Builder dialog = new MaterialStyledDialog.Builder(context);
-        dialog.setTitle(title)
-                .setDescription(desc)
-                .setStyle(Style.HEADER_WITH_ICON);
-
         if (title.equals("Success")) {
-            dialog.setIcon(R.mipmap.ic_success);
-
-        } else {
-            dialog.setIcon(R.mipmap.ic_failed);
-            dialog.setPositiveText(R.string.button_ok)
+            dialog.setTitle(title)
+                    .setDescription(desc)
+                    .setStyle(Style.HEADER_WITH_ICON)
+                    .setIcon(R.mipmap.ic_success)
+                    .setPositiveText(R.string.button_ok)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            Intent i = new Intent(PayUPnPActivity.this, HomeActivity.class);
+                           /* Intent i = new Intent(PayUPnPActivity.this, CreateArticle.class);
+                            i.putExtra("message", status);
+                            setResult(Activity.RESULT_OK, i);
+                            finish();*/
+                            Intent i = new Intent(PayUPnPActivity.this, MainActivity.class);
+                            //  i.putExtra("status", 0);
                             startActivity(i);
-                            i.putExtra("status", status);
-                            setResult(GET_PAYMENT_STATUS, i);
-                            finish();
+                            dialog.dismiss();
+                        }
+                    });
+            // postPaymentStatus(1);
+        } else {
+            //  postPaymentStatus(0);
+            dialog.setTitle(title)
+                    .setDescription(desc)
+                    .setStyle(Style.HEADER_WITH_ICON)
+                    .setIcon(R.mipmap.ic_failed)
+                    .setPositiveText(R.string.button_ok)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                          /*  Intent i = new Intent(PayUPnPActivity.this, CreateArticle.class);
+                            // startActivity(i);
+                            i.putExtra("message", status);
+                            setResult(Activity.RESULT_OK, i);
+                            finish();*/
+                            Intent i = new Intent(PayUPnPActivity.this, MainActivity.class);
+                          //  i.putExtra("status", 0);
+                           // startActivity(i);
+                            startActivityForResult(i, GET_PAYMENT_STATUS);
+                            dialog.dismiss();
                         }
                     });
         }

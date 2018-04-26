@@ -129,10 +129,10 @@ public class BackgroundService extends Service {
         newsRequestList.put("all_news", "1");
         newsRequestList.put("news_status", news_status);
 
-      //  Log.v("callNewsListAPI", " newsRequestList " + newsRequestList);
+        //  Log.v("callNewsListAPI", " newsRequestList " + newsRequestList);
 
         Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id, paramAllNews);
-       // Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
+        // Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, id);
         serverResponse.enqueue(new Callback<NewsFeedModelResponse>() {
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
@@ -141,39 +141,40 @@ public class BackgroundService extends Service {
 
                     NewsFeedModelResponse serverResponse = response.body();
                     if (serverResponse.getStatus() == 0) {
-                    //    Log.v("BackSercallNewsListAPI ", "response " + new Gson().toJson(response.body()));
+                        //    Log.v("BackSercallNewsListAPI ", "response " + new Gson().toJson(response.body()));
 
                         try {
                             newsFeedList = serverResponse.getNewsFeedList();
-                         //   Log.v("", "newsFeedList " + newsFeedList.toString());
+                            //   Log.v("", "newsFeedList " + newsFeedList.toString());
 
                             NewsFeedList model;
                             try {
                                 RegisterMember member = new RegisterMember();
                                 List<NewsImages> imagesList = new ArrayList<>();
                                 NewsImages imagesModel = new NewsImages();
-                                int n=serverResponse.getNewsFeedList().size();
-                                for (int i = n-1; i < n; i--) {
-                                    if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
-                                        model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
-                                                serverResponse.getNewsFeedList().get(i).getNews_uuid(),
-                                                serverResponse.getNewsFeedList().get(i).getCategory(),
-                                                serverResponse.getNewsFeedList().get(i).getCategory_id(),
-                                                serverResponse.getNewsFeedList().get(i).getSub_category(),
-                                                serverResponse.getNewsFeedList().get(i).getSub_category_id(),
-                                                serverResponse.getNewsFeedList().get(i).getCountry(),
-                                                serverResponse.getNewsFeedList().get(i).getState(),
-                                                serverResponse.getNewsFeedList().get(i).getCity(),
-                                                serverResponse.getNewsFeedList().get(i).getNews_title(),
-                                                serverResponse.getNewsFeedList().get(i).getNews_description(),
-                                                serverResponse.getNewsFeedList().get(i).getLanguage(),
-                                                serverResponse.getNewsFeedList().get(i).getComment(),
-                                                serverResponse.getNewsFeedList().get(i).getLike_count(),
-                                                serverResponse.getNewsFeedList().get(i).getMember_id(),
-                                                serverResponse.getNewsFeedList().get(i).getCreated_at(),
-                                                serverResponse.getNewsFeedList().get(i).getNews_images(),
-                                                serverResponse.getNewsFeedList().get(i).getMember()
-                                        );
+                                int n = serverResponse.getNewsFeedList().size();
+                                if (n != -1) {
+                                    for (int i = n - 1; i < n; i--) {
+                                        if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
+                                            model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
+                                                    serverResponse.getNewsFeedList().get(i).getNews_uuid(),
+                                                    serverResponse.getNewsFeedList().get(i).getCategory(),
+                                                    serverResponse.getNewsFeedList().get(i).getCategory_id(),
+                                                    serverResponse.getNewsFeedList().get(i).getSub_category(),
+                                                    serverResponse.getNewsFeedList().get(i).getSub_category_id(),
+                                                    serverResponse.getNewsFeedList().get(i).getCountry(),
+                                                    serverResponse.getNewsFeedList().get(i).getState(),
+                                                    serverResponse.getNewsFeedList().get(i).getCity(),
+                                                    serverResponse.getNewsFeedList().get(i).getNews_title(),
+                                                    serverResponse.getNewsFeedList().get(i).getNews_description(),
+                                                    serverResponse.getNewsFeedList().get(i).getLanguage(),
+                                                    serverResponse.getNewsFeedList().get(i).getComment(),
+                                                    serverResponse.getNewsFeedList().get(i).getLike_count(),
+                                                    serverResponse.getNewsFeedList().get(i).getMember_id(),
+                                                    serverResponse.getNewsFeedList().get(i).getCreated_at(),
+                                                    serverResponse.getNewsFeedList().get(i).getNews_images(),
+                                                    serverResponse.getNewsFeedList().get(i).getMember()
+                                            );
                                       /*  model.setId(serverResponse.getNewsFeedList().get(i).getId());
                                         model.setNews_uuid(serverResponse.getNewsFeedList().get(i).getNews_uuid());
                                         model.setCategory(serverResponse.getNewsFeedList().get(i).getCategory());
@@ -188,7 +189,7 @@ public class BackgroundService extends Service {
                                         model.setCreated_at(serverResponse.getNewsFeedList().get(i).getCreated_at());
                                         model.setMember(serverResponse.getNewsFeedList().get(i).getMember());*/
 
-                                      //  for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getMembersList().size(); j++) {
+                                            //  for (int j = 0; j < serverResponse.getNewsFeedList().get(i).getMembersList().size(); j++) {
                                             if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
                                                 member.setMemberId(model.getMember().getId());
                                                 //   member.setMemberToken(model.getMember().getMemberToken().trim());
@@ -200,26 +201,26 @@ public class BackgroundService extends Service {
                                                 memberTable.insertMembers(member);
 
                                             }
-                                       // }
-                                        if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
-                                            int p=serverResponse.getNewsFeedList().get(i).getNews_images().size();
-                                            for (int j = p-1; j < p; j++) {
-                                                imagesModel.setId(model.getNews_images().get(j).getId());
-                                                imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
-                                                imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
-                                                imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
-                                                imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
+                                            // }
+                                            if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
+                                                int p = serverResponse.getNewsFeedList().get(i).getNews_images().size();
+                                                for (int j = p - 1; j < p; j++) {
+                                                    imagesModel.setId(model.getNews_images().get(j).getId());
+                                                    imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
+                                                    imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
+                                                    imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
+                                                    imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
 
-                                                imagesList.add(imagesModel);
+                                                    imagesList.add(imagesModel);
 
-                                                newsImagesTable.insertNewsImages(imagesModel);
+                                                    newsImagesTable.insertNewsImages(imagesModel);
+                                                }
                                             }
+
+                                            newsListTable.insertNewsList(model);
+
                                         }
-
-                                        newsListTable.insertNewsList(model);
-
                                     }
-
 
                                 }
                             } catch (Exception e) {

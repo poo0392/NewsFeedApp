@@ -79,6 +79,7 @@ import job.com.news.helper.NoConnectivityException;
 import job.com.news.helper.TimeoutException;
 import job.com.news.interfaces.WebService;
 import job.com.news.models.NewsFeedModelResponse;
+import job.com.news.models.PayUTransactionDetailsModel;
 import job.com.news.payU.PayUPnPActivity;
 import job.com.news.register.RegisterMember;
 import job.com.news.sharedpref.MyPreferences;
@@ -96,7 +97,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 //changes added on 26/03
 public class CreateArticle extends AppCompatActivity implements View.OnClickListener {
-    private int GET_PAYMENT_STATUS = 2;
+    private int GET_PAYMENT_STATUS = 3;
     private Spinner mStateSpinner, mCitySpinner, mArticleSpinner;
     private EditText mTitleEdit, mDescEdit;
     private TextView article_state_text, article_city_text, article_type_text, article_date_text, title_text, desc_text, total_charges_text;
@@ -1057,34 +1058,37 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.article_btn_submit:
-                if (validateFields()) {
+                //  if (validateFields()) {
                /* */
 //
 //                    // memberList = db.getMember();
 //                   // memberList = db.getMember();
-                    // memberId = String.valueOf(memberList.get(0).getMemberId());
-                    // memberToken = memberList.get(0).getMemberToken();
-                    // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
-                    //   postNewsAPI();
-                    // Log.v("00 ","charges "+charges);
-                    mProgressDialog = new ProgressDialog(mContext);
-                    mProgressDialog.setMessage("Proceeding for payment..");
-                    mProgressDialog.show();
+                // memberId = String.valueOf(memberList.get(0).getMemberId());
+                // memberToken = memberList.get(0).getMemberToken();
+                // Log.v("article_btn_submit ", " memberId " + memberId + " memberToken " + memberToken);
+                //   postNewsAPI();
+                // Log.v("00 ","charges "+charges);
+                mProgressDialog = new ProgressDialog(mContext);
+                mProgressDialog.setMessage("Proceeding for payment..");
+                mProgressDialog.show();
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
 
-                            Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                        Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                        intent.putExtra("Price", 1);
+                        startActivityForResult(intent, GET_PAYMENT_STATUS);
+                          /*  Intent intent = new Intent(CreateArticle.this, MainActivity.class);
                             intent.putExtra("Price", 1);
-                            startActivityForResult(intent, GET_PAYMENT_STATUS);
-                            mProgressDialog.dismiss();
-                        }
-                    }, 3000);
+                            startActivityForResult(intent, GET_PAYMENT_STATUS);*/
+                        mProgressDialog.dismiss();
+                    }
+                }, 3000);
 
 
-                }
+                // }
 
                 break;
             case R.id.article_image1:
@@ -1126,6 +1130,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void postNewsAPI() {
+        Log.v("Calling ", "postNewsAPI");
         mapValuesFinal = new LinkedHashMap<>();
         mProgressDialog = new ProgressDialog(CreateArticle.this);
         mProgressDialog.setMessage("Loading...");
@@ -1283,7 +1288,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                       /*  Intent i = new Intent(CreateArticle.this, HomeActivity.class);
                         startActivity(i);
                         finish();*/
-                       Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
+                        Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
                         intent.putExtra("Price", 1);
                         startActivity(intent);
                         finish();
@@ -1409,7 +1414,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             startActivityForResult(intent, PICK_FROM_GALLERY);
         } else {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-          //  photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            //  photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
             photoPickerIntent.setType("image/*");
             startActivityForResult(photoPickerIntent, SELECT_FILE);
                /* Intent intent = new Intent();
@@ -1435,20 +1440,140 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_FILE || requestCode == PICK_FROM_GALLERY) {
+        Log.v("onActivityResult ", "requestCode " + requestCode);
+        Log.v("onActivityResult ", "resultCode " + resultCode);
 
+        if (requestCode == SELECT_FILE || requestCode == PICK_FROM_GALLERY) {
+            if (resultCode == Activity.RESULT_OK) {
                 onSelectFromGalleryResult(data);
-            } else if (requestCode == GET_PAYMENT_STATUS) {
+            }
+        } else if (requestCode == GET_PAYMENT_STATUS) {
+            if (resultCode == Activity.RESULT_OK) {
                 // fetch the message String
-                String status = data.getStringExtra("status");
+                String status = data.getStringExtra("message");
+                Log.v("onActivityResult ", "status " + status);
                 // Set the message string in textView
                 // textViewMessage.setText(message);
                 if (status.equals("Success")) {
                     postNewsAPI();
-                }
+                   // postPaymentStatus(1);
+                }/*else{
+                    postPaymentStatus(0);
+                }*/
+
             }
         }
+
+    }
+
+    private void postPaymentStatus(final int status) {
+      LinkedHashMap  mapValuesFinal = new LinkedHashMap<>();
+        Log.v("Calling ", "postPaymentStatusAPI");
+        mProgressDialog = new ProgressDialog(CreateArticle.this);
+        mProgressDialog.setMessage("Please Wait...");
+        mProgressDialog.show();
+        OkHttpClient client = new OkHttpClient.Builder()
+               /* .connectTimeout(0000, TimeUnit.MILLISECONDS)
+                .readTimeout(600000, TimeUnit.MILLISECONDS)*/
+                .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        WebService webService = retrofit.create(WebService.class);
+        PayUTransactionDetailsModel.ResultList results = new PayUTransactionDetailsModel.ResultList();
+        String paymentId = results.getPaymentId();
+        String Status = results.getStatus();
+        String Key = results.getKey();
+        String Txnid = results.getTxnid();
+        String Amount = results.getAmount();
+        String Payment_date = results.getPayment_date();
+        String Productinfo = results.getProductinfo();
+        String Transaction_message = results.getTransaction_message();
+        String Bankcode = results.getBankcode();
+        String Error = results.getError();
+        String Error_Message = results.getError_Message();
+
+        RequestBody pMemberToken = RequestBody.create(MediaType.parse("text/plain"), membertoken);
+        RequestBody pMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberid);
+        RequestBody pPaymentId = RequestBody.create(MediaType.parse("text/plain"), paymentId);
+        RequestBody pStatus = RequestBody.create(MediaType.parse("text/plain"), Status);
+        RequestBody pKey = RequestBody.create(MediaType.parse("text/plain"), Key);
+        RequestBody pTxnid = RequestBody.create(MediaType.parse("text/plain"), Txnid);
+        RequestBody pAmount = RequestBody.create(MediaType.parse("text/plain"), Amount);
+        RequestBody pPayment_date = RequestBody.create(MediaType.parse("text/plain"), Payment_date);
+        RequestBody pProductinfo = RequestBody.create(MediaType.parse("text/plain"), Productinfo);
+        RequestBody pTransaction_message = RequestBody.create(MediaType.parse("text/plain"), Transaction_message);
+        RequestBody pBankcode = RequestBody.create(MediaType.parse("text/plain"), Bankcode);
+        RequestBody pError = RequestBody.create(MediaType.parse("text/plain"), Error);
+        RequestBody pError_Message = RequestBody.create(MediaType.parse("text/plain"), Error_Message);
+
+
+        mapValuesFinal.put("membertoken", membertoken);
+        mapValuesFinal.put("memberid", String.valueOf(memberid));
+        mapValuesFinal.put("paymentId", paymentId);
+        mapValuesFinal.put("Status", Status);
+        mapValuesFinal.put("Key", Key);
+        mapValuesFinal.put("Txnid", Txnid);
+        mapValuesFinal.put("Amount", Amount);
+        mapValuesFinal.put("Payment_date", Payment_date);
+        mapValuesFinal.put("Productinfo", Productinfo);
+        mapValuesFinal.put("Transaction_message", Transaction_message);
+        mapValuesFinal.put("Bankcode", Bankcode);
+        mapValuesFinal.put("Error", Error);
+        mapValuesFinal.put("Error_Message", Error_Message);
+
+        Log.v("postPaymentStatus ", "reqParams " + mapValuesFinal.toString());
+
+        Call<PayUTransactionDetailsModel> serverResponse = webService.postPaymentDetails(pMemberToken, pMemberId,
+                pPaymentId, pTransaction_message, pStatus, pKey, pTxnid, pAmount, pProductinfo, pPayment_date, pBankcode,
+                pError, pError_Message);
+
+
+        serverResponse.enqueue(new Callback<PayUTransactionDetailsModel>() {
+            @Override
+            public void onResponse(Call<PayUTransactionDetailsModel> call, Response<PayUTransactionDetailsModel> response) {
+                  mProgressDialog.dismiss();
+
+                if (response.isSuccessful()) {
+
+                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
+                    }.getType();
+                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
+                            .fromJson(String.valueOf(response.body()), collectionType);*/
+
+                    PayUTransactionDetailsModel serverResponse = response.body();
+
+                    if (serverResponse.getStatus().equals("0")) {
+
+                        Log.v("PostPaymentdetails ", "status " + serverResponse.getStatus());
+                        /*if (status == 1) {
+
+                        } else {
+
+                        }*/
+                        //   showSuccessAlertDialog(CreateArticle.this, "Success", "Your article created succesfully\n Proceeding for payment");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PayUTransactionDetailsModel> call, Throwable t) {
+                 mProgressDialog.dismiss();
+                t.printStackTrace();
+                Log.v("PostPaymentdetails ", "Failure " + t.getMessage());
+                //Toast.makeText(mContext, "Failure", Toast.LENGTH_SHORT).show();
+                if (t instanceof NoConnectivityException) {
+                    // No internet connection
+                    //    Toast.makeText(Cr.this, "Please connect to Internet", Toast.LENGTH_SHORT).show();
+                    // setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
+                }
+            }
+        });
 
     }
 
@@ -1461,9 +1586,9 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 selectedImage = data.getData();
                 mediaPath = getPathFromURI(selectedImage);
                 imageFIle = new File(mediaPath);
-            //    Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
-               // Toast.makeText(getApplicationContext(), "Image Path: " + mediaPath + "\nUri Path: " + selectedImage.toString(), Toast.LENGTH_SHORT).show();
-              //  Log.v("onSelectFromGallery ", " selectedImage " + selectedImage.toString());
+                //    Log.v("onSelectFromGallery ", " mediaPath " + mediaPath);
+                // Toast.makeText(getApplicationContext(), "Image Path: " + mediaPath + "\nUri Path: " + selectedImage.toString(), Toast.LENGTH_SHORT).show();
+                //  Log.v("onSelectFromGallery ", " selectedImage " + selectedImage.toString());
 
                /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     imageFIle = new File();
