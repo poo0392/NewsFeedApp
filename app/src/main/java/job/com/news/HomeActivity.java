@@ -14,6 +14,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -130,11 +131,15 @@ public class HomeActivity extends AppCompatActivity
     Fragment fragment;
     JSONArray jsonArray;
     private int lastExpandedPosition = -1;
+    Handler mHandler;
+    boolean firsttime=true;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
         mContext = this;
         newsFeedApplication = NewsFeedApplication.getApp();
@@ -144,17 +149,15 @@ public class HomeActivity extends AppCompatActivity
         ll_linBase = (LinearLayout) findViewById(R.id.ll_linBase);
         back_press_screen = 2;
         //DBHelper.getInstance(getApplicationContext());
-        checkPayuResp();
         scheduleAlarm();
         getPrefData();
-
+        callNewsListAPI(memberToken, memberId);
 
         /*if (role.equals("1")) {
             callRequestStatusHomeFragment();
         } else {
             callHomeFragment();
         }*/
-
 
         if (!checkPermission()) {
             requestPermission();
@@ -165,51 +168,22 @@ public class HomeActivity extends AppCompatActivity
         setAppToolbar();
         initialializeComponents();
         callHomeFragment();
-        callNewsListAPI(memberToken, memberId);
 
-    }
-
-    private void checkPayuResp() {
-       /* Log.v("", "checkPayuResp");
-        String payuResponse = "{\"status\":0,\"message\":\"payment status for :187564009\",\"result\":{\"postBackParamId\":141260502,\"mihpayid\":\"6927137143\",\"paymentId\":187564009,\"mode\":\"DC\",\"status\":\"success\",\"unmappedstatus\":\"captured\",\"key\":\"WiCZgZAf\",\"txnid\":\"1524198711375\",\"amount\":\"1.0\",\"additionalCharges\":\"\",\"addedon\":\"2018-04-20 10:08:26\",\"createdOn\":1524199150000,\"productinfo\":\"product_info\",\"firstname\":\"pooja\",\"lastname\":\"\",\"address1\":\"\",\"address2\":\"\",\"city\":\"\",\"state\":\"\",\"country\":\"\",\"zipcode\":\"\",\"email\":\"pooja130192@gmail.com\",\"phone\":\"7666175151\",\"udf1\":\"\",\"udf2\":\"\",\"udf3\":\"\",\"udf4\":\"\",\"udf5\":\"\",\"udf6\":\"\",\"udf7\":\"\",\"udf8\":\"\",\"udf9\":\"\",\"udf10\":\"\",\"hash\":\"56888449c8e27b29dd33c82b8ddb29b8bd77301e9a94bc6c309d71f30022c7db6d657de881e6f68b12e45aabbab8b4b252812a210bc70d639eea7bc2cb1cbc41\",\"field1\":\"5241991432776575103049\",\"field2\":\"018489\",\"field3\":\"1.00\",\"field4\":\"6927137143\",\"field5\":\"100\",\"field6\":\"05\",\"field7\":\"6927137143\",\"field8\":\"\",\"field9\":\"Transaction is Successful\",\"bank_ref_num\":\"5241991432776575103049\",\"bankcode\":\"VISA\",\"error\":\"E000\",\"error_Message\":\"No Error\",\"cardToken\":\"345e622d2a2a229e49c3c\",\"offer_key\":\"\",\"offer_type\":\"\",\"offer_availed\":\"\",\"pg_ref_no\":\"\",\"offer_failure_reason\":\"\",\"name_on_card\":\"payu\",\"cardnum\":\"408849XXXXXX8716\",\"cardhash\":\"This field is no longer supported in postback params.\",\"card_type\":\"\",\"card_merchant_param\":null,\"version\":\"\",\"postUrl\":\"https:\\/\\/www.payumoney.com\\/mobileapp\\/payumoney\\/success.php\",\"calledStatus\":false,\"additional_param\":\"\",\"amount_split\":\"{\\\"PAYU\\\":\\\"1.0\\\"}\",\"discount\":\"0.00\",\"net_amount_debit\":\"1\",\"fetchAPI\":null,\"paisa_mecode\":\"\",\"meCode\":\"{\\\"MID\\\":\\\"hdfc_89050047\\\"}\",\"payuMoneyId\":\"187564009\",\"encryptedPaymentId\":null,\"id\":null,\"surl\":null,\"furl\":null,\"baseUrl\":null,\"retryCount\":0,\"pg_TYPE\":\"HdfcCYBER\"},\"errorCode\":null,\"responseCode\":null}\n" +
-                "\n";
-        Object obj = null;
-        Log.v("", "Transaction Status" + " Success");
-        List<PayUTransactionDetailsModel> paymentDetails = new ArrayList<>();
-
-        PayUTransactionDetailsModel model = new PayUTransactionDetailsModel();
-        //  PayUTransactionDetailsModel
-        try {
-            JSONArray jsonArr = new JSONArray("["+payuResponse+"]");
-           // List<Data> dataList = new ArrayList<>();
-            for (int i = 0; i < jsonArr.length(); i++) {
-
-                JSONObject jsonObj = jsonArr.getJSONObject(i);
-                //Data data = new Data();
-
-                model.setResult(jsonObj.getString("result"));
-
-                paymentDetails.add(model);
-                Log.v("checkPayuResp ", "paymentDetails " + paymentDetails.toString());
-            }
-
-          *//*  JSONObject jsonObj = new JSONObject(payuResponse);
-            //paymentDetails.addAll(jsonObj.get("result"));
-            model.setResult(jsonObj.get("result"));*//*
-            // obj=jsonObj;
-
-            //obj = (Object) payuResponse;
-           // paymentD.add(obj);
-           // model.setResult(obj);
-         //   Log.v("", "paymentDetails " + paymentDetails);
-           // Log.v("checkPayuResp ", "obj " + obj);
-
-
-            //  paymentDetails=transactionResponse.getPayuResponse();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        /*if(firsttime){
+            callHomeActivityToRefresh();
+            firsttime=false;
         }*/
+
+
     }
+
+
+
+    private void callHomeActivityToRefresh() {
+        startActivity(new Intent(this, HomeActivity.class));
+        finish();
+    }
+
 
     private void callRequestStatusHomeFragment() {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
@@ -238,7 +212,7 @@ public class HomeActivity extends AppCompatActivity
         // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
         // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
         alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
-                AlarmManager.INTERVAL_HALF_HOUR, pIntent); //
+                200000, pIntent); //
 
         // AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         // Start service every 15 min
@@ -393,6 +367,9 @@ public class HomeActivity extends AppCompatActivity
                             //setListeners();
                             // scheduleAlarm();
                             // loadCategoryUI();
+                          //  finish();
+                          //  callHomeActivityToRefresh();
+                            callHomeFragment();
                         }
                     } else {
                         Log.v("Failure ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
@@ -477,6 +454,8 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void initialializeComponents() {
+
+
         gson = new Gson();
 
         memberTable = new MemberTable(mContext);
@@ -787,7 +766,7 @@ public class HomeActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
-                startActivity(new Intent(this, HomeActivity.class));
+
                 if (grantResults.length > 0) {
 
                     boolean readStorageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
@@ -1051,122 +1030,5 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-    private void callPostPayuRecordAPI() {
-        LinkedHashMap mapValuesFinal = new LinkedHashMap<>();
-        Log.v("Calling ", "postPaymentStatusAPI");
-      /*  mProgressDialog = new ProgressDialog(MainActivity.this);
-        mProgressDialog.setMessage("Please Wait...");
-        mProgressDialog.show();*/
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.MINUTES)//MILLISECONDS
-                .readTimeout(10, TimeUnit.MINUTES)
-                .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
-                .build();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        WebService webService = retrofit.create(WebService.class);
-        Log.v(" ", "paymentDetails " + paymentDetails.toString());
-        PayUTransactionDetailsModel.ResultList results = new PayUTransactionDetailsModel.ResultList();
-
-        String paymentId = paymentDetails.get(0).getPaymentId();
-        String Status = paymentDetails.get(0).getStatus();
-        String Key = paymentDetails.get(0).getKey();
-        String Txnid =  paymentDetails.get(0).getTxnid();
-        String Amount = paymentDetails.get(0).getAmount();
-        String Payment_date = paymentDetails.get(0).getPayment_date();
-        String Productinfo = paymentDetails.get(0).getProductinfo();
-        String Transaction_message = paymentDetails.get(0).getTransaction_message();
-        String Bankcode = paymentDetails.get(0).getBankcode();
-        String Error = paymentDetails.get(0).getError();
-        String Error_Message = paymentDetails.get(0).getError_Message();
-
-        RequestBody pMemberToken = RequestBody.create(MediaType.parse("text/plain"), memberToken);
-        RequestBody pMemberId = RequestBody.create(MediaType.parse("text/plain"), "" + memberId);
-        RequestBody pPaymentId = RequestBody.create(MediaType.parse("text/plain"), paymentId);
-        RequestBody pStatus = RequestBody.create(MediaType.parse("text/plain"), Status);
-        RequestBody pKey = RequestBody.create(MediaType.parse("text/plain"), Key);
-        RequestBody pTxnid = RequestBody.create(MediaType.parse("text/plain"), Txnid);
-        RequestBody pAmount = RequestBody.create(MediaType.parse("text/plain"), Amount);
-        RequestBody pPayment_date = RequestBody.create(MediaType.parse("text/plain"), Payment_date);
-        RequestBody pProductinfo = RequestBody.create(MediaType.parse("text/plain"), Productinfo);
-        RequestBody pTransaction_message = RequestBody.create(MediaType.parse("text/plain"), Transaction_message);
-        RequestBody pBankcode = RequestBody.create(MediaType.parse("text/plain"), Bankcode);
-        RequestBody pError = RequestBody.create(MediaType.parse("text/plain"), Error);
-        RequestBody pError_Message = RequestBody.create(MediaType.parse("text/plain"), Error_Message);
-
-
-        mapValuesFinal.put("member_token", memberToken);
-        mapValuesFinal.put("member_id", String.valueOf(memberId));
-        mapValuesFinal.put("payment_id", paymentId);
-        mapValuesFinal.put("status", Status);
-        mapValuesFinal.put("txtkey", Key);
-        mapValuesFinal.put("txnid", Txnid);
-        mapValuesFinal.put("amount", Amount);
-        mapValuesFinal.put("payment_date", Payment_date);
-        mapValuesFinal.put("product_info", Productinfo);
-        mapValuesFinal.put("transaction_message", Transaction_message);
-        mapValuesFinal.put("bank_code", Bankcode);
-        mapValuesFinal.put("error", Error);
-        mapValuesFinal.put("error_msg", Error_Message);
-
-        Log.v("postPaymentStatus ", "reqParams " + mapValuesFinal.toString());
-
-        Call<PayUTransactionDetailsModel> serverResponse = webService.postPaymentDetails(pMemberToken, pMemberId,
-                pPaymentId, pTransaction_message, pStatus, pKey, pTxnid, pAmount, pProductinfo, pPayment_date, pBankcode,
-                pError, pError_Message);
-
-
-        serverResponse.enqueue(new Callback<PayUTransactionDetailsModel>() {
-            @Override
-            public void onResponse(Call<PayUTransactionDetailsModel> call, Response<PayUTransactionDetailsModel> response) {
-                //  mProgressDialog.dismiss();
-
-                if (response.isSuccessful()) {
-
-                  /*  Type collectionType = new TypeToken<List<NewsFeedModelResponse>>() {
-                    }.getType();
-                    List<NewsFeedModelResponse> lcs = (List<NewsFeedModelResponse>) new Gson()
-                            .fromJson(String.valueOf(response.body()), collectionType);*/
-
-                    PayUTransactionDetailsModel serverResponse = response.body();
-
-                    if (serverResponse.getStatus().equals("0")) {
-
-                        Log.v("PostPaymentdetails ", "status " + serverResponse.getStatus());
-
-                      /*  Intent i = new Intent(HomeActivity.this, PayUPnPActivity.class);
-                        i.putExtra("post_status", serverResponse.getStatus());
-                        //  i.putExtras(results);
-                        setResult(Activity.RESULT_OK, i);
-                        finish();*/
-                        /*if (status == 1) {
-
-                        } else {
-
-                        }*/
-                        //   showSuccessAlertDialog(CreateArticle.this, "Success", "Your article created succesfully\n Proceeding for payment");
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PayUTransactionDetailsModel> call, Throwable t) {
-                //  mProgressDialog.dismiss();
-                t.printStackTrace();
-                Log.v("PostPaymentdetails ", "Failure " + t.getMessage());
-                //Toast.makeText(mContext, "Failure", Toast.LENGTH_SHORT).show();
-                if (t instanceof NoConnectivityException) {
-                    // No internet connection
-                    //    Toast.makeText(Cr.this, "Please connect to Internet", Toast.LENGTH_SHORT).show();
-                    // setFailedAlertDialog(HomeActivity.this, "Failed", "No Internet! Please Check Your internet connection");
-                }
-            }
-        });
-
-    }
 }

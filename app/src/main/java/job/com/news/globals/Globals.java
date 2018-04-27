@@ -12,5 +12,5 @@ import job.com.news.models.PayUTransactionDetailsModel;
 public class Globals {
     public static String selectedLanguage = null;
     public static int back_press_screen=0;
-    public static List<PayUTransactionDetailsModel.ResultList>   paymentDetails = new ArrayList<>();
+    public static List<PayUTransactionDetailsModel.ResultList> paymentDetails = new ArrayList<>();
 }

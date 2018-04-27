@@ -458,7 +458,9 @@ public class PayUPnPActivity extends AppCompatActivity {
             // Check which object is non-null
             if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
                 String payuResponse = transactionResponse.getPayuResponse();
-
+                if(paymentDetails!=null){
+                    paymentDetails.clear();
+                }
                 results = new PayUTransactionDetailsModel.ResultList();
                 try {
                     JSONObject result = (new JSONObject(payuResponse)).getJSONObject("result");
@@ -474,6 +476,7 @@ public class PayUPnPActivity extends AppCompatActivity {
                     //Data data = new Data();
 
                     //model.setResult(result.getString(""));
+
                     results.setPaymentId(result.getString("paymentId"));
                     results.setStatus(result.getString("status"));
                     results.setKey(result.getString("key"));
@@ -515,14 +518,15 @@ public class PayUPnPActivity extends AppCompatActivity {
                 if (transactionResponse.getTransactionStatus().equals(TransactionResponse.TransactionStatus.SUCCESSFUL)) {
                     //Success Transaction
                     Log.v("transactionResponse ", "Transaction Status" + " Success");
-                    showStatusDialog("Success", "Transaction Completed");
-                    //postPaymentStatus(1);
+                 //  showStatusDialog("Success", "Transaction Completed");
+                    //postpostPaymentStatus(1);
+                    postPaymentDetails(1);
                 } else {
                     //Failure Transaction
                     Log.v("transactionResponse ", "Transaction Status" + " Failed");
-                   showStatusDialog("Failed", "Transaction Failed");
+                   //showStatusDialog("Failed", "Transaction Failed");
                     // postPaymentStatus(0);
-
+                    postPaymentDetails(0);
 
                   //  startActivityForResult(i, GET_PAYMENT_STATUS);
                     //finish();
@@ -552,15 +556,28 @@ public class PayUPnPActivity extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Both objects are null!");
             }
-        }else if(resultCode==GET_PAYMENT_STATUS && requestCode==RESULT_OK){
+        }else if(resultCode==RESULT_OK && requestCode==GET_PAYMENT_STATUS){
             String status = null;
+            Log.v("onActivityResult ","data "+data);
             if (data != null) {
                 status = data.getStringExtra("post_status");
                 Log.v("onActivityResult ", "post_status " + status);
+
+               if(status.equals("0")){
+                   showStatusDialog("Failed", "Transaction Failed");
+               }else{
+                   showStatusDialog("Success", "Transaction Completed");
+               }
             }
 
            // showStatusDialog("Failed", "Transaction Failed");
         }
+    }
+
+    private void postPaymentDetails(int status) {
+        Intent i = new Intent(PayUPnPActivity.this, MainActivity.class);
+        i.putExtra("status",status);
+        startActivityForResult(i, GET_PAYMENT_STATUS);
     }
 
 
@@ -576,19 +593,14 @@ public class PayUPnPActivity extends AppCompatActivity {
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                           /* Intent i = new Intent(PayUPnPActivity.this, CreateArticle.class);
+                            Intent i = new Intent(PayUPnPActivity.this, CreateArticle.class);
                             i.putExtra("message", status);
                             setResult(Activity.RESULT_OK, i);
-                            finish();*/
-                            Intent i = new Intent(PayUPnPActivity.this, MainActivity.class);
-                            //  i.putExtra("status", 0);
-                            startActivity(i);
+                            finish();
                             dialog.dismiss();
                         }
                     });
-            // postPaymentStatus(1);
         } else {
-            //  postPaymentStatus(0);
             dialog.setTitle(title)
                     .setDescription(desc)
                     .setStyle(Style.HEADER_WITH_ICON)
@@ -597,15 +609,10 @@ public class PayUPnPActivity extends AppCompatActivity {
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                          /*  Intent i = new Intent(PayUPnPActivity.this, CreateArticle.class);
-                            // startActivity(i);
+                            Intent i = new Intent(PayUPnPActivity.this, CreateArticle.class);
                             i.putExtra("message", status);
                             setResult(Activity.RESULT_OK, i);
-                            finish();*/
-                            Intent i = new Intent(PayUPnPActivity.this, MainActivity.class);
-                          //  i.putExtra("status", 0);
-                           // startActivity(i);
-                            startActivityForResult(i, GET_PAYMENT_STATUS);
+                            finish();
                             dialog.dismiss();
                         }
                     });

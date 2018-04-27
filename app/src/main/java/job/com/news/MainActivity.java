@@ -36,13 +36,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
 
         //  StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         //  StrictMode.setThreadPolicy(policy);
 
         getPref = MyPreferences.getMyAppPref(this);
-        // status=getIntent().getExtras().getInt("status");
+        status=getIntent().getExtras().getInt("status");
+        Log.v("MainActivity ","status "+status);
         memberid = getPref.getMemberId();
         membertoken = getPref.getMemberToken().trim();
         callPostPayuRecordAPI();

@@ -153,7 +153,7 @@ public class BackgroundService extends Service {
                                 List<NewsImages> imagesList = new ArrayList<>();
                                 NewsImages imagesModel = new NewsImages();
                                 int n = serverResponse.getNewsFeedList().size();
-                                if (n != -1) {
+                               // if (n != -1) {
                                     for (int i = n - 1; i < n; i--) {
                                         if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
                                             model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
@@ -222,7 +222,7 @@ public class BackgroundService extends Service {
                                         }
                                     }
 
-                                }
+                               // }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

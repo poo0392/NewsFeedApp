@@ -1,7 +1,9 @@
 package job.com.news;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +40,7 @@ public class NewsDetailScreen extends AppCompatActivity {
     List<NewsImages> imagesList;
     NewsFeedApplication newsFeedApplication;
     TextView txtTitle, txtNewsdesc, date, txt_post_time, txt_post_person_name, txt_city;
-    ImageView ivBackground;
+    ImageView ivBackground, iv_share;
     int clickedPosition, newsId;
     String category;
     NewsListTable newsListTable;
@@ -89,9 +92,9 @@ public class NewsDetailScreen extends AppCompatActivity {
         txt_city.setText(newsListByNewsId.get(0).getCity());
         txtNewsdesc.setText(newsListByNewsId.get(0).getNews_description());
         txt_post_person_name.setText(member_name);
-        if(newsListByNewsId.get(0).getSub_category()!=null) {
+        if (newsListByNewsId.get(0).getSub_category() != null) {
             collapsingToolbar.setTitle(newsListByNewsId.get(0).getCategory() + " | " + newsListByNewsId.get(0).getSub_category());
-        }else {
+        } else {
             collapsingToolbar.setTitle(newsListByNewsId.get(0).getCategory());
         }
         collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
@@ -108,7 +111,7 @@ public class NewsDetailScreen extends AppCompatActivity {
             // Hide progress bar on successful load
             Picasso.with(this).load(load_image)
                     .placeholder(R.drawable.default_no_image)
-                    .resize(1000,1000)
+                    .resize(1000, 1000)
                     .into(ivBackground/*, new com.squareup.picasso.Callback() {
                     @Override
                     public void onSuccess() {
@@ -181,10 +184,29 @@ public class NewsDetailScreen extends AppCompatActivity {
         txt_post_time = (TextView) findViewById(R.id.txt_post_time);
         txt_post_person_name = (TextView) findViewById(R.id.txt_post_person_name);
         ivBackground = (ImageView) findViewById(R.id.details_image);
+        iv_share = (ImageView)mToolbar.findViewById(R.id.iv_share);
+        iv_share.setVisibility(View.GONE);
     }
 
     private void setListeners() {
-
+      /*  iv_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    image = imagesList.get(0).getNews_pic();
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.putExtra(Intent.EXTRA_TEXT, "Check this news article. Download now Apna News App"+txtTitle.getText().toString());
+                    String path = null;
+                    path = MediaStore.Images.Media.insertImage(getContentResolver(), image, "title", null);
+                    Uri screenshotUri = Uri.parse(path);
+                    intent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
+                    intent.setType("image*//*");
+                    startActivity(Intent.createChooser(intent, "Share image"));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });*/
     }
 
     @Override
