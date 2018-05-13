@@ -426,16 +426,29 @@
                 android:src="@mipmap/ic_info"
                 android:tint="@color/colorPrimary"/>
         </LinearLayout>
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
                 android:paddingLeft="5dp"
                 android:text="@string/photo_str"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/text_small" />
 
+                <TextView
+                    android:id="@+id/txt_image_sel_err"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/red"
+                    android:textSize="12sp" />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/news_background"
     android:orientation="vertical"
-    tools:context="job.com.news.LanguageSelection">
+    tools:context="com.org.apnanews.LanguageSelection">
 
 
     <LinearLayout
