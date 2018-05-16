@@ -56,15 +56,14 @@
                         android:textSize="@dimen/text_small"
                         android:visibility="visible" />
 
-                    <com.weiwangcn.betterspinner.library.BetterSpinner
+                    <com.org.apnanews.utils.BetterSpinner
                         android:id="@+id/state_better_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
                         android:hint="@string/hint_select_state"
                         android:textSize="@dimen/text_small" />
-
+                   <!-- android:focusable="true"
+                    android:focusableInTouchMode="true"-->
                 </LinearLayout>
                 <!--City Linear Layout-->
                 <LinearLayout
@@ -86,14 +85,15 @@
                         android:visibility="visible" />
 
 
-                    <com.weiwangcn.betterspinner.library.BetterSpinner
+                    <com.org.apnanews.utils.BetterSpinner
                         android:id="@+id/city_better_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
+
                         android:hint="@string/hint_select_city"
                         android:textSize="@dimen/text_small" />
+                    <!--android:focusable="true"
+                    android:focusableInTouchMode="true"-->
                 </LinearLayout>
             </LinearLayout>
             <!--Article Views Spinner-->
@@ -109,7 +109,7 @@
                 android:textSize="@dimen/text_small"
                 android:visibility="visible" />
 
-            <com.weiwangcn.betterspinner.library.BetterSpinner
+            <com.org.apnanews.utils.BetterSpinner
                 android:id="@+id/article_better_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
                 android:textSize="@dimen/text_small"
                 android:visibility="visible" />
 
-            <com.weiwangcn.betterspinner.library.BetterSpinner
+            <com.org.apnanews.utils.BetterSpinner
                 android:id="@+id/sub_article_better_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -567,30 +567,7 @@
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight=".6"
-                    android:orientation="vertical"
-                    android:visibility="gone">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="5dp"
-                        android:text="No. of Days for publishing"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="@dimen/text_small" />
-
-                    <com.weiwangcn.betterspinner.library.BetterSpinner
-                        android:id="@+id/publish_better_spinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"
-                        android:hint="No. of Days"
-                        android:textSize="@dimen/text_small" />
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"

@@ -127,7 +127,7 @@ public class RequestStatusHomeFragment extends Fragment {
             // fromStatus = getIntent().getExtras().getString("addFrom");
 
             if (message == null || message.equals("")) {
-                Toast.makeText(mContext, "if null", Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(mContext, "if null", Toast.LENGTH_SHORT).show();
 
             } else {
                 fromStatus = message;

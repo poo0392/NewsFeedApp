@@ -273,6 +273,7 @@ public class RequestsListFragment extends Fragment {
                                     .setStyle(Style.HEADER_WITH_ICON)
                                     .setCustomView(customView)
                                     .setIcon(R.mipmap.ic_failed)
+                                    .setCancelable(false)
                                     .setPositiveText(R.string.button_ok)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -303,6 +304,7 @@ public class RequestsListFragment extends Fragment {
                             new MaterialStyledDialog.Builder(mContext)
                                     .setDescription("Do you want to approve this news?")
                                     .setStyle(Style.HEADER_WITH_ICON)
+                                    .setCancelable(false)
                                     .setIcon(R.mipmap.ic_dialog_approve)
                                     .setPositiveText(R.string.button_ok)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -377,7 +379,7 @@ public class RequestsListFragment extends Fragment {
                     if (serverResponse.getStatus() == 0) {
 
                         try {
-                            Toast.makeText(mContext, "Success", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(mContext, "Success", Toast.LENGTH_SHORT).show();
                             // callNewsListAPI(memberToken,memberId,news_status);
                            /* RequestsListFragment frg = new RequestsListFragment();
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -441,6 +443,7 @@ public class RequestsListFragment extends Fragment {
                 .setTitle(title)
                 .setDescription(desc)
                 .setStyle(Style.HEADER_WITH_ICON)
+                .setCancelable(false)
                 .setIcon(R.mipmap.ic_failed)
                 .setPositiveText(R.string.button_ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {

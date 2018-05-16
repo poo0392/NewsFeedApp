@@ -64,7 +64,6 @@ import com.org.apnanews.helper.NoConnectivityException;
 import com.org.apnanews.interfaces.FragmentFromAdapter;
 import com.org.apnanews.interfaces.WebService;
 import com.org.apnanews.models.NewsFeedList;
-import com.org.apnanews.models.NewsFeedListParcable;
 import com.org.apnanews.models.NewsFeedModelResponse;
 import com.org.apnanews.models.NewsImages;
 import com.org.apnanews.register.RegisterMember;
@@ -82,6 +81,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 import static com.org.apnanews.globals.Globals.back_press_screen;
 
 //changes added on //changes 16_03.
@@ -117,7 +117,7 @@ public class HomeActivity extends AppCompatActivity
     private List<NewsFeedList> newsFeedList;
     private List<NewsFeedList> newsFeedListNew;
     private List<NewsFeedList> ListNew, catList;
-    private List<NewsFeedListParcable> newsFeedListParc = new ArrayList<>();
+    //private List<NewsFeedListParcable> newsFeedListParc = new ArrayList<>();
     private List<String> categoryList, catDupList;
     Gson gson;
     Fragment fragment;
@@ -188,7 +188,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
         tx.replace(R.id.content_frame, new HomeFragment());
         // tx.addToBackStack(null);
-        tx.commit();
+        tx.commitAllowingStateLoss();
     }
 
     private void scheduleAlarm() {
@@ -204,7 +204,7 @@ public class HomeActivity extends AppCompatActivity
         // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
         // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
         alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
-                200000, pIntent); //
+                INTERVAL_FIFTEEN_MINUTES, pIntent); //
 
         // AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         // Start service every 15 min
@@ -361,7 +361,9 @@ public class HomeActivity extends AppCompatActivity
                             // loadCategoryUI();
                           //  finish();
                           //  callHomeActivityToRefresh();
-                            callHomeFragment();
+
+                                    callHomeFragment();
+
                         }
                     } else {
                      //   Log.v("Failure ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
@@ -391,6 +393,7 @@ public class HomeActivity extends AppCompatActivity
                 .setTitle(title)
                 .setDescription(desc)
                 .setStyle(Style.HEADER_WITH_ICON)
+                .setCancelable(false)
                 .setIcon(R.mipmap.ic_failed)
                 .setPositiveText(R.string.button_ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -940,6 +943,7 @@ public class HomeActivity extends AppCompatActivity
                 .setTitle("Confirm Please...")
                 .setDescription("Do you want to close the app ?")
                 .setStyle(Style.HEADER_WITH_TITLE)
+                .setCancelable(false)
                 .setPositiveText(R.string.button_ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override

@@ -13,6 +13,7 @@
     <!-- Strings related to login -->
     <string name="prompt_username">Email</string>
     <string name="prompt_password">Password</string>
+    <string name="prompt_name">Name</string>
     <string name="action_login_in">Login</string>
     <string name="sign_up_text">Sign up</string>
     <string name="forgot_password">Forgot password?</string>
@@ -20,9 +21,7 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="email_pattern_error">Please enter valid email id</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."
-
-    </string>
+    <string name="permission_rationale">Contacts permissions are needed for providing email completions.</string>
     <string name="toast_msg_state_validations">Please Select State</string>
     <string name="toast_msg_city_validations">Please Select City</string>
     <string name="toast_msg_article_validations">Please Select Article Type</string>
@@ -178,32 +177,32 @@
     <string name="button_ok">Ok</string>
 
     <string name="title_activity_base">BaseActivity</string>
-    <string name="title_activity_net_banking">NetBankingActivity</string>
+   <!-- <string name="title_activity_net_banking">NetBankingActivity</string>
     <string name="title_activity_cash_card">CashCardActivity</string>
     <string name="title_activity_emi">EmiActivity</string>
     <string name="title_activity_card">CardActivity</string>
     <string name="title_activity_user_cards">UserCardsActivity</string>
-    <string name="title_activity_payments">PaymentsActivity</string>
-    <string name="pay_now">Pay</string>
+    <string name="title_activity_payments">PaymentsActivity</string>-->
+  <!--  <string name="pay_now">Pay</string>-->
     <string name="cancel">Cancel</string>
-    <string name="ok">Ok</string>
-    <string name="click_here">Click here</string>
+
+  <!--  <string name="click_here">Click here</string>
     <string name="if_cvv_and_expiry_on_card"> &#160;if you have CVV and Expiry on your card</string>
     <string name="if_dont_cvv_and_expiry_on_card"> &#160;if you don\'t have CVV and Expiry on your card</string>
     <string name="net_banking">Net Banking</string>
     <string name="title_activity_merchant_payment">MerchantPaymentActivity</string>
-    <string name="title_activity_verify_api">VerifyApiActivity</string>
+    <string name="title_activity_verify_api">VerifyApiActivity</string>-->
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+   <!-- <string name="hello_blank_fragment">Hello blank fragment</string>-->
 
-    <string name="test">Test</string>
-    <string name="production">Production</string>
+  <!--  <string name="test">Test</string>
+    <string name="production">Production</string>-->
 
-    <string-array name="environment_array">
+   <!-- <string-array name="environment_array">
         <item>@string/test</item>
         <item>@string/production</item>
-    </string-array>
+    </string-array>-->
 
     <string-array name="no_of_days_publishing">
         <item>30 days</item>
@@ -215,26 +214,8 @@
     <string name="app_desc">APNA NEWS App enables user to post news in multiple language. It also allows to view news posted by user.
     It helps user to post their news article. It also provides latest news in simple and easy manner.</string>
 
-    <string name="use_live_key_in_production_environment">Please use your live merchant key in production environment</string>
-    <string name="could_not_receive_data">Could not receive data</string>
-    <string name="default_text_large">But I must explain to you how all this mistaken idea of denouncing of a pleasure and
-        praising pain was born and I will give you a complete account of the system,
-        and expound the actual teachings of the great explorer of the truth,
-        the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself,
-        because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that
-        are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain,
-        but occasionally circumstances occur in which toil and pain can procure him some great pleasure.
-        To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it?
-        But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who
-        avoids a pain that produces no resultant pleasure?
-        On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the
-        charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue;
-        and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through
-        shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of
-        choice is untrammeled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed
-        and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it
-        will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in
-        these matters to this principle of selection: he rejects pleasures to secure other greater pleasures,
-        or else he endures pains to avoid worse pains</string>
-    <string name="title_activity_main2">Main2Activity</string>
+  <!--  <string name="use_live_key_in_production_environment">Please use your live merchant key in production environment</string>-->
+  <!--  <string name="could_not_receive_data">Could not receive data</string>-->
+
+
 </resources>

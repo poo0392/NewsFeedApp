@@ -11,6 +11,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.org.apnanews.R;
+
 import java.util.Calendar;
 
 public class BetterSpinner extends android.support.v7.widget.AppCompatAutoCompleteTextView implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
@@ -45,7 +47,7 @@ public class BetterSpinner extends android.support.v7.widget.AppCompatAutoComple
                                   Rect previouslyFocusedRect) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
         if (focused) {
-            performFiltering("", 0);
+           // performFiltering("", 0);
             InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getWindowToken(), 0);
             setKeyListener(null);
@@ -91,7 +93,7 @@ public class BetterSpinner extends android.support.v7.widget.AppCompatAutoComple
 
     @Override
     public void setCompoundDrawablesWithIntrinsicBounds(Drawable left, Drawable top, Drawable right, Drawable bottom) {
-        Drawable dropdownIcon = ContextCompat.getDrawable(getContext(), com.weiwangcn.betterspinner.library.R.drawable.ic_expand_more_black_18dp);
+        Drawable dropdownIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_arrow_drop_down_black_48dp);
         if (dropdownIcon != null) {
             right = dropdownIcon;
             right.mutate().setAlpha(128);

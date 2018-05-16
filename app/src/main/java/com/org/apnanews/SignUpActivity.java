@@ -378,4 +378,10 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        session.setLogin(false);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
 }

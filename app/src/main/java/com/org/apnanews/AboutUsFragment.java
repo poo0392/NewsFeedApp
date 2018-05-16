@@ -21,7 +21,7 @@ import com.org.apnanews.globals.Globals;
  */
 
 public class AboutUsFragment extends Fragment {
-    //\u2022 Bullet
+
     Context mContext;
     Toolbar toolbar;
     TextView txtAppVersion, txtAppDesc, txtAppFeatures, txtCopyright;

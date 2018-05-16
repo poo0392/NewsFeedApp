@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Apna News</string>
+    <string name="next_text">Next</string>
+    <string-array name="language_arr">
+        <item>Select Language</item>
+        <item>हिंदी</item>
+        <item>मराठी</item>
+    </string-array>
+    <string name="error_language_selection">Please Select Language</string>
+    <string name="permission_rationale">Contacts permissions are needed for providing email completions.</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="whiz_project_key">9uuxccl3jdqiw7aw6c2tw6p4</string>
+    <string name="Rs">\u20B9</string>
+    <string name="button_ok">Ok</string>
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="app_desc">APNA NEWS App enables user to post news in multiple language. It also allows to view news posted by user.
+    It helps user to post their news article. It also provides latest news in simple and easy manner.</string>
+
 
     <string name="home_toolbar_title">समाचार फ़ीड</string>
+    <string name="about_toolbar_title">ऐप के बारे में</string>
     <string name="profile_toolbar_title">प्रोफाइल</string>
-  <!--  <string name="about_toolbar_title">ऐप के बारे में</string>-->
+
 
     <!--Login-->
     <string name="prompt_username">ईमेल</string>
@@ -36,7 +57,7 @@
     <string name="toast_msg_desc_validations">कृपया विवरण दर्ज करें</string>
     <string name="toast_msg_charges_validations">कृपया पोस्ट की अवधि का चयन करें</string>
     <string name="toast_msg_desc_select">कृपया विवरण विवरण चुनें (शब्दों में)</string>
-    <string name="toast_msg_image_select">कृपया कम से कम एक छवि का चयन करें</string>
+   <!-- <string name="toast_msg_image_select">कृपया कम से कम एक छवि का चयन करें</string>-->
 
     <!-- Strings related to login -->
     <string name="prompt_email">ईमेल</string>

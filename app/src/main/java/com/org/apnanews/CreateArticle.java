@@ -46,7 +46,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
-import com.weiwangcn.betterspinner.library.BetterSpinner;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -83,6 +82,8 @@ import com.org.apnanews.payU.PayUPnPActivity;
 import com.org.apnanews.register.RegisterMember;
 import com.org.apnanews.sharedpref.MyPreferences;
 import com.org.apnanews.sharedpref.SessionManager;
+import com.org.apnanews.utils.BetterSpinner;
+
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -113,7 +114,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     private TextView mTotalChargesView, mDateView,img_sel_err;
     private RadioGroup radioGroupDays, radioGroupWords;
     private String mRsSymbol;
-    private String mArticleCode, categoryId, subCategoryId, stateId, cityId;
+    private String mArticleCode, categoryId="", subCategoryId,stateId="", cityIdValue="";
     private ImageView mArticleImage1, mArticleImage2, iv_info_desc, iv_info_title;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1, spaceCount, PICK_FROM_GALLERY = 2;
     private String mediaPath;
@@ -125,7 +126,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     String getLangFromPref, language, selectedState, selectedCity, selectedDays;
     ArrayAdapter<String> state_adapter, article_adapter, sub_article_adapter, city_adapter, publish_days_adapter;
     RelativeLayout state_relative, city_relative, article_relative;
-    BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsSubArticleSpinner, bsPublishDaysSpinner;
+    BetterSpinner bsStateSpinner, bsCitySpinner, bsArticleSpinner, bsSubArticleSpinner;
     LinearLayout ll_sub_article;
     RadioButton article_100d_radio, article_200d_radio, article_300d_radio, article_400d_radio;
     private SessionManager session, langSelection;
@@ -328,7 +329,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         bsCitySpinner = (BetterSpinner) findViewById(R.id.city_better_spinner);
         bsArticleSpinner = (BetterSpinner) findViewById(R.id.article_better_spinner);
         bsSubArticleSpinner = (BetterSpinner) findViewById(R.id.sub_article_better_spinner);
-        bsPublishDaysSpinner = (BetterSpinner) findViewById(R.id.publish_better_spinner);
+
         bsCitySpinner.setClickable(false);
         bsCitySpinner.setFocusableInTouchMode(false);
 
@@ -336,8 +337,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         bsArticleSpinner.setAdapter(article_adapter);// changed mArticleSpinner to bsArticleSpinner
 
 
-        publish_days_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, no_of_days_arr);
-        bsPublishDaysSpinner.setAdapter(publish_days_adapter);
+
 
         radioGroupDays = (RadioGroup) findViewById(R.id.article_radio_days);
         radioGroupDays.getCheckedRadioButtonId();
@@ -450,14 +450,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             }
         });
 
-        bsPublishDaysSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedDays = parent.getItemAtPosition(position).toString();
-                //Log.v("bsPublishDaysItemClick ", "selectedDays " + selectedDays);
 
-            }
-        });
 
         radioGroupWords.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -860,17 +853,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
                     if (response.isSuccessful()) {
                         mProgressDialog.dismiss();
-                        //Log.v("State ","response "+response.toString());
+                        Log.v("State ","response "+response.toString());
                        // Log.e("Stateresponse ", new Gson().toJson(response.body()));
 
 
                         State state = response.body();
-                        int responseCode = state.getStatus();
-                        String responseMessage = state.getDescription();
-
-                        List list = state.getStates();
-
-                        displayStateData((ArrayList) state.getStates());
+                       // int responseCode = state.getStatus();
+                       // String responseMessage = state.getDescription();
+                        List<State_Name> states=new ArrayList<>();
+                        states.addAll(state.getStates());
+                       // ArrayList<State_Name> stateList= new ArrayList<>(state.getStates());
+                        displayStateData(states);
                     } else {
                         Toast.makeText(CreateArticle.this, "Server Error", Toast.LENGTH_SHORT).show();
                     }
@@ -896,7 +889,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void displayStateData(ArrayList<State_Name> stateList) {
+    private void displayStateData(List<State_Name> stateList) {
+
         try {
             ArrayList<String> list = new ArrayList();
             mapState = new HashMap<>();
@@ -907,7 +901,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     mapState.put(stateData.getStateName().trim(), stateData.getId());
                 }
 
-
+                bsStateSpinner.setFocusableInTouchMode(true);
                 state_adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, list);
                 //mStateSpinner.setAdapter(adapter);
                 bsStateSpinner.setAdapter(state_adapter); //changed from mStateSpinner to bsStateSpinner
@@ -986,11 +980,11 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                         //Log.e("Cityresponse ", new Gson().toJson(response.body()));
 
                         City city = response.body();
-                        int responseCode = city.getStatus();
-                        String responseMessage = city.getDescription();
-                        List list = city.getCities();
-
-                        displayCityData((ArrayList) city.getCities());
+                      //  int responseCode = city.getStatus();
+                      //  String responseMessage = city.getDescription();
+                       // List list = city.getCities();
+                        ArrayList cityList=new ArrayList(city.getCities());
+                        displayCityData(cityList);
 
                     } else {
                         //  displayCityData();
@@ -1018,6 +1012,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     }
 
     private void displayCityData(ArrayList<City_Name> cityList) {
+
         try {
             ArrayList<String> list = new ArrayList();
             cityMap = new HashMap<>();
@@ -1048,8 +1043,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         selectedCity = parent.getItemAtPosition(position).toString();
-                        cityId = String.valueOf(cityMap.get(selectedCity));
-                        //Log.v("bsCityItemClick ", "selectedCity " + selectedCity + " cityId " + cityId);
+                        cityIdValue = String.valueOf(cityMap.get(selectedCity));
+                        //Log.v("bsCityItemClick ", "selectedCity " + selectedCity + " cityIdValue " + cityIdValue);
                     }
                 });
             } else {
@@ -1133,6 +1128,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
                 Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
                 intent.putExtra("Price", charges);
+                //intent.putExtra("Price", 1);
                 startActivityForResult(intent, GET_PAYMENT_STATUS);
 
                 mProgressDialog.dismiss();
@@ -1228,7 +1224,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         RequestBody paramSubCategoryId = RequestBody.create(MediaType.parse("text/plain"), "" + sub_category_id);
         RequestBody paramCountryId = RequestBody.create(MediaType.parse("text/plain"), "" + countryId);
         RequestBody paramStateId = RequestBody.create(MediaType.parse("text/plain"), "" + stateId);
-        RequestBody paramCityId = RequestBody.create(MediaType.parse("text/plain"), "" + cityId);
+        RequestBody paramCityId = RequestBody.create(MediaType.parse("text/plain"), "" + cityIdValue);
         RequestBody paramNewsTitle = RequestBody.create(MediaType.parse("text/plain"), "" + newsTitle);
         RequestBody paramNewsDesc = RequestBody.create(MediaType.parse("text/plain"), "" + newsDesc);
         //  RequestBody paramNewsPic = RequestBody.create(MediaType.parse("text/plain"), "" + newsPic);
@@ -1239,7 +1235,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         mapValuesFinal.put("sub_category_id", String.valueOf(sub_category_id));
         mapValuesFinal.put("country_id", countryId);
         mapValuesFinal.put("state_id", stateId);
-        mapValuesFinal.put("city_id", cityId);
+        mapValuesFinal.put("city_id", cityIdValue);
         mapValuesFinal.put("news_title", newsTitle);
         mapValuesFinal.put("news_desc", newsDesc);
         // mapValuesFinal.put("news_images", String.valueOf(newsPic));
@@ -1250,7 +1246,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         Log.v("postNewsAPI ", "categoryId " + categoryId);
         Log.v("postNewsAPI ", "SubcategoryId " + sub_category_id);
         Log.v("postNewsAPI ", "stateId " + stateId);
-        Log.v("postNewsAPI ", "cityId " + cityId);
+        Log.v("postNewsAPI ", "cityIdValue " + cityIdValue);
         Log.v("postNewsAPI ", "newsTitle " + newsTitle);
         Log.v("postNewsAPI ", "newsDesc " + newsDesc);
         Log.v("postNewsAPI ", "image " + image);
@@ -1327,6 +1323,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 .setTitle(title)
                 .setDescription(desc)
                 .setStyle(Style.HEADER_WITH_ICON)
+                .setCancelable(false)
                 .setIcon(R.mipmap.ic_success)
                 .setPositiveText(R.string.button_ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -1350,6 +1347,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                 .setDescription(desc)
                 .setStyle(Style.HEADER_WITH_ICON)
                 .setIcon(R.mipmap.ic_failed)
+                .setCancelable(false)
                 .setPositiveText(R.string.button_ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -1523,17 +1521,17 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // CharSequence userText = textBox.getText();
-        if (categoryId != null ||
-                sub_category_id != 0 ||
-                stateId != null ||
-                cityId != null ||
-                !mTitleEdit.getText().toString().equals("") ||
+        if (!categoryId.equals("") &&
+                sub_category_id != 0 &&
+                !stateId.equals("") &&
+                !cityIdValue.equals("") &&
+                !mTitleEdit.getText().toString().equals("") &&
                 !mDescEdit.getText().toString().equals("")
                 ) {
             outState.putInt("articleSpinner", Integer.parseInt(categoryId) - 1);
             outState.putInt("subArticleSpinner", sub_category_id);
             outState.putInt("stateId", Integer.parseInt(stateId));
-            outState.putInt("cityId", Integer.parseInt(cityId));
+            outState.putInt("cityIdValue", Integer.parseInt(cityIdValue));
             outState.putCharSequence("title", mTitleEdit.getText().toString());
             outState.putCharSequence("desc", mDescEdit.getText().toString());
         }
@@ -1547,7 +1545,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             int arSpinnerPos = savedInstanceState.getInt("articleSpinner");
             int subArSpinnerPos = savedInstanceState.getInt("subArticleSpinner");
             int stateId = savedInstanceState.getInt("stateId");
-            int cityId = savedInstanceState.getInt("cityId");
+            int cityId = savedInstanceState.getInt("cityIdValue");
             CharSequence title = savedInstanceState.getCharSequence("title");
             CharSequence desc = savedInstanceState.getCharSequence("desc");
             bsArticleSpinner.setSelection(arSpinnerPos);

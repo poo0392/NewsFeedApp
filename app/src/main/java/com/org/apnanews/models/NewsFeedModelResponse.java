@@ -30,7 +30,7 @@ public class NewsFeedModelResponse {
     @Expose
     // private NewsFeedList newsFeedList;
     private List<NewsFeedList> newsFeedList;
-    private List<NewsFeedListParcable> newsFeedListParc;
+ /*   private List<NewsFeedListParcable> newsFeedListParc;
 
     public List<NewsFeedListParcable> getNewsFeedListParc() {
         return newsFeedListParc;
@@ -39,7 +39,7 @@ public class NewsFeedModelResponse {
     public void setNewsFeedListParc(List<NewsFeedListParcable> newsFeedListParc) {
         this.newsFeedListParc = newsFeedListParc;
     }
-
+*/
 
     public List<NewsFeedList> getNewsFeedList() {
         return newsFeedList;

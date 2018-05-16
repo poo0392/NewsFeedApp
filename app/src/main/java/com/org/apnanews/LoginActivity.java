@@ -343,6 +343,7 @@ public class LoginActivity extends AppCompatActivity {
         new MaterialStyledDialog.Builder(context)
                 .setTitle(title)
                 .setDescription(desc)
+                .setCancelable(false)
                 .setStyle(Style.HEADER_WITH_ICON)
                 .setIcon(R.mipmap.ic_failed)
                 .setPositiveText(R.string.button_ok)
@@ -361,6 +362,7 @@ public class LoginActivity extends AppCompatActivity {
                 .setDescription(desc)
                 .setStyle(Style.HEADER_WITH_ICON)
                 .setIcon(R.mipmap.ic_success)
+                .setCancelable(false)
                 .setPositiveText(R.string.button_ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -389,6 +391,7 @@ public class LoginActivity extends AppCompatActivity {
                 .setDescription(desc)
                 .setStyle(Style.HEADER_WITH_ICON)
                 .setIcon(R.mipmap.ic_success)
+                .setCancelable(false)
                 .setPositiveText("Yes")
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override

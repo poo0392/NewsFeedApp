@@ -283,15 +283,17 @@ public class NewsListTable {
         String query1 = "select seq from sqlite_sequence where name = '" + NewsListTable.NEWS_LIST_TABLE_NAME + "'";
         Cursor cursor = db.rawQuery(query1, null);
         long id = 0;
-        if (cursor.moveToFirst()) {
-            id = cursor.getLong(cursor.getColumnIndex("seq"));
-        }
+      //  if(cursor.getCount() != 0) {
+            if (cursor.moveToFirst()) {
+                id = cursor.getLong(cursor.getColumnIndex("seq"));
+            }
+        //}
   /*  if(cursor.moveToFirst()){
         id = cursor.getString(cursor.getColumnIndex(NewsListTable.NEWS_ID));
     }*/
         //Log.v("getLastId ", "id " + id);
         cursor.close();
-        db.close();
+       // db.close();
         return id;
     }
 

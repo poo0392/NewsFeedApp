@@ -588,6 +588,7 @@ public class PayUPnPActivity extends AppCompatActivity {
                     .setDescription(desc)
                     .setStyle(Style.HEADER_WITH_ICON)
                     .setIcon(R.mipmap.ic_success)
+                    .setCancelable(false)
                     .setPositiveText(R.string.button_ok)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
@@ -604,6 +605,7 @@ public class PayUPnPActivity extends AppCompatActivity {
                     .setDescription(desc)
                     .setStyle(Style.HEADER_WITH_ICON)
                     .setIcon(R.mipmap.ic_failed)
+                    .setCancelable(false)
                     .setPositiveText(R.string.button_ok)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
