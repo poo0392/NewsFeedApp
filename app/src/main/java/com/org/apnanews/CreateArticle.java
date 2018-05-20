@@ -835,6 +835,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                     .show();*/
 
             OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(50000, TimeUnit.MILLISECONDS)
+                    .readTimeout(50000, TimeUnit.MILLISECONDS)
                     .addInterceptor(new ConnectivityInterceptor(mContext))
                     .build();
 
@@ -853,19 +855,20 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
 
                     if (response.isSuccessful()) {
                         mProgressDialog.dismiss();
-                        Log.v("State ","response "+response.toString());
-                       // Log.e("Stateresponse ", new Gson().toJson(response.body()));
-
-
+                        // Log.v("State ","response "+response.toString());
+                        // Log.e("Stateresponse ", new Gson().toJson(response.body()));
                         State state = response.body();
-                       // int responseCode = state.getStatus();
-                       // String responseMessage = state.getDescription();
-                        List<State_Name> states=new ArrayList<>();
-                        states.addAll(state.getStates());
-                       // ArrayList<State_Name> stateList= new ArrayList<>(state.getStates());
-                        displayStateData(states);
-                    } else {
-                        Toast.makeText(CreateArticle.this, "Server Error", Toast.LENGTH_SHORT).show();
+                        if (state.getStatus() == 0) {
+
+                            // int responseCode = state.getStatus();
+                            // String responseMessage = state.getDescription();
+                            // List<State_Name> states=new ArrayList<>();
+                            // ArrayList<State_Name> stateList= new ArrayList<>(state.getStates());
+                            // states.addAll(state.getStates());
+                            displayStateData((ArrayList<State_Name>) state.getStates());
+                        } else {
+                            Toast.makeText(CreateArticle.this, "Server Error", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
 
@@ -877,7 +880,7 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
                         // No internet connection
                         Toast.makeText(mContext, "Please connect to Internet", Toast.LENGTH_SHORT).show();
                     } else {
-                        bsStateSpinner.setFocusableInTouchMode(false);
+                      //  bsStateSpinner.setFocusableInTouchMode(false);
                         Toast.makeText(mContext, "Server Error", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -889,12 +892,13 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void displayStateData(List<State_Name> stateList) {
+    private void displayStateData( ArrayList<State_Name> stateList) {
+       // List<State_Name> stateList=new ArrayList<>(states.getStates());
 
         try {
-            ArrayList<String> list = new ArrayList();
+            ArrayList<String> list = new ArrayList<>();
             mapState = new HashMap<>();
-            if (stateList.size() != 0 || !stateList.isEmpty()) {
+            if (stateList.size()> 0|| stateList.size() != 0 || !stateList.isEmpty() ) {
                 for (int i = 0; i < stateList.size(); i++) {
                     State_Name stateData = stateList.get(i);
                     list.add(stateData.getStateName());
@@ -975,20 +979,25 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             call.enqueue(new Callback<City>() {
                 @Override
                 public void onResponse(Call<City> call, Response<City> response) {
+                    mProgressDialog.dismiss();
                     if (response.isSuccessful()) {
-                        mProgressDialog.dismiss();
                         //Log.e("Cityresponse ", new Gson().toJson(response.body()));
 
                         City city = response.body();
-                      //  int responseCode = city.getStatus();
-                      //  String responseMessage = city.getDescription();
-                       // List list = city.getCities();
-                        ArrayList cityList=new ArrayList(city.getCities());
-                        displayCityData(cityList);
+                        if (city.getStatus() == 0) {
+                            //  int responseCode = city.getStatus();
+                            //  String responseMessage = city.getDescription();
+                            // List list = city.getCities();
+                           // List<City_Name> cityList = new ArrayList<>();
+                            // ArrayList<State_Name> stateList= new ArrayList<>(state.getStates());
+                           // cityList.addAll(city.getCities());
 
-                    } else {
-                        //  displayCityData();
-                        Toast.makeText(CreateArticle.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            displayCityData((ArrayList<City_Name>) city.getCities());
+
+                        } else {
+                            //  displayCityData();
+                            Toast.makeText(CreateArticle.this, "Server Error", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
 
@@ -1127,8 +1136,8 @@ public class CreateArticle extends AppCompatActivity implements View.OnClickList
             public void run() {
 
                 Intent intent = new Intent(CreateArticle.this, PayUPnPActivity.class);
-                intent.putExtra("Price", charges);
-                //intent.putExtra("Price", 1);
+               // intent.putExtra("Price", charges);
+                intent.putExtra("Price", 1);
                 startActivityForResult(intent, GET_PAYMENT_STATUS);
 
                 mProgressDialog.dismiss();

@@ -1,12 +1,18 @@
 package com.org.apnanews.article;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class State {
-
+    @SerializedName("status")
+    @Expose
     private Integer status;
     private String description;
-    private List<State_Name> states = null;
+    @SerializedName("states")
+    @Expose
+    private List<State_Name> states;
 
     public Integer getStatus() {
         return status;

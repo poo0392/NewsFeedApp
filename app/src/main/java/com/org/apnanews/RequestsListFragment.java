@@ -34,6 +34,7 @@ import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -73,6 +74,7 @@ public class RequestsListFragment extends Fragment {
     int memberId;
     String role;
     List<NewsFeedList> newsFeedList;
+    List<NewsFeedList> newsFeedListResp=new ArrayList<>();
     ProgressDialog mProgressDialog;
     ItemClickListener clickListener;
     int newsId;
@@ -199,7 +201,9 @@ public class RequestsListFragment extends Fragment {
                             try {
 
                                 newsFeedList =serverResponse.getNewsFeedList() ;
-                              //  Collections.sort(newsFeedList, Collections.reverseOrder());
+
+                              // Collections.sort(newsFeedList, Collections.reverseOrder());
+                                Collections.reverse(newsFeedList);
 
                                 if(newsFeedList!=null || !newsFeedList.isEmpty()) {
                                     loadDatatoList(newsFeedList, "response");

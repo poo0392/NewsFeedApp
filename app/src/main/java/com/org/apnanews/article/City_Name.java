@@ -1,15 +1,28 @@
 package com.org.apnanews.article;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by deepak on 5/16/2017.
  */
 
 public class City_Name {
-
+    @SerializedName("id")
+    @Expose
     private Integer id;
+
+    @SerializedName("city")
+    @Expose
     private String city;
+    @SerializedName("state_id")
+    @Expose
     private String stateId;
+    @SerializedName("creaet_at")
+    @Expose
     private String creaetAt;
+    @SerializedName("updated_at")
+    @Expose
     private String updatedAt;
 
     public Integer getId() {

@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="com.payu.magicretry:magicretry-1.0.5">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.android/build-cache/0e8bf2140fb4ec770c81daa790d02b925a5fa564/output/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.android/build-cache/0e8bf2140fb4ec770c81daa790d02b925a5fa564/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/bca66ba5c3a7a7d107b246eb6b5c5476e0c56383/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/bca66ba5c3a7a7d107b246eb6b5c5476e0c56383/output/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

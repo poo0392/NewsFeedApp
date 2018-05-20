@@ -35,6 +35,7 @@ public class NewsDetailScreen extends AppCompatActivity {
     List<NewsFeedList> mNewsFeedList, newsListByNewsId;
     List<RegisterMember> memberList;
     List<NewsImages> imagesList;
+    ArrayList<NewsFeedList> NewsFeedListResp;
     NewsFeedApplication newsFeedApplication;
     TextView txtTitle, txtNewsdesc, date, txt_post_time, txt_post_person_name, txt_city;
     ImageView ivBackground, iv_share;
@@ -75,35 +76,43 @@ public class NewsDetailScreen extends AppCompatActivity {
     private void setData() {
         // mNewsFeedList = newsListTable.getAllNewsRecords();
         // mNewsFeedList = newsListTable.getNewsRecordsByCategory(category);
+        if (newsListTable.checkNewsPresent(newsId)) {
+             newsListByNewsId = newsListTable.getRecordById(newsId);
+            imagesList = newsImagesTable.getNewsImagesList(newsListByNewsId.get(0).getId());
 
-        newsListByNewsId = newsListTable.getRecordById(newsId);
-        //Log.v("db ", "getNewsFeedList " + newsListByNewsId.toString());
-        //  for(int k=0;k<newsListByNewsId.size();k++)
-        memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsListByNewsId.get(0).getMember_id()));
+
+
+            getDetailedData(0);
+
+        }else{
+            newsListByNewsId=NewsFeedListResp;
+           // txtTitle.setText(NewsFeedListResp.get(clickedPosition).getNews_title());
+            getDetailedData(clickedPosition);
+        }
+    }
+
+    private void getDetailedData(int position) {
+        memberList = memberTable.getMemberListByMemberId(Integer.parseInt(newsListByNewsId.get(position).getMember_id()));
 
 
         //  String member_name=newsFeedList.get(position).getMember().getFirstName();
-        String member_name = memberList.get(0).getFirstName();
+        String member_name = memberList.get(position).getFirstName();
 
-        txtTitle.setText(newsListByNewsId.get(0).getNews_title());
-        txt_city.setText(newsListByNewsId.get(0).getCity());
-        txtNewsdesc.setText(newsListByNewsId.get(0).getNews_description());
+        txtTitle.setText(newsListByNewsId.get(position).getNews_title());
+        txt_city.setText(newsListByNewsId.get(position).getCity());
+        txtNewsdesc.setText(newsListByNewsId.get(position).getNews_description());
         txt_post_person_name.setText(member_name);
-        if (newsListByNewsId.get(0).getSub_category() != null) {
-            collapsingToolbar.setTitle(newsListByNewsId.get(0).getCategory() + " | " + newsListByNewsId.get(0).getSub_category());
+        if (newsListByNewsId.get(position).getSub_category() != null) {
+            collapsingToolbar.setTitle(newsListByNewsId.get(position).getCategory() + " | " + newsListByNewsId.get(position).getSub_category());
         } else {
-            collapsingToolbar.setTitle(newsListByNewsId.get(0).getCategory());
+            collapsingToolbar.setTitle(newsListByNewsId.get(position).getCategory());
         }
         collapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         collapsingToolbar.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 
-        imagesList = newsImagesTable.getNewsImagesList(newsListByNewsId.get(0).getId());
-
         if (!imagesList.isEmpty() && imagesList.size() > 0) {
             image = imagesList.get(0).getNews_pic();
             load_image = Constant.IMAGE_URL + "/" + image;
-            //Log.v("Adapter ", "load_image" + load_image);
-            //   new DownloadImageTask(ivBackground).execute(load_image);
 
             // Hide progress bar on successful load
             Picasso.with(this).load(load_image)
@@ -125,13 +134,15 @@ public class NewsDetailScreen extends AppCompatActivity {
         } else {
             ivBackground.setImageResource(R.drawable.default_no_image);
         }
+
+
        /* Picasso.with(this)
                 .load(load_image)
                 .placeholder(R.drawable.default_no_image) //this is optional the image to display while the url image is downloading
                 // .error(Your Drawable Resource)         //this is also optional if some error has occurred in downloading the image this image would be displayed
                 .into(ivBackground);*/
 
-        String dateTime = newsListByNewsId.get(0).getCreated_at();
+        String dateTime = newsListByNewsId.get(position).getCreated_at();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long time = 0;
         try {
@@ -145,7 +156,6 @@ public class NewsDetailScreen extends AppCompatActivity {
         CharSequence ago = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
         txt_post_time.setText(ago);
 
-
     }
 
     private void getIntentData() {
@@ -153,8 +163,9 @@ public class NewsDetailScreen extends AppCompatActivity {
         clickedPosition = Integer.parseInt(intent.getStringExtra("itemPosition"));
         newsId = Integer.parseInt(intent.getStringExtra("newsId"));
         category = intent.getStringExtra("category");
-
-        //Log.v("NewsDetailScreen ", "clickedPosition=" + clickedPosition + ", newsId=" + newsId + ", category=" + category);
+        Bundle args = intent.getBundleExtra("BUNDLE");
+        NewsFeedListResp= (ArrayList<NewsFeedList>) args.getSerializable("ARRAYLIST");
+        Log.v("NewsDetailScreen ", "clickedPosition=" + clickedPosition + ", newsId=" + newsId + ", category=" + category);
     }
 
     private void setAppToolbar() {

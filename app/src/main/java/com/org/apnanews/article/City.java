@@ -1,5 +1,8 @@
 package com.org.apnanews.article;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -7,10 +10,13 @@ import java.util.List;
  */
 
 public class City {
-
+    @SerializedName("status")
+    @Expose
     private Integer status;
     private String description;
-    private List<City_Name> cities = null;
+    @SerializedName("cities")
+    @Expose
+    private List<City_Name> cities;
 
     public Integer getStatus() {
         return status;

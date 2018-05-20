@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -170,6 +172,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     } else if (comment.equals("") || comment.equals("\"\"")) {
                         imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
                     } else {
+                        if(comment.contains("\"")) {
+                            comment = comment.replace("\"", "");
+                        }
                         imageViewHolder.ll_reject_cmt.setVisibility(View.VISIBLE);
                         imageViewHolder.txt_reject_cmt.setText(comment);
                     }
@@ -181,7 +186,29 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
 
 
-            } else {
+            } else if (from[0].equals("user") && !from[1].equals("")){
+                if (from[1].equals("rejected")) {
+                    comment = newsFeedList.get(position).getComment();
+                    //Log.v("Adapter ", "comment " + comment);
+
+                    if (comment == null) {
+                        imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
+                    } else if (comment.equals("") || comment.equals("\"\"")) {
+                        imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
+                    } else {
+                        if (comment.contains("\"")) {
+                            comment = comment.replace("\"", "");
+                        }
+                        imageViewHolder.ll_reject_cmt.setVisibility(View.VISIBLE);
+                        imageViewHolder.txt_reject_cmt.setText(comment);
+                    }
+
+                    imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
+                } else {
+                    imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
+                    imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
+                }
+            }else{
                 imageViewHolder.ll_reject_cmt.setVisibility(View.GONE);
                 imageViewHolder.ll_approve_or_dec.setVisibility(View.GONE);
             }
@@ -385,6 +412,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Intent intent = new Intent(mContext, NewsDetailScreen.class);
         intent.putExtra("itemPosition", pos + "");
         intent.putExtra("category", newsFeedList.get(pos).getCategory());
+        Bundle args = new Bundle();
+        args.putSerializable("ARRAYLIST",(Serializable)newsFeedList);
+        intent.putExtra("BUNDLE",args);
         intent.putExtra("newsId", newsFeedList.get(pos).getId() + "");
         mContext.startActivity(intent);
     }

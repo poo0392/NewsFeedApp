@@ -243,7 +243,7 @@ public class NewsListTable {
         if (sub_cat_id != 0) {
             query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY_ID + " = " + category_id + " AND " + NewsListTable.SUB_CATEGORY_ID + " = " + sub_cat_id + " ";
         } else if (category_id == 0) {
-            query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " LIMIT 5";
+            query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " LIMIT 15";
         } else {
             query1 = "SELECT * FROM " + NewsListTable.NEWS_LIST_TABLE_NAME + " where " + NewsListTable.CATEGORY_ID + " = " + category_id /*+ " AND " + NewsListTable.SUB_CATEGORY_ID + " = " + sub_cat_id + " "*/;
         }
