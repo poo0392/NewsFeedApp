@@ -208,7 +208,8 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();*/
 
-            sendlogin(username, password);
+            //sendlogin(username, password);
+            showSuccessAlertDialog(LoginActivity.this, "Success", "Logged In Successfully");
         }
     }
 
@@ -369,6 +370,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         //register success
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
 

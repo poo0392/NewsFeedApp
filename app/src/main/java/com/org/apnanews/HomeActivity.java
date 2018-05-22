@@ -984,7 +984,10 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.action_logout) {
             session.setLogin(false);
             Intent intent = new Intent(this, LoginActivity.class);
+           // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+          //  finish();
         } else if (id == R.id.action_change_language) {
             Intent intent = new Intent(this, LanguageSelection.class);
             intent.putExtra("from", "home");
