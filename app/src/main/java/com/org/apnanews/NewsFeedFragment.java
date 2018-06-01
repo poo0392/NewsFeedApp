@@ -17,7 +17,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,13 +34,8 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
-import com.google.gson.Gson;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.org.apnanews.adapter.DynamicFragmentAdapter;
 import com.org.apnanews.adapter.ImageAdapter;
 import com.org.apnanews.db.CategoryMasterTable;
@@ -61,6 +55,10 @@ import com.org.apnanews.register.RegisterMember;
 import com.org.apnanews.service.ConnectivityChangeReciever;
 import com.org.apnanews.sharedpref.MyPreferences;
 import com.org.apnanews.sharedpref.SessionManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -239,7 +237,7 @@ public class NewsFeedFragment extends Fragment {
                 // List<NewsFeedList> filteredModelList = filter(newsFeedList, query);
                 List<NewsFeedList> filteredModelList = filter(newsFeedList, query);
 
-                if (filteredModelList.size() > 0) {
+              /*  if (filteredModelList.size() > 2) {
                     adapter.setFilter(filteredModelList);
                     // hideKeyboard();
                     return true;
@@ -250,10 +248,10 @@ public class NewsFeedFragment extends Fragment {
                     // Snackbar.make(ll_news_feed, "Record Not Found..", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     noDataFoundPopUp();
                     return false;
-                }
+                }*/
 
                 //    }
-                //  return true;
+                  return true;
             }
         });
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
@@ -327,23 +325,27 @@ public class NewsFeedFragment extends Fragment {
 
     private List<NewsFeedList> filter(List<NewsFeedList> newsFeedList, String query) {
         query = query.toLowerCase();
-        final List<NewsFeedList> filteredList = new ArrayList<>();
-        for (NewsFeedList list : newsFeedList) {
+       // if(query.length()>2) {
+            final List<NewsFeedList> filteredList = new ArrayList<>();
+            for (NewsFeedList list : newsFeedList) {
 
-            String cityFilter = list.getCity().toLowerCase();
-            String stateFilter = list.getState().toLowerCase();
-            String categoryFilter = list.getCategory();
-            if ((cityFilter.contains(query)) || (stateFilter.contains(query))) {
-                filteredList.add(list);
+                String cityFilter = list.getCity().toLowerCase();
+                String stateFilter = list.getState().toLowerCase();
+                String categoryFilter = list.getCategory();
+                if ((cityFilter.contains(query)) || (stateFilter.contains(query))) {
+                    filteredList.add(list);
+               }
+               //else{
+//                    hideKeyboard();
+//                }
+
             }
 
-        }
-
-        // NewsFeedFragment nf = new NewsFeedFragment();
-        //nf.loadDataFilter(filteredList, categoryFilter);
-        //  loadDataNew(filteredList);
-        setListToAdapter(filteredList, "filter");
-
+            // NewsFeedFragment nf = new NewsFeedFragment();
+            //nf.loadDataFilter(filteredList, categoryFilter);
+            //  loadDataNew(filteredList);
+            setListToAdapter(filteredList, "filter");
+        //}
         return filteredList;
     }
 
@@ -805,6 +807,9 @@ public class NewsFeedFragment extends Fragment {
 
 
     public void setListToAdapter(List<NewsFeedList> newsFeedList, String from) {
+//        if(from.equals("filter")) {
+//            hideKeyboard();
+//        }
         //Log.v("", " from " + from);
         adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
         mRecyclerView.setAdapter(adapter);

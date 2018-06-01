@@ -21,13 +21,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import com.org.apnanews.db.MemberTable;
 import com.org.apnanews.db.PersonalDetails;
 import com.org.apnanews.forgotpassword.ForgotPassword;
@@ -39,6 +32,13 @@ import com.org.apnanews.register.LoginRegisterResponse;
 import com.org.apnanews.register.RegisterMember;
 import com.org.apnanews.sharedpref.MyPreferences;
 import com.org.apnanews.sharedpref.SessionManager;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
     MemberTable memberTable;
     PersonalDetails pd;
+    MaterialDialog dialogMaterial;
 
 
     @Override
@@ -121,6 +122,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initializeComponents() {
+
+        //survetej94@gmail.com
+        //dearsheru@94
 
 
         // Set up the login form.
@@ -208,8 +212,8 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();*/
 
-            //sendlogin(username, password);
-            showSuccessAlertDialog(LoginActivity.this, "Success", "Logged In Successfully");
+            sendlogin(username, password);
+          //  showSuccessAlertDialog(LoginActivity.this, "Success", "Logged In Successfully");
         }
     }
 
@@ -357,9 +361,10 @@ public class LoginActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void showSuccessAlertDialog(Context context, String title, String desc) {
-        new MaterialStyledDialog.Builder(context)
-                .setTitle(title)
+    private void showSuccessAlertDialog(final Context context, String title, String desc) {
+       MaterialStyledDialog.Builder dialog= new MaterialStyledDialog.Builder(context);
+
+        dialog.setTitle(title)
                 .setDescription(desc)
                 .setStyle(Style.HEADER_WITH_ICON)
                 .setIcon(R.mipmap.ic_success)
@@ -368,17 +373,27 @@ public class LoginActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialogMaterial=dialog;
                         //register success
+                        dialog.dismiss();
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                        context.startActivity(intent);
                         finish();
 
                         session.setLogin(true);
-                        dialog.dismiss();
+
                     }
                 })
                 .show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(dialogMaterial!=null){
+            dialogMaterial.dismiss();
+        }
     }
 
     @Override
@@ -398,7 +413,7 @@ public class LoginActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        //   dialog.dismiss();
+                           dialog.dismiss();
                         ActivityCompat.finishAffinity(LoginActivity.this);
                     }
                 })

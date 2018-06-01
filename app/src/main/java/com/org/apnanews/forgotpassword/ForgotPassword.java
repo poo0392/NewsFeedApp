@@ -6,22 +6,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
-
 import com.org.apnanews.Constant;
 import com.org.apnanews.R;
 import com.org.apnanews.interfaces.WebService;
 import com.org.apnanews.sharedpref.MyPreferences;
+
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -124,7 +122,7 @@ public class ForgotPassword extends AppCompatActivity {
                         if (serverResponse.getStatus() == 0) {
                             //register success
                             String desc = serverResponse.getDescription();
-                            Toast.makeText(ForgotPassword.this, desc, Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(ForgotPassword.this, desc, Toast.LENGTH_SHORT).show();
                             showSuccessAlertDialog(ForgotPassword.this, "Success", "Your new password is sent to your email id");
 
                         } else {

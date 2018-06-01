@@ -28,7 +28,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,16 +41,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
 import com.google.gson.Gson;
-
-import org.json.JSONArray;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-
 import com.org.apnanews.adapter.ExpandListAdapter;
 import com.org.apnanews.changepassword.ChangePassword;
 import com.org.apnanews.db.CategoryMasterTable;
@@ -70,6 +59,16 @@ import com.org.apnanews.register.RegisterMember;
 import com.org.apnanews.service.AlarmReceiver;
 import com.org.apnanews.sharedpref.MyPreferences;
 import com.org.apnanews.sharedpref.SessionManager;
+
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -124,8 +123,8 @@ public class HomeActivity extends AppCompatActivity
     JSONArray jsonArray;
     private int lastExpandedPosition = -1;
     Handler mHandler;
-    boolean firsttime=true;
-
+    boolean firsttime = true;
+    MaterialDialog dialogMaterial;
 
 
     @Override
@@ -143,7 +142,7 @@ public class HomeActivity extends AppCompatActivity
         //DBHelper.getInstance(getApplicationContext());
         scheduleAlarm();
         getPrefData();
-        callNewsListAPI(memberToken, memberId);
+        callNewsListAPI(memberToken, memberId, "");
 
         /*if (role.equals("1")) {
             callRequestStatusHomeFragment();
@@ -159,16 +158,15 @@ public class HomeActivity extends AppCompatActivity
 
         setAppToolbar();
         initialializeComponents();
-        callHomeFragment();
 
         /*if(firsttime){
             callHomeActivityToRefresh();
             firsttime=false;
         }*/
 
+        // callHomeFragment();
 
     }
-
 
 
     private void callHomeActivityToRefresh() {
@@ -219,13 +217,14 @@ public class HomeActivity extends AppCompatActivity
         }*/
     }
 
-    public void callNewsListAPI(String memberToken, int memberId) {
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setMessage("Loading...");
-        mProgressDialog.show();
-
+    public void callNewsListAPI(String memberToken, int memberId, final String from) {
+        if (!from.equals("background")) {
+            mProgressDialog = new ProgressDialog(mContext);
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.show();
+        }
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new ConnectivityInterceptor(mContext))
+                .addInterceptor(new ConnectivityInterceptor(getApplicationContext()))
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -250,7 +249,7 @@ public class HomeActivity extends AppCompatActivity
         newsRequestList.put("all_news", "1");
         newsRequestList.put("news_status", news_status);
 
-      //  Log.v("callNewsListAPI", " newsRequestList " + newsRequestList);
+        //  Log.v("callNewsListAPI", " newsRequestList " + newsRequestList);
 
 
         Call<NewsFeedModelResponse> serverResponse = webService.getNewsListRequest(paramMemberToken, paramMemberId, status, last_id, paramAllNews);
@@ -260,7 +259,7 @@ public class HomeActivity extends AppCompatActivity
             @SuppressLint("LongLogTag")
             @Override
             public void onResponse(Call<NewsFeedModelResponse> call, Response<NewsFeedModelResponse> response) {
-                mProgressDialog.dismiss();
+
                 String newsList = "";
                 if (response.isSuccessful()) {
 
@@ -272,12 +271,12 @@ public class HomeActivity extends AppCompatActivity
                     //  NewsFeedModelResponse serverResponse = new Gson().fromJson(response.body().toString(), NewsFeedModelResponse.class);
                     NewsFeedModelResponse serverResponse = response.body();
                     jsonResponse = new Gson().toJson(response.body());
-                   // Log.v(TAG + " callNewsListAPI ", "response " + jsonResponse);
+                    // Log.v(TAG + " callNewsListAPI ", "response " + jsonResponse);
                     String code = serverResponse.getCode();
                     String desc = serverResponse.getDescription();
                     if (serverResponse.getStatus() == 0) {
                         if (serverResponse.getNewsFeedList() == null) {
-                         //   Log.v("callNewsListAPI ", "newsFeedList " + "null");
+                            //   Log.v("callNewsListAPI ", "newsFeedList " + "null");
                             Toast.makeText(mContext, "Error in Response. Please check after some time.", Toast.LENGTH_SHORT).show();
                         } else {
 
@@ -291,61 +290,63 @@ public class HomeActivity extends AppCompatActivity
                                     List<NewsImages> imagesList = new ArrayList<>();
                                     NewsImages imagesModel = new NewsImages();
                                     int n = serverResponse.getNewsFeedList().size();
-                                    for (int i = n - 1; i < n; i--) {
-                                        if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
+                                    if (n > 0) {
+                                        for (int i = n - 1; i < n; i--) {
+                                            if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
 
 
-                                            model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
-                                                    serverResponse.getNewsFeedList().get(i).getNews_uuid(),
-                                                    serverResponse.getNewsFeedList().get(i).getCategory(),
-                                                    serverResponse.getNewsFeedList().get(i).getCategory_id(),
-                                                    serverResponse.getNewsFeedList().get(i).getSub_category(),
-                                                    serverResponse.getNewsFeedList().get(i).getSub_category_id(),
-                                                    serverResponse.getNewsFeedList().get(i).getCountry(),
-                                                    serverResponse.getNewsFeedList().get(i).getState(),
-                                                    serverResponse.getNewsFeedList().get(i).getCity(),
-                                                    serverResponse.getNewsFeedList().get(i).getNews_title(),
-                                                    serverResponse.getNewsFeedList().get(i).getNews_description(),
-                                                    serverResponse.getNewsFeedList().get(i).getLanguage(),
-                                                    serverResponse.getNewsFeedList().get(i).getComment(),
-                                                    serverResponse.getNewsFeedList().get(i).getLike_count(),
-                                                    serverResponse.getNewsFeedList().get(i).getMember_id(),
-                                                    serverResponse.getNewsFeedList().get(i).getCreated_at(),
-                                                    serverResponse.getNewsFeedList().get(i).getNews_images(),
-                                                    serverResponse.getNewsFeedList().get(i).getMember()
-                                            );
+                                                model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
+                                                        serverResponse.getNewsFeedList().get(i).getNews_uuid(),
+                                                        serverResponse.getNewsFeedList().get(i).getCategory(),
+                                                        serverResponse.getNewsFeedList().get(i).getCategory_id(),
+                                                        serverResponse.getNewsFeedList().get(i).getSub_category(),
+                                                        serverResponse.getNewsFeedList().get(i).getSub_category_id(),
+                                                        serverResponse.getNewsFeedList().get(i).getCountry(),
+                                                        serverResponse.getNewsFeedList().get(i).getState(),
+                                                        serverResponse.getNewsFeedList().get(i).getCity(),
+                                                        serverResponse.getNewsFeedList().get(i).getNews_title(),
+                                                        serverResponse.getNewsFeedList().get(i).getNews_description(),
+                                                        serverResponse.getNewsFeedList().get(i).getLanguage(),
+                                                        serverResponse.getNewsFeedList().get(i).getComment(),
+                                                        serverResponse.getNewsFeedList().get(i).getLike_count(),
+                                                        serverResponse.getNewsFeedList().get(i).getMember_id(),
+                                                        serverResponse.getNewsFeedList().get(i).getCreated_at(),
+                                                        serverResponse.getNewsFeedList().get(i).getNews_images(),
+                                                        serverResponse.getNewsFeedList().get(i).getMember()
+                                                );
 
-                                            // for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMember(); k++) {
-                                            if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
-                                                member.setMemberId(model.getMember().getId());
-                                                //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
-                                                member.setFirstName(model.getMember().getFirstName().trim());
-                                                member.setLastName(model.getMember().getLastName().trim());
-                                                member.setEmailId(model.getMember().getEmailId().trim());
-                                                member.setMobile(model.getMember().getMobile());
+                                                // for (int k = 0; k < serverResponse.getNewsFeedList().get(i).getMember(); k++) {
+                                                if (!memberTable.checkUser(serverResponse.getNewsFeedList().get(i).getMember().getId())) {
+                                                    member.setMemberId(model.getMember().getId());
+                                                    //   member.setMemberToken(model.getMembersList().get(j).getMemberToken().trim());
+                                                    member.setFirstName(model.getMember().getFirstName().trim());
+                                                    member.setLastName(model.getMember().getLastName().trim());
+                                                    member.setEmailId(model.getMember().getEmailId().trim());
+                                                    member.setMobile(model.getMember().getMobile());
 
-                                                memberTable.insertMembers(member);
+                                                    memberTable.insertMembers(member);
 
-                                            }
-                                            // }
-                                            //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
-                                            if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
-                                                int p = serverResponse.getNewsFeedList().get(i).getNews_images().size();
-                                                for (int j = p - 1; j < p; j++) {
-                                                    imagesModel.setId(model.getNews_images().get(j).getId());
-                                                    imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
-                                                    imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
-                                                    imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
-                                                    imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
-
-                                                    imagesList.add(imagesModel);
-
-                                                    newsImagesTable.insertNewsImages(imagesModel);
                                                 }
+                                                // }
+                                                //Log.v("", "getNews_images().size() " + serverResponse.getNewsFeedList().get(i).getNews_images().size());
+                                                if (serverResponse.getNewsFeedList().get(i).getNews_images() != null && serverResponse.getNewsFeedList().get(i).getNews_images().size() > 0) {
+                                                    int p = serverResponse.getNewsFeedList().get(i).getNews_images().size();
+                                                    for (int j = p - 1; j < p; j++) {
+                                                        imagesModel.setId(model.getNews_images().get(j).getId());
+                                                        imagesModel.setNews_id(model.getNews_images().get(j).getNews_id());
+                                                        imagesModel.setNews_pic(model.getNews_images().get(j).getNews_pic());
+                                                        imagesModel.setCreated_at(model.getNews_images().get(j).getCreated_at());
+                                                        imagesModel.setUpdated_at(model.getNews_images().get(j).getUpdated_at());
+
+                                                        imagesList.add(imagesModel);
+
+                                                        newsImagesTable.insertNewsImages(imagesModel);
+                                                    }
+                                                }
+
+                                                newsListTable.insertNewsList(model);
+
                                             }
-
-                                            newsListTable.insertNewsList(model);
-
                                         }
                                     }
 
@@ -359,14 +360,18 @@ public class HomeActivity extends AppCompatActivity
                             //setListeners();
                             // scheduleAlarm();
                             // loadCategoryUI();
-                          //  finish();
-                          //  callHomeActivityToRefresh();
-
-                                    callHomeFragment();
+                            //  finish();
+                            //  callHomeActivityToRefresh();
+                            if (!from.equals("background")) {
+                                if (mProgressDialog.isShowing()) {
+                                    mProgressDialog.dismiss();
+                                }
+                            }
+                            callHomeFragment();
 
                         }
                     } else {
-                     //   Log.v("Failure ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
+                        //   Log.v("Failure ", "status " + serverResponse.getStatus() + " Desc " + serverResponse.getDescription());
                         //setFailedAlertDialog(HomeActivity.this, serverResponse.getStatus().toString(), "Failure");
                         Toast.makeText(mContext, "Error in Response ", Toast.LENGTH_SHORT).show();
 
@@ -376,7 +381,11 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call<NewsFeedModelResponse> call, Throwable t) {
-                mProgressDialog.dismiss();
+                if (!from.equals("background")) {
+                    if (mProgressDialog.isShowing()) {
+                        mProgressDialog.dismiss();
+                    }
+                }
                 t.printStackTrace();
 
                 if (t instanceof NoConnectivityException) {
@@ -386,6 +395,14 @@ public class HomeActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(dialogMaterial!=null){
+            dialogMaterial.dismiss();
+        }
     }
 
     private void setFailedAlertDialog(Context context, String title, String desc) {
@@ -548,7 +565,7 @@ public class HomeActivity extends AppCompatActivity
                   /*  SharedPreferences preferences = getSharedPreferences("newsFeedPref", 0);
                    // preferences.edit().remove("childName").commit();
                     preferences.edit().remove("expandpos").commit();*/
-                //    ToastCompat.makeText(HomeActivity.this,"Home clicked", ToastCompat.LENGTH_SHORT).show();
+                    //    ToastCompat.makeText(HomeActivity.this,"Home clicked", ToastCompat.LENGTH_SHORT).show();
                     myPreferences = MyPreferences.getMyAppPref(mContext);
                     myPreferences.setExpandChildName("null");
                     myPreferences.setExpandPosition(0);
@@ -616,7 +633,7 @@ public class HomeActivity extends AppCompatActivity
                 // TODO Auto-generated method stub
                 // Temporary code:
                 String child_name = listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
-               // Log.v("onChildClick ", "child_name " + child_name);
+                // Log.v("onChildClick ", "child_name " + child_name);
 
 
                 if (child_name.equals("Pending Request")) {
@@ -939,32 +956,38 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void closeApplication() {
-        new MaterialStyledDialog.Builder(HomeActivity.this)
-                .setTitle("Confirm Please...")
-                .setDescription("Do you want to close the app ?")
-                .setStyle(Style.HEADER_WITH_TITLE)
-                .setCancelable(false)
-                .setPositiveText(R.string.button_ok)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        //finishAffinity();
-                        // finish();
+        /*runOnUiThread(new Runnable() {
+            @Override
+            public void run() {*/
 
-                        //for lower api version than 16
-                        ActivityCompat.finishAffinity(HomeActivity.this);
-                    }
-                })
-                .setNegativeText(R.string.cancel)
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
+                new MaterialStyledDialog.Builder(HomeActivity.this)
+                        .setTitle("Confirm Please...")
+                        .setDescription("Do you want to close the app ?")
+                        .setStyle(Style.HEADER_WITH_TITLE)
+                        .setCancelable(true)
+                        .setPositiveText(R.string.button_ok)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialogMaterial=dialog;
+                                //finishAffinity();
+                                // finish();
+                                dialog.dismiss();
+                                //for lower api version than 16
+                                ActivityCompat.finishAffinity(HomeActivity.this);
+                            }
+                        })
+                        .setNegativeText(R.string.cancel)
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
 
-
+           // }
+        ///});
     }
 
     @Override
@@ -984,10 +1007,10 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.action_logout) {
             session.setLogin(false);
             Intent intent = new Intent(this, LoginActivity.class);
-           // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-          //  finish();
+            finish();
         } else if (id == R.id.action_change_language) {
             Intent intent = new Intent(this, LanguageSelection.class);
             intent.putExtra("from", "home");
@@ -1014,7 +1037,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void setFragment(String childName, int childPosition) {
-      //  Log.v("setFragment ", "childName " + childName);
+        //  Log.v("setFragment ", "childName " + childName);
         myPreferences = MyPreferences.getMyAppPref(mContext);
         myPreferences.setExpandPosition(childPosition);
         myPreferences.setExpandChildName(childName);
@@ -1031,4 +1054,8 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
+    public void refreshDashboard(String memberToken, int memberId, String from) {
+
+        callNewsListAPI(memberToken, memberId, from);
+    }
 }

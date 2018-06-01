@@ -4,15 +4,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import com.org.apnanews.Constant;
+import com.org.apnanews.HomeActivity;
 import com.org.apnanews.db.MemberTable;
 import com.org.apnanews.db.NewsImagesTable;
 import com.org.apnanews.db.NewsListTable;
@@ -24,6 +19,11 @@ import com.org.apnanews.models.NewsFeedModelResponse;
 import com.org.apnanews.models.NewsImages;
 import com.org.apnanews.register.RegisterMember;
 import com.org.apnanews.sharedpref.MyPreferences;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -51,6 +51,7 @@ public class BackgroundService extends Service {
     private MemberTable memberTable;
     private NewsListTable newsListTable;
     private NewsImagesTable newsImagesTable;
+    private HomeActivity activity;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -65,6 +66,7 @@ public class BackgroundService extends Service {
         //changed on 12/05/17
         newsListTable = new NewsListTable(this);
         newsImagesTable = new NewsImagesTable(this);
+        activity=new HomeActivity();
         this.backgroundThread = new Thread(myTask);
         //Log.v("BackgroundService ", "Background Service Called");
 
@@ -100,7 +102,7 @@ public class BackgroundService extends Service {
         return START_STICKY;
     }
 
-    private void callNewsListAPI(String memberToken, int memberId) {
+    private void callNewsListAPI(final String memberToken, final int memberId) {
         //  mProgressDialog = new ProgressDialog(HomeActivity.this);
         //  mProgressDialog.setMessage("Loading...");
         //  mProgressDialog.show();
@@ -154,7 +156,7 @@ public class BackgroundService extends Service {
                                 List<NewsImages> imagesList = new ArrayList<>();
                                 NewsImages imagesModel = new NewsImages();
                                 int n = serverResponse.getNewsFeedList().size();
-                               // if (n != -1) {
+                                if (n > 0) {
                                     for (int i = n - 1; i < n; i--) {
                                         if (!newsListTable.checkNewsPresent(serverResponse.getNewsFeedList().get(i).getId())) {
                                             model = new NewsFeedList(serverResponse.getNewsFeedList().get(i).getId(),
@@ -222,8 +224,9 @@ public class BackgroundService extends Service {
 
                                         }
                                     }
+                                    activity.refreshDashboard(memberToken,memberId,"background");
 
-                               // }
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

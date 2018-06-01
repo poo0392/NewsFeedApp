@@ -24,6 +24,15 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
+import com.org.apnanews.CreateArticle;
+import com.org.apnanews.MainActivity;
+import com.org.apnanews.NewsFeedApplication;
+import com.org.apnanews.R;
+import com.org.apnanews.db.MemberTable;
+import com.org.apnanews.db.PersonalDetails;
+import com.org.apnanews.models.PayUTransactionDetailsModel;
+import com.org.apnanews.register.RegisterMember;
+import com.org.apnanews.sharedpref.MyPreferences;
 import com.payumoney.core.PayUmoneyConfig;
 import com.payumoney.core.PayUmoneyConstants;
 import com.payumoney.core.PayUmoneySdkInitializer;
@@ -45,15 +54,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.org.apnanews.CreateArticle;
-import com.org.apnanews.MainActivity;
-import com.org.apnanews.NewsFeedApplication;
-import com.org.apnanews.R;
-import com.org.apnanews.db.MemberTable;
-import com.org.apnanews.models.PayUTransactionDetailsModel;
-import com.org.apnanews.register.RegisterMember;
-import com.org.apnanews.sharedpref.MyPreferences;
-
 import static com.org.apnanews.globals.Globals.paymentDetails;
 
 /**
@@ -68,6 +68,7 @@ public class PayUPnPActivity extends AppCompatActivity {
     String emailID, mobileNo, productInfo, first_name, mRsSymbol, membertoken;
     int amountPref, memberid;
     MemberTable memberTable;
+    PersonalDetails pd;
     Button payNowButton;
     TextView amountTextView;
     private RadioGroup radioGroup_select_env;
@@ -87,6 +88,7 @@ public class PayUPnPActivity extends AppCompatActivity {
         context = this;
         setAppToolbar();
         memberTable = new MemberTable(context);
+        pd = new PersonalDetails(context);
 
         getPrefData();
         getDbData();
@@ -98,7 +100,7 @@ public class PayUPnPActivity extends AppCompatActivity {
 
     private void getDbData() {
         membersList = new ArrayList<>();
-        membersList.addAll(memberTable.getMemberListByMemberId(memberid));
+        membersList.addAll(pd.getMemberListByMemberId(memberid));
     }
 
     private void getPrefData() {

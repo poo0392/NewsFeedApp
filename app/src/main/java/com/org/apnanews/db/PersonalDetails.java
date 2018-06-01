@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.org.apnanews.register.RegisterMember;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by POOJA on 2/20/2018.
  */
@@ -72,5 +75,33 @@ public class PersonalDetails {
         }
 
         return false;
+    }
+
+
+    public List<RegisterMember> getMemberListByMemberId(int member_id) {// here member_id = news_list.member_id
+        db = dbHelper.getWritableDatabase();
+
+        ArrayList<RegisterMember> listAll = new ArrayList<RegisterMember>();
+        RegisterMember model;
+        // String query1 = "SELECT * FROM " + MemberTable.MEMBER_TABLE_NAME + " where " + MemberTable.MEMBER_ID + " = " + member_id;
+      String query1="select * from "+PersonalDetails.TABLE_NAME+" where "+PersonalDetails.MEMBER_ID+" = "+member_id;
+        Cursor cursor = db.rawQuery(query1, null);
+        //  while (cursor != null && cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
+            model = new RegisterMember();
+            model.setMemberId(cursor.getColumnIndex(PersonalDetails.MEMBER_ID));
+            model.setMemberToken(cursor.getString(cursor.getColumnIndex(PersonalDetails.MEMBER_TOKEN)));
+            model.setFirstName(cursor.getString(cursor.getColumnIndex(PersonalDetails.FIRST_NAME)));
+            model.setLastName(cursor.getString(cursor.getColumnIndex(PersonalDetails.LAST_NAME)));
+            model.setEmailId(cursor.getString(cursor.getColumnIndex(PersonalDetails.EMAIL_ID)));
+            model.setMobile(cursor.getString(cursor.getColumnIndex(PersonalDetails.MOBILE)));
+            listAll.add(model);
+        }
+        // Log.v("DbHelper ", " MemList(mrm_id) " + listAll.toString());
+        cursor.close();
+        db.close();
+        return listAll;
+
+
     }
 }
