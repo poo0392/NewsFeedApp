@@ -21,8 +21,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
-import com.google.gson.Gson;
-
 import com.org.apnanews.db.MemberTable;
 import com.org.apnanews.db.PersonalDetails;
 import com.org.apnanews.helper.ConnectivityInterceptor;
@@ -32,6 +30,7 @@ import com.org.apnanews.register.LoginRegisterResponse;
 import com.org.apnanews.register.RegisterMember;
 import com.org.apnanews.sharedpref.MyPreferences;
 import com.org.apnanews.sharedpref.SessionManager;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -320,6 +319,7 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
+                      //  Intent intent = new Intent(SignUpActivity.this, HomeScreenActivity.class);
                         startActivity(intent);
                         finish();
                         session.setLogin(true);

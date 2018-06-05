@@ -130,7 +130,6 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_home);
         mContext = this;
         newsFeedApplication = NewsFeedApplication.getApp();
@@ -471,15 +470,13 @@ public class HomeActivity extends AppCompatActivity
         gson = new Gson();
 
         memberTable = new MemberTable(mContext);
-        categoryMasterTable = new CategoryMasterTable(mContext);
-        subCategoryTable = new SubCategoryTable(mContext);
         newsImagesTable = new NewsImagesTable(mContext);
         newsFeedList = new ArrayList<>();
         categoryList = new ArrayList<>();
         catDupList = new ArrayList<>();
-        newsFeedApplication = NewsFeedApplication.getApp();
-        session = new SessionManager(mContext);
-        langSelection = new SessionManager(mContext);
+
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
@@ -14,9 +13,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Locale;
-
 import com.org.apnanews.sharedpref.SessionManager;
+
+import java.util.Locale;
 
 public class LanguageSelection extends AppCompatActivity {
 
@@ -140,6 +139,7 @@ public class LanguageSelection extends AppCompatActivity {
             if (fromActivity != null) {
                 if (fromActivity.equals("home")) {
                     Intent intent = new Intent(LanguageSelection.this, HomeActivity.class);
+                  //  Intent intent = new Intent(LanguageSelection.this, HomeScreenActivity.class);
                     startActivity(intent);
                     finish();
                 } else if (fromActivity.equals("splash")) {

@@ -5,17 +5,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.org.apnanews.db.DBHelper;
+import com.org.apnanews.sharedpref.SessionManager;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-
-import com.org.apnanews.db.DBHelper;
-import com.org.apnanews.sharedpref.SessionManager;
 
 public class SplashScreen extends AppCompatActivity {
     private SessionManager session;
@@ -99,6 +98,7 @@ public class SplashScreen extends AppCompatActivity {
             public void run() {
                 if (session.isLoggedIn()) {
                     Intent intent = new Intent(SplashScreen.this, HomeActivity.class);
+                  //  Intent intent = new Intent(SplashScreen.this, HomeScreenActivity.class);
                     startActivity(intent);
                     finish();
                 } else {

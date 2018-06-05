@@ -144,6 +144,7 @@ public class LoginActivity extends AppCompatActivity {
             setLocaleLang();
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            //Intent intent = new Intent(LoginActivity.this, HomeScreenActivity.class);
             startActivity(intent);
             finish();
         }
@@ -377,7 +378,8 @@ public class LoginActivity extends AppCompatActivity {
                         //register success
                         dialog.dismiss();
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                        // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                       // Intent intent = new Intent(LoginActivity.this, HomeScreenActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         context.startActivity(intent);
                         finish();
 
@@ -413,7 +415,7 @@ public class LoginActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                           dialog.dismiss();
+                        dialog.dismiss();
                         ActivityCompat.finishAffinity(LoginActivity.this);
                     }
                 })
