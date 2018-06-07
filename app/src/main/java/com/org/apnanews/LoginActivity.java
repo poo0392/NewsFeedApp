@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -52,7 +52,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LoginActivity extends AppCompatActivity {
     //chnages added on 3/9/2018.
     // UI references.
-    private EditText mUsernameView, mPasswordView;
+    private TextInputEditText mUsernameView, mPasswordView;
     private Button mSubmitBtn;
     private ProgressDialog progressDialog;
     private MyPreferences myPreferences;
@@ -65,13 +65,13 @@ public class LoginActivity extends AppCompatActivity {
     private List<NewsFeedList> newsFeedList = new ArrayList<>();
     MemberTable memberTable;
     PersonalDetails pd;
-    MaterialDialog dialogMaterial;
-
+    MaterialStyledDialog.Builder dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         context = this;
         myPreferences = MyPreferences.getMyAppPref(this);
         session = new SessionManager(getApplicationContext());
@@ -128,8 +128,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
         // Set up the login form.
-        mUsernameView = (EditText) findViewById(R.id.username);
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mUsernameView = (TextInputEditText) findViewById(R.id.username);
+        mPasswordView = (TextInputEditText) findViewById(R.id.password);
 
         mLoginInButton = (Button) findViewById(R.id.login_button);
 
@@ -145,6 +145,7 @@ public class LoginActivity extends AppCompatActivity {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             //Intent intent = new Intent(LoginActivity.this, HomeScreenActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
         }
@@ -214,7 +215,7 @@ public class LoginActivity extends AppCompatActivity {
             finish();*/
 
             sendlogin(username, password);
-          //  showSuccessAlertDialog(LoginActivity.this, "Success", "Logged In Successfully");
+            //  showSuccessAlertDialog(LoginActivity.this, "Success", "Logged In Successfully");
         }
     }
 
@@ -299,8 +300,13 @@ public class LoginActivity extends AppCompatActivity {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                           // Toast.makeText(LoginActivity.this,"Logged In Successfully", Toast.LENGTH_SHORT).show();
-                            showSuccessAlertDialog(LoginActivity.this, "Success", "Logged In Successfully");
+                            // Toast.makeText(LoginActivity.this,"Logged In Successfully", Toast.LENGTH_SHORT).show();
+                            try {
+
+                                showSuccessAlertDialog(LoginActivity.this, "Success", "Logged In Successfully");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
                         } else {
                             //login failed
@@ -314,7 +320,10 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<LoginRegisterResponse> call, Throwable t) {
-                    progressDialog.dismiss();
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+
                     t.printStackTrace();
                     //Log.v(" onFailure ", " getMessage " + t.getMessage());
                     if (t instanceof NoConnectivityException) {
@@ -363,7 +372,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showSuccessAlertDialog(final Context context, String title, String desc) {
-       MaterialStyledDialog.Builder dialog= new MaterialStyledDialog.Builder(context);
+        dialog = new MaterialStyledDialog.Builder(context);
+        dialog.autoDismiss(true);
 
         dialog.setTitle(title)
                 .setDescription(desc)
@@ -374,28 +384,34 @@ public class LoginActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        dialogMaterial=dialog;
                         //register success
                         dialog.dismiss();
+                        session.setLogin(true);
+
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                       // Intent intent = new Intent(LoginActivity.this, HomeScreenActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        context.startActivity(intent);
+                        // Intent intent = new Intent(LoginActivity.this, HomeScreenActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                         finish();
 
-                        session.setLogin(true);
+
 
                     }
                 })
+
                 .show();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(dialogMaterial!=null){
-            dialogMaterial.dismiss();
-        }
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
     }
 
     @Override
@@ -405,8 +421,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showBackPressAlertDialog(Context context, String title, String desc) {
-        new MaterialStyledDialog.Builder(context)
-                .setTitle(title)
+        dialog = new MaterialStyledDialog.Builder(context);
+        dialog.setTitle(title)
                 .setDescription(desc)
                 .setStyle(Style.HEADER_WITH_ICON)
                 .setIcon(R.mipmap.ic_success)

@@ -151,6 +151,7 @@ public class NewsFeedFragment extends Fragment {
         //Log.v(TAG + " onCreateView ", " Called ");
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         setHasOptionsMenu(true);
+        Globals.checkSync=true;
         newsFeedApplication = NewsFeedApplication.getApp();
         Globals.back_press_screen=2;
         mContext = getActivity();
@@ -814,6 +815,7 @@ public class NewsFeedFragment extends Fragment {
         adapter = new ImageAdapter(getActivity(), newsFeedList, mRecyclerView, "newsfeed_fragment", 0);
         mRecyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
     }
 
     private int[] tabsValues() {

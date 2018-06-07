@@ -28,6 +28,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -79,9 +80,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.SYSTEM_ALERT_WINDOW;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 import static com.org.apnanews.globals.Globals.back_press_screen;
+import static com.org.apnanews.globals.Globals.checkSync;
 
 //changes added on //changes 16_03.
 public class HomeActivity extends AppCompatActivity
@@ -99,7 +102,7 @@ public class HomeActivity extends AppCompatActivity
     String emailId, fullName, memberToken, cityFilter, stateFilter, categoryFilter;
     int memberId;
     String role;
-    String jsonResponse;
+    String jsonResponse, getfromScreen;
     LinearLayout ll_linBase;
     private NewsFeedApplication newsFeedApplication;
     ExpandListAdapter listAdapter;
@@ -124,13 +127,14 @@ public class HomeActivity extends AppCompatActivity
     private int lastExpandedPosition = -1;
     Handler mHandler;
     boolean firsttime = true;
-    MaterialDialog dialogMaterial;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
         mContext = this;
         newsFeedApplication = NewsFeedApplication.getApp();
         session = new SessionManager(mContext);
@@ -154,9 +158,10 @@ public class HomeActivity extends AppCompatActivity
 
         }
         setLocaleLang();
-
+        initialize();
         setAppToolbar();
         initialializeComponents();
+
 
         /*if(firsttime){
             callHomeActivityToRefresh();
@@ -165,6 +170,16 @@ public class HomeActivity extends AppCompatActivity
 
         // callHomeFragment();
 
+    }
+
+    private void initialize() {
+        gson = new Gson();
+
+        memberTable = new MemberTable(mContext);
+        newsImagesTable = new NewsImagesTable(mContext);
+        newsFeedList = new ArrayList<>();
+        categoryList = new ArrayList<>();
+        catDupList = new ArrayList<>();
     }
 
 
@@ -217,6 +232,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     public void callNewsListAPI(String memberToken, int memberId, final String from) {
+        getfromScreen = from;
         if (!from.equals("background")) {
             mProgressDialog = new ProgressDialog(mContext);
             mProgressDialog.setMessage("Loading...");
@@ -355,18 +371,13 @@ public class HomeActivity extends AppCompatActivity
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-
-                            //setListeners();
-                            // scheduleAlarm();
-                            // loadCategoryUI();
-                            //  finish();
-                            //  callHomeActivityToRefresh();
-                            if (!from.equals("background")) {
+                           /* if (!getfromScreen.equals("background")) {
                                 if (mProgressDialog.isShowing()) {
                                     mProgressDialog.dismiss();
                                 }
-                            }
+                            }*/
                             callHomeFragment();
+
 
                         }
                     } else {
@@ -397,10 +408,21 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        Log.v("onStart Called", "");
+        //if(checkSync==true){
+
+        // }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
-        if(dialogMaterial!=null){
-            dialogMaterial.dismiss();
+        Log.v("OnPause Called", "");
+        if (checkSync) {
+            mProgressDialog.dismiss();
+
         }
     }
 
@@ -414,7 +436,7 @@ public class HomeActivity extends AppCompatActivity
                 .setPositiveText(R.string.button_ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    public void onClick(MaterialDialog dialog, DialogAction which) {
                         dialog.dismiss();
                     }
                 })
@@ -465,18 +487,6 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void initialializeComponents() {
-
-
-        gson = new Gson();
-
-        memberTable = new MemberTable(mContext);
-        newsImagesTable = new NewsImagesTable(mContext);
-        newsFeedList = new ArrayList<>();
-        categoryList = new ArrayList<>();
-        catDupList = new ArrayList<>();
-
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -760,6 +770,7 @@ public class HomeActivity extends AppCompatActivity
 
         int readStoragePermissionResult = ContextCompat.checkSelfPermission(mContext, READ_EXTERNAL_STORAGE);
         int writeStoragePermissionResult = ContextCompat.checkSelfPermission(mContext, WRITE_EXTERNAL_STORAGE);
+        int systemAlertPermissionResult = ContextCompat.checkSelfPermission(mContext, SYSTEM_ALERT_WINDOW);
 
         return readStoragePermissionResult == PackageManager.PERMISSION_GRANTED &&
                 writeStoragePermissionResult == PackageManager.PERMISSION_GRANTED;
@@ -768,7 +779,7 @@ public class HomeActivity extends AppCompatActivity
     private void requestPermission() {
         ActivityCompat.requestPermissions(HomeActivity.this, new String[]{
                 READ_EXTERNAL_STORAGE,
-                WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                WRITE_EXTERNAL_STORAGE, SYSTEM_ALERT_WINDOW}, PERMISSION_REQUEST_CODE);
 
     }
 
@@ -781,8 +792,9 @@ public class HomeActivity extends AppCompatActivity
 
                     boolean readStorageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     boolean writeStorageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    boolean systemAlertAcepted = grantResults[2] == PackageManager.PERMISSION_GRANTED;
 
-                    if (readStorageAccepted && writeStorageAccepted) {
+                    if (readStorageAccepted && writeStorageAccepted && systemAlertAcepted) {
                         /*Toast.makeText(mContext, "All Permissions Granted",
                                 Toast.LENGTH_SHORT).show();*/
                         //Snackbar.make(recyclerView, "Permission Granted, Now you can access Gallery and camera.", Snackbar.LENGTH_LONG).show();
@@ -806,7 +818,7 @@ public class HomeActivity extends AppCompatActivity
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                                     requestPermissions(new String[]{
                                                                     READ_EXTERNAL_STORAGE,
-                                                                    WRITE_EXTERNAL_STORAGE},
+                                                                    WRITE_EXTERNAL_STORAGE, SYSTEM_ALERT_WINDOW},
                                                             PERMISSION_REQUEST_CODE);
                                                 }
                                             }
@@ -940,9 +952,43 @@ public class HomeActivity extends AppCompatActivity
                 tx.commit();
             } else {*/
                 //  this.finish();
-                closeApplication();
+                // closeApplication();
+                closeApplication2();
             }
         }
+    }
+
+    private void closeApplication2() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+        builder.setTitle("Confirm Please...");
+        builder.setMessage("Do you want to close the app ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //finishAffinity();
+                        // finish();
+                        dialog.dismiss();
+                        //for lower api version than 16
+                        ActivityCompat.finishAffinity(HomeActivity.this);
+
+
+                    }
+                });
+
+        builder.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+
+        AlertDialog alert1 = builder.create();
+        //alert1.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        alert1.show();
     }
 
     @Override
@@ -957,33 +1003,33 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void run() {*/
 
-                new MaterialStyledDialog.Builder(HomeActivity.this)
-                        .setTitle("Confirm Please...")
-                        .setDescription("Do you want to close the app ?")
-                        .setStyle(Style.HEADER_WITH_TITLE)
-                        .setCancelable(true)
-                        .setPositiveText(R.string.button_ok)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                dialogMaterial=dialog;
-                                //finishAffinity();
-                                // finish();
-                                dialog.dismiss();
-                                //for lower api version than 16
-                                ActivityCompat.finishAffinity(HomeActivity.this);
-                            }
-                        })
-                        .setNegativeText(R.string.cancel)
-                        .onNegative(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
+        new MaterialStyledDialog.Builder(HomeActivity.this)
+                .setTitle("Confirm Please...")
+                .setDescription("Do you want to close the app ?")
+                .setStyle(Style.HEADER_WITH_TITLE)
+                .setCancelable(true)
+                .setPositiveText(R.string.button_ok)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        //finishAffinity();
+                        // finish();
 
-           // }
+                        //for lower api version than 16
+                        ActivityCompat.finishAffinity(HomeActivity.this);
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeText(R.string.cancel)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+
+        // }
         ///});
     }
 
@@ -1004,10 +1050,10 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.action_logout) {
             session.setLogin(false);
             Intent intent = new Intent(this, LoginActivity.class);
-            // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            finish();
+            // finish();
         } else if (id == R.id.action_change_language) {
             Intent intent = new Intent(this, LanguageSelection.class);
             intent.putExtra("from", "home");
@@ -1049,7 +1095,6 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
     }
-
 
     public void refreshDashboard(String memberToken, int memberId, String from) {
 
